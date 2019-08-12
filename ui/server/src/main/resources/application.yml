@@ -1,0 +1,93 @@
+
+
+logging:
+  level:
+    group.u: DEBUG
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %logger.%M - %msg%n"
+
+info:
+  version: ${platform.version}
+
+ data:
+    jest:
+      uri: http://elastic:9200
+
+cloud:
+  aws:
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
+environment: local
+
+spring:
+  data:
+    rest:
+      detection-strategy: ANNOTATED
+    jest:
+      uri: http://localhost:9200
+    mongodb:
+      host: mongo
+      port: 27017
+      database: sector-server
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  jpa:
+    hibernate:
+      ddl-auto: create
+  datasource:
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: postgres
+    password: mysecretpassword
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+
+server:
+  port: 8080
+
+---
+
+spring.profiles: local
+
+data.science.service.baseurl: http://data-science-interface:8080
+
+---
+
+spring.profiles: embedded
+
+spring:
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 51255
+      database: linkEmbedded
+
+---
+
+spring.profiles: contractTests
+
+
+# use static DS endpoint when running for contract tests
+data.science.service.baseurl: http://data-science-interface:8080
+
+data:
+  jest:
+    uri: http://elastic:9200
+
+---
+
+spring.profiles: ft
+---
+
+spring.profiles: dev
+---
+
+spring.profiles: qa
+---
+
+spring.profiles: prod

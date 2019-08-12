@@ -1,0 +1,875 @@
+resource_types:
+  - name: terraform
+    type: docker-image
+    source:
+      repository: ljfranklin/terraform-resource
+  - name: latest-docker-image
+    type: docker-image
+    privileged: true
+    source:
+      repository: concourse/docker-image-resource
+      tag: latest
+  - name: slack-notification
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+  - name: simple-s3-resource
+    type: docker-image
+    source:
+      repository: 18fgsa/s3-resource-simple
+
+resources:
+  - name: slack-notify
+    type: slack-notification
+    source:
+      url: ((slack_webhook))
+  - name: terraform
+    type: terraform
+    source:
+      backend_type: s3
+      backend_config:
+        bucket: ((tf_backend))
+        key: mdas-terraform-concourseup-4.2.tfstate
+        region: ((bucket_aws_region))
+        access_key: ((aws_access_key_id))
+        secret_key: ((aws_secret_access_key))
+      vars:
+        tag_name: concourse
+      env:
+        AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+  #      TF_LOG: DEBUG
+  - name: source
+    type: git
+    source: &repo-source
+      uri: ((git_source_url))
+      branch: master
+      private_key: ((git_private_key))
+#      ignore_paths: [services/scoring-service, notebooks]
+  - name: version
+    type: semver
+    source:
+      driver: git
+      uri: ((git_version_url))
+      initial_version: 0.0.1
+      branch: version
+      file: version
+      private_key: ((git_private_key))
+  ################### ECR REPOS ######################
+  - name: server-docker-image
+    type: latest-docker-image
+    source:
+      aws_access_key_id: ((aws_access_key_id))
+      aws_secret_access_key: ((aws_secret_access_key))
+      repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/server
+  - name: main-ds-service-docker-image
+    type: latest-docker-image
+    source:
+      repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/data-science-service
+      aws_access_key_id: ((aws_access_key_id))
+      aws_secret_access_key: ((aws_secret_access_key))
+  - name: client-docker-image
+    type: latest-docker-image
+    source:
+      repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/ui
+      aws_access_key_id: ((aws_access_key_id))
+      aws_secret_access_key: ((aws_secret_access_key))
+
+jobs:
+  - name: Create Terraform Persistence
+    public: true
+    plan:
+      - get: source
+        trigger: false
+      - task: Create Buckets
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
+                echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+                echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
+                echo "Creating Repository Persistence"
+                aws s3api create-bucket --bucket ((tf_backend)) --region us-east-1
+          outputs:
+            - name: vars
+
+  - name: Initialize
+    public: true
+    plan:
+      - get: source
+        trigger: true
+      - get: version
+
+###################### BUILD SERVICES ############################
+  - name: Build UI
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: true
+        params: {depth: 10}
+        passed: [Initialize]
+      - get: version
+        passed: [Initialize]
+      - task: Build Front End
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-node10-yarn1-17-3
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              echo "begin build front end script"
+              cd source/ui/sector-ui
+
+              echo "building front end"
+              npm install
+              yarn build
+              echo "front end build complete"
+
+              echo "pushing results to sonarqube"
+              echo "pushing results to sonarqube complete"
+
+              echo "preparing files for container build"
+              cp ./container/Dockerfile ../../../docker/.
+              cp ./container/start-nginx.sh ../../../docker/.
+              cp -Rf ./container/config ../../../docker/.
+              cp -Rf ./build ../../../docker/.
+          inputs:
+          - name: source
+          outputs:
+          - name: docker
+        on_failure:
+          put: slack-notify
+          params:
+            text: |
+              "Build failed on job 'Build-Project'. Check it out at: 'http://http://concourse.mdas2.com/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME'"
+            silent: true
+
+  - name: Execute UI Automated Tests
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Build server
+        trigger: true
+      - get: version
+        passed:
+          - Build server
+      - task: Execute Test
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: bradbytecubed/mdas-pipeline
+          run:
+            path: entrypoint.sh
+            args:
+              - bash
+              - -exc
+              - |
+                echo "Noop for now"
+          inputs:
+            - name: source
+          caches:
+            - path: maven
+
+  - name: Build server
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Initialize
+        trigger: true
+        params:
+          depth: 10
+      - get: version
+        passed:
+          - Initialize
+        trigger: true
+      - task: Build Server
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/openjdk12-maven
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd source/ui/server
+              mvn clean install
+          inputs:
+          - name: source
+          outputs:
+          - name: vars
+
+###################### FUNCTIONAL TESTS############################
+  - name: Execute main-ds-service Unit and Integration Tests
+    public: true
+    plan:
+      - get: source
+        trigger: true
+        passed:
+          - Initialize
+      - get: version
+        passed:
+          - Initialize
+      - task: Execute Test
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+          TESTING: 1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd source/services/data-science-service
+              mkdir -p models/s3
+              pip install -r requirements.txt
+              pytest
+          inputs:
+            - name: source
+
+  - name: Execute server Functional Tests
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Build server
+        trigger: true
+      - get: version
+        passed:
+          - Build server
+      - task: Execute Test
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: bradbytecubed/mdas-pipeline
+          run:
+            path: entrypoint.sh
+            args:
+              - bash
+              - -exc
+              - |
+                echo "Noop for now"
+          inputs:
+            - name: source
+          caches:
+            - path: maven
+
+###################### CONTRACT TESTS ############################
+  - name: Execute main-ds-service Contract Tests
+    public: true
+    plan:
+      - get: source
+        trigger: true
+        passed: [Execute main-ds-service Unit and Integration Tests]
+      - get: version
+        passed: [Execute main-ds-service Unit and Integration Tests]
+      - task: Execute Test
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/maven-java-10-aws
+          inputs:
+            - name: source
+          params:
+            AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+            AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+            AWS_ACCOUNT_ID: ((aws_account_id))
+            CONTRACT_TESTS: true
+          run:
+            path: entrypoint.sh
+            args:
+              - bash
+              - -exc
+              - |
+                pwd
+                # setup maven cache
+                M2_HOME="${HOME}/.m2"
+                M2_CACHE="$(pwd)/maven"
+                [[ -d "${M2_CACHE}" && ! -d "${M2_HOME}" ]] && ln -s "${M2_CACHE}" "${M2_HOME}"
+                # prepare and run tests
+                # debugging the run
+
+                docker-compose -f source/docker-compose.yml up -d --build data-science-service
+                source/wait-for-status-code-at-url.sh localhost:8083/health/check 200
+                mvn clean test -f source/services/data-science-service/contract-tests/pom.xml
+
+  - name: Execute server Contract Tests
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Execute server Functional Tests
+        trigger: true
+      - get: version
+        passed:
+          - Execute server Functional Tests
+      - task: Execute Test
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: bradbytecubed/mdas-pipeline
+          run:
+            path: entrypoint.sh
+            args:
+              - bash
+              - -exc
+              - |
+                echo "Noop for now"
+          inputs:
+            - name: source
+          caches:
+            - path: maven
+
+  ###################### ARTIFACT PUBLISH ############################
+  - name: Provision Docker Repositories
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Execute main-ds-service Contract Tests
+          - Execute server Contract Tests
+          - Build UI
+        trigger: true
+      - get: version
+      - task: Write Variables
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: bytecubed/bytecubed-java-ci
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
+                echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+                echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
+                echo "Verify/Create ECR Repos"
+          outputs:
+            - name: vars
+          inputs:
+            - name: version
+      - put: terraform
+        params:
+          terraform_source: source/config/ecr-setup
+          plan_only: true
+          env_name: terraform
+          var_files: [./vars/terraform.tfvars]
+          vars:
+            environment: terraform
+      - put: terraform
+        params:
+          terraform_source: source/config/ecr-setup
+          env_name: terraform
+          plan_run: true
+          var_files: [./vars/terraform.tfvars]
+          vars:
+            environment: terraform
+
+  - name: Push UI
+    public: true
+    plan:
+      - get: source
+        trigger: true
+        passed: [Provision Docker Repositories]
+      - get: version
+        passed: [Provision Docker Repositories]
+      - task: Build Front End Image
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-node10-yarn1-17-3
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              echo "begin build front end script"
+              cd source/ui/sector-ui
+
+              echo "building front end"
+              npm install
+              yarn build
+              echo "front end build complete"
+
+              echo "pushing results to sonarqube"
+              echo "pushing results to sonarqube complete"
+
+              echo "preparing files for container build"
+              cp ./container/Dockerfile ../../../docker/.
+              cp ./container/start-nginx.sh ../../../docker/.
+              cp -Rf ./container/config ../../../docker/.
+              cp -Rf ./build ../../../docker/.
+          inputs:
+            - name: source
+          outputs:
+            - name: docker
+      - put: client-docker-image
+        params: {build: docker, tag_file: version/number}
+
+  - name: Push server Image
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Provision Docker Repositories
+        trigger: true
+      - get: version
+        passed:
+          - Provision Docker Repositories
+      - task: Build Server Image
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/openjdk12-maven
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd source/ui/server
+              mvn clean install
+              cp Dockerfile ../../../docker
+              cp -R target ../../../docker/target
+          inputs:
+            - name: source
+          outputs:
+            - name: docker
+          caches:
+            - path: maven
+      - put: server-docker-image
+        params:
+          build: docker
+          tag_file: version/number
+
+  - name: Push main-ds-service Image
+    public: true
+    plan:
+      - get: source
+        passed:
+          - Provision Docker Repositories
+        trigger: true
+      - get: version
+        passed:
+          - Provision Docker Repositories
+      - task: Build Test Project
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCOUNT_ID: ((aws_account_id))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cp -r source/services/data-science-service/** docker/
+          inputs:
+            - name: source
+          outputs:
+            - name: docker
+      - put: main-ds-service-docker-image
+        params:
+          build: docker
+          tag_file: version/number
+
+###################### DEPLOY SERVICE ############################
+  - name: Deploy Services And Run Functional Tests In Dev
+    serial: true
+    plan:
+    - get: source
+      passed:
+      - Push main-ds-service Image
+      - Push server Image
+      - Push UI
+      trigger: true
+    - get: version
+      passed:
+      - Push main-ds-service Image
+      - Push server Image
+      - Push UI
+      trigger: true
+    - task: Write Variables
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            echo region = \"us-west-2\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the dev environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        env_name: dev
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: dev
+    - put: terraform
+      params:
+        env_name: dev
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: dev
+    - task: Run Functional Tests
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-node10-selenium-chrome
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+            #   source/wait-for-status-code-at-url.sh ftUrl 200
+                cd source/functional-tests
+                npm install && npm run webdriver:update
+                npm run protractor
+          inputs:
+          - name: source
+
+
+  - name: Deploy Services And Run Functional Tests in FT
+    serial: true
+    plan:
+    - get: source
+      trigger: true
+      passed:
+      - Deploy Services To Dev
+    - get: version
+    - task: Write Variables
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            echo region = \"us-west-2\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the ft environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        env_name: ft
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: ft
+    - put: terraform
+      params:
+        env_name: ft
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: ft
+    - task: Run Functional Tests
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-node10-selenium-chrome
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+            # source/wait-for-status-code-at-url.sh ftUrl 200
+              cd source/functional-tests
+              npm install && npm run webdriver:update
+              npm run protractor
+          inputs:
+          - name: source
+
+  - name: Execute OWASP Security Scan-Development
+    serial: true
+    plan:
+    - get: version
+      passed:
+        - Deploy Services To Dev
+      trigger: true
+    - task: Scan Environment
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: latest-docker-image
+          source:
+            repository: owasp/zap2docker-live
+        run:
+          path: /bin/bash
+          args:
+          - -xce
+          - |
+            echo "starting scan..."
+            cd
+            # /zap/zap-baseline.py -t http://server-dev.theravenspoe.io/ | grep -q "FAIL-NEW: 0"
+            # [ $? -eq 0 ]  || exit 1
+            # echo "scan successful, no vulnerabilities found"
+  - name: Deploy Services To Test
+    serial: true
+    plan:
+    - get: source
+      passed:
+      - Deploy Services To Dev
+      trigger: true
+    - get: version
+      passed:
+      - Push server Image
+      - Push UI
+      trigger: true
+    - task: Write Variables
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            echo region = \"us-east-2\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the test environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        env_name: test
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: test
+    - put: terraform
+      params:
+        env_name: test
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: test
+  - name: Execute OWASP Security Scan Test
+    serial: true
+    plan:
+    - get: version
+      trigger: true
+      passed:
+        - Deploy Services To Test
+    - task: Scan Environment
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: latest-docker-image
+          source:
+            repository: owasp/zap2docker-live
+        run:
+          path: /bin/bash
+          args:
+          - -c
+          - |
+            echo "starting scan"
+            cd
+            # /zap/zap-baseline.py -t http://server-test.theravenspoe.io/ | grep -q "FAIL-NEW: 0"
+            # [ $? -eq 0 ]  || exit 1
+            # echo "scan successful, no vulnerabilities found"
+  - name: Deploy Services To Production
+    serial: true
+    plan:
+    - get: source
+      passed:
+      - Deploy Services To Dev
+    - get: version
+      # passed:
+      # - Execute OWASP Security Scan Test
+    - task: Write Variables
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            echo region = \"us-east-2\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the prod environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        env:
+          AWS_REGION: us-west-2
+        env_name: prod
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: prod
+    - put: terraform
+      params:
+        env:
+          AWS_REGION: us-west-2
+        env_name: prod
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+        vars:
+          environment: prod
+  - name: Execute OWASP Security Scan Prod
+    serial: true
+    plan:
+    - get: version
+      trigger: true
+      passed:
+        - Deploy Services To Production
+    - task: Scan Environment
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: latest-docker-image
+          source:
+            repository: owasp/zap2docker-live
+        run:
+          path: /bin/bash
+          args:
+          - -c
+          - |
+            echo "starting scan"
+            cd
+            # /zap/zap-baseline.py -t http://wwww.theravenspoe.io/ | grep -q "FAIL-NEW: 0"
+            # [ $? -eq 0 ]  || exit 1
+            # echo "scan successful, no vulnerabilities found"

@@ -1,0 +1,8 @@
+spring.profiles: it
+
+data.science.service.baseurl: mockValue
+
+elasticsearch:
+  clustername: docker-cluster
+  host: elastic
+  port: 9300

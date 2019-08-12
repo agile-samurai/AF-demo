@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "lib": [ "es2015" ],
+    "types": [
+      "jasmine"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

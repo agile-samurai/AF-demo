@@ -1,0 +1,127 @@
+[
+  {
+    "name": "${env}-reporting-proxy",
+    "image": "${haproxy_image}:latest",
+    "memory": 512,
+    "essential": true,
+    "privileged": true,
+    "links": [
+      "${env}-reporting-scala:surs-backend",
+      "${env}-reporting-java:surs-service"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${env}_surs-proxy"
+      }
+    },
+    "portMappings": [
+      {
+        "containerPort": 80
+      }
+    ]
+  },
+  {
+    "name": "${env}-reporting-scala",
+    "image": "${scala_image}:${tag}",
+    "memory": 1024,
+    "essential": true,
+    "command": [
+      "-Dconfig.resource=application-${env}.conf"
+    ],
+    "environment": [
+      {
+        "name": "AWS_ACCESS_KEY_ID",
+        "value": "${access_key}"
+      },
+      {
+        "name": "AWS_SECRET_ACCESS_KEY",
+        "value": "${secret_key}"
+      },
+      {
+        "name": "REGION",
+        "value": "${region}"
+      },
+      {
+        "name": "MONGO_PASSWORD",
+        "value": "${mongo_pass}"
+      },
+      {
+        "name": "AUTH_HOST_INTERNAL_IP",
+        "value": "${auth_host_internal_ip}"
+      },
+      {
+        "name": "KAFKA_INTERNAL_IP",
+        "value": "${kafka_internal_ip}"
+      },
+      {
+        "name": "ELASTICSEARCH",
+        "value": "${elasticsearch}"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${env}_surs-scala-service"
+      }
+    },
+    "portMappings": [
+      {
+        "containerPort": 9000
+      }
+    ]
+  },
+  {
+    "name": "${env}-reporting-java",
+    "image": "${java_image}:latest",
+    "essential": true,
+    "memory": 1024,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "${env}_surs-java-service"
+      }
+    },
+    "environment": [
+      {
+        "name": "SPRING_PROFILES_ACTIVE",
+        "value": "${env}"
+      },
+      {
+        "name": "SPRING_DATA_MONGODB_USERNAME",
+        "value": "${mongo_user}"
+      },
+      {
+        "name": "SPRING_DATA_MONGODB_PASSWORD",
+        "value": "${mongo_pass}"
+      },
+      {
+        "name": "SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE",
+        "value": "admin"
+      },
+      {
+        "name": "AUTH_HOST_INTERNAL_IP",
+        "value": "${auth_host_internal_ip}"
+      },
+      {
+        "name": "KAFKA_INTERNAL_IP",
+        "value": "${kafka_internal_ip}"
+      },
+      {
+        "name": "ELASTICSEARCH_URL",
+        "value": "${elasticsearch}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 8080
+      }
+    ]
+  }
+]
