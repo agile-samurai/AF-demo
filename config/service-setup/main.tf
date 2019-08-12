@@ -103,27 +103,6 @@ module "elasticsearch" {
 
 }
 
-module "kafka" {
-  source                      = "./modules/kafka"
-  vpc_id                      = module.network.vpc_id
-  region                      = var.region
-  environment                 = terraform.workspace
-  private_subnets             = module.network.private_subnets
-  public_subnets              = module.network.public_subnets
-  zookeeper_svc_count         = 1
-  broker_svc_count            = 1
-  ecs_cluster_name            = module.ecs-cluster.ecs_cluster_name
-  ecs_cluster_id              = module.ecs-cluster.ecs_cluster_id
-  sg-allow-ssh                = module.ecs-cluster.sg-allow-ssh
-  sg-allow-cluster            = module.ecs-cluster.sg-allow-cluster
-  ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
-  ecs_autoscale_role_arn      = module.ecs.ecs_autoscale_role_arn
-  ecs_service_role_arn        = module.ecs.ecs_service_role_arn
-  ecs_instance_role_name      = module.ecs.ecs_instance_role_name
-  ecs_instance_ip             = module.ecs-cluster.dns_name
-  zone_id                     = aws_route53_zone.primary.zone_id
-}
-
 module "mongodb" {
   source           = "./modules/mongo"
   vpc_id           = module.network.vpc_id
@@ -140,9 +119,9 @@ module "mongodb" {
 module "postgres" {
   source = "./modules/postgres"
 
-  username     = var.db_user
-  rds_password = var.db_pass
-  db_name      = "postgres"
+  db_user = var.postgres_username
+  db_pass = var.postgres_password
+  db_name = "postgres"
 
   private_subnets = module.network.private_subnets
   public_subnets  = module.network.public_subnets
@@ -217,8 +196,8 @@ module "server" {
   loadbalancer_port        = 80
   zone_id                  = aws_route53_zone.primary.zone_id
 
-  postgres_username          = var.db_user
-  postgres_password          = var.db_pass
+  postgres_username          = var.postgres_username
+  postgres_password          = var.postgres_password
   postgres_url               = module.postgres.postgres_url
   data_science_url           = module.datascience.dns_name
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
