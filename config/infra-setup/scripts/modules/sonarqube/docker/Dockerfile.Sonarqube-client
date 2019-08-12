@@ -1,0 +1,14 @@
+FROM carlyledavis/bytecubed-java-ci
+
+LABEL maintainer="madhu.joshi@bytecubed.com"
+ENV SONAR_SCANNER_PACKAGE=sonar-scanner-cli-3.2.0.1227-linux.zip
+ENV SONAR_SCANNER_URL=https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/${SONAR_SCANNER_PACKAGE}
+ENV SONAR_SCANNER_HOME /opt/sonar-scanner
+ENV PATH $PATH:${SONAR_SCANNER_HOME}/bin
+ENV WORKDIR /home/workspace
+
+# Download sonar scanner
+RUN curl -sOL ${SONAR_SCANNER_URL} && \
+      unzip -q ${SONAR_SCANNER_PACKAGE} -d /opt && \
+      ln -sf sonar-scanner-*-linux sonar-scanner && \
+      rm -f ${SONAR_SCANNER_PACKAGE}

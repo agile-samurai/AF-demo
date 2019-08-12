@@ -1,0 +1,33 @@
+logging:
+  level:
+    com.gargoylesoftware: OFF
+    org.apache: OFF
+    group.u: DEBUG
+
+platform:
+  import:
+    host: http://data-importer-ms.dev.mdas2.com
+  training:
+    data:
+      path: ../mdas-data-set
+
+info:
+  version: ${platform.version}
+
+cloud:
+  aws:
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
+environment: local
+aws-endpoint-base: http://localhost
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080

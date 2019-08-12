@@ -1,0 +1,27 @@
+#FROM sonarqube:6.7.4
+FROM sonarqube:latest
+
+ENV SONARQUBE_HOME=/opt/sonarqube
+# Location of the plugins we want to install
+ENV SONAR_JAVA_URL="https://sonarsource.bintray.com/Distribution/sonar-java-plugin/sonar-java-plugin-5.11.0.17289.jar"
+ENV SONAR_TS_URL="https://sonarsource.bintray.com/Distribution/sonar-typescript-plugin/sonar-typescript-plugin-1.7.0.2893.jar"
+ENV SONAR_FINDBUGS_URL="https://sonarsource.bintray.com/Distribution/sonar-findbugs-plugin/sonar-findbugs-plugin-3.3.jar"
+ENV SONAR_PMD_URL="https://sonarsource.bintray.com/Distribution/sonar-pmd-plugin/sonar-pmd-plugin-2.5.jar"
+ENV SONAR_JS_URL="https://sonarsource.bintray.com/Distribution/sonar-javascript-plugin/sonar-javascript-plugin-4.2.0.6476.jar"
+ENV SONAR_SCALA_URL="https://github.com/mwz/sonar-scala/releases"
+ENV SONAR_PYTHON_URL="https://sonarsource.bintray.com/Distribution/sonar-python-plugin/sonar-python-plugin-1.10.0.2131.jar"
+ENV SONAR_KOTLIN_URL="https://sonarsource.bintray.com/Distribution/sonar-kotlin-plugin/sonar-kotlin-plugin-1.0.1.965.jar"
+ENV SONAR_SAML_URL="https://binaries.sonarsource.com/Distribution/sonar-auth-saml-plugin/sonar-auth-saml-plugin-1.1.0.181.jar"
+
+RUN wget -q ${SONAR_JAVA_URL} && \
+    wget -q ${SONAR_TS_URL} && \
+    wget -q ${SONAR_FINDBUGS_URL} && \
+    wget -q ${SONAR_PMD_URL} && \
+    wget -q ${SONAR_JS_URL} && \
+    wget -q ${SONAR_SCALA_URL} && \
+    wget -q ${SONAR_PYTHON_URL} && \
+    wget -q ${SONAR_KOTLIN_URL} && \
+    wget -q ${SONAR_SAML_URL} && \
+    mv *.jar $SONARQUBE_HOME/extensions/plugins 
+    
+COPY ./fortify-ssc-sonarqube-plugin-2.4-SNAPSHOT.jar $SONARQUBE_HOME/extensions/plugins

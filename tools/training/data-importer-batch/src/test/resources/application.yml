@@ -1,0 +1,20 @@
+logging:
+  level:
+    com.gargoylesoftware: OFF
+    org.apache: OFF
+
+cloud:
+  aws:
+    stack:
+      auto: false
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        predictionResponseOutput:
+          destination: predictionResponse.t
+
+spring.profiles: it
+
+aws-endpoint-base: http://localhost
