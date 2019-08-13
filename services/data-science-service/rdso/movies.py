@@ -32,11 +32,12 @@ def movie_df():
     return mv
 
 
-def get_json_files(n: int = None, s3_folder="data/movie_json") -> list:
+def get_json_files(n: int = None, s3_folder="data/movie_json", **kwargs) -> list:
     list_of_dicts = []
-    # mv = movie_df()
-    b = Bucket("rdso-challenge2", s3_folder)
+    print(f"Getting data from {s3_folder}")
+    b = Bucket("rdso-challenge2", s3_folder, quiet=True, **kwargs)
     file_list = list(b)[:n]
+    print("Done getting data.")
     for jfile in file_list:
         shortened_file = jfile[len(s3_folder) + 1 :]
         f = b[str(shortened_file)]
@@ -47,7 +48,17 @@ def get_json_files(n: int = None, s3_folder="data/movie_json") -> list:
 
 
 def imdb_df(data):
-    return pd.DataFrame(data)
+    df = pd.DataFrame(data)
+    df.drop(["@context", "@type"], axis=1, inplace=True)
+    df["film_id"] = df.url.apply(lambda x: "tt" + x.strip("/title/"))
+    try:
+        df["film_director"] = df.director.apply(lambda x: x["name"])
+        df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
+    except TypeError as e:
+        pass
+    # df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
+    # df["num_directors"] = df.director.apply(lambda x: len(x["name"]))
+    return df
 
 
 if __name__ == "__main__":
