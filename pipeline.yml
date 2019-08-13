@@ -85,7 +85,7 @@ groups:
     - Execute server Functional Tests
     - Execute server Contract Tests
     - Execute UI Automated Tests
-    - Provision Docker Repositories
+    - Provision ECR Repositories
     - Push UI
     - Push server Image
     - Push main-ds-service Image
@@ -105,7 +105,7 @@ groups:
     - Execute UI Automated Tests
   - name: publish-and-scan
     jobs:
-    - Provision Docker Repositories
+    - Provision ECR Repositories
     - Push UI
     - Push server Image
     - Push main-ds-service Image
@@ -257,7 +257,7 @@ jobs:
             - -ec
             - |
               cd source/ui/server
-              mvn clean install -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### DO TESTS!!!
+              mvn clean install -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso -Dsonar.projectName=rdso ### do tests
           inputs:
           - name: source
           outputs:
@@ -401,7 +401,7 @@ jobs:
             - path: maven
 
   ###################### ARTIFACT PUBLISH ############################
-  - name: Provision Docker Repositories
+  - name: Provision ECR Repositories
     public: true
     plan:
       - get: source
@@ -453,9 +453,9 @@ jobs:
     plan:
       - get: source
         trigger: true
-        passed: [Provision Docker Repositories]
+        passed: [Provision ECR Repositories]
       - get: version
-        passed: [Provision Docker Repositories]
+        passed: [Provision ECR Repositories]
       - task: Build Front End Image
         config:
           platform: linux
@@ -496,11 +496,11 @@ jobs:
     plan:
       - get: source
         passed:
-          - Provision Docker Repositories
+          - Provision ECR Repositories
         trigger: true
       - get: version
         passed:
-          - Provision Docker Repositories
+          - Provision ECR Repositories
       - task: Build Server Image
         config:
           platform: linux
@@ -533,11 +533,11 @@ jobs:
     plan:
       - get: source
         passed:
-          - Provision Docker Repositories
+          - Provision ECR Repositories
         trigger: true
       - get: version
         passed:
-          - Provision Docker Repositories
+          - Provision ECR Repositories
       - task: Build Test Project
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
@@ -581,7 +581,7 @@ jobs:
       - Push server Image
       - Push UI
       trigger: true
-    - task: Write Variables
+    - task: Write Variables and Run TF Deploy
       params:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -649,7 +649,7 @@ jobs:
     - get: version
       # passed:
       # - Execute OWASP Security Scan Test
-    - task: Write Variables
+    - task:  Write Variables and Run TF Deploy
       config:
         platform: linux
         image_resource:
