@@ -36,8 +36,9 @@ public class ResourceServerConfig  extends WebSecurityConfigurerAdapter implemen
                 .and()
                 .httpBasic();
 
-        http.addFilterAfter(new JWTSecurityEnhancementFilter(), BasicAuthenticationFilter.class);
 
+        http.addFilterAfter(new JWTSecurityEnhancementFilter(), BasicAuthenticationFilter.class);
+        http.addFilterAfter(new JWTSecurityEnhancementFilter(), BasicAuthenticationFilter.class);
     }
 
     @Bean
