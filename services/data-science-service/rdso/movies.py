@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-from utils.bucket import Bucket
+from rdso.utils.bucket import Bucket
 
 
 def secondary_genre(x):
