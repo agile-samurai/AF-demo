@@ -3,7 +3,7 @@
 *.log
 
 *.ctxt
-
+es-data/
 .mtj.tmp/
 
 # Package Files #
