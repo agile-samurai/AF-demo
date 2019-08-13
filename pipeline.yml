@@ -74,43 +74,44 @@ resources:
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/ui
       aws_access_key_id: ((aws_access_key_id))
       aws_secret_access_key: ((aws_secret_access_key))
+
 groups:
-- name: all
-  jobs:
-  - Create Terraform Persistence
-  - Initialize
-  - Build UI
-  - Build server
-  - Execute server Functional Tests
-  - Execute server Contract Tests
-  - Execute UI Automated Tests
-  - Provision Docker Repositories
-  - Push UI
-  - Push server Image
-  - Push main-ds-service Image
-  - Deploy Services To Dev
-  - Deploy Services To Production
-  - Execute OWASP Security Scan Prod
-- name: prepare
-  jobs:
-  - Create Terraform Persistence
-  - Initialize
-- name: build-and-test
-  jobs:
-  - Build UI
-  - Build server
-  - Execute server Functional Tests
-  - Execute server Contract Tests
-  - Execute UI Automated Tests
-- name: publish-and-scan
-  jobs:
-  - Provision Docker Repositories
-  - Push UI
-  - Push server Image
-  - Push main-ds-service Image
-  - Deploy Services To Dev
-  - Deploy Services To Production
-  - Execute OWASP Security Scan Prod
+  - name: all
+    jobs:
+    - Create Terraform Persistence
+    - Initialize
+    - Build UI
+    - Build server
+    - Execute server Functional Tests
+    - Execute server Contract Tests
+    - Execute UI Automated Tests
+    - Provision Docker Repositories
+    - Push UI
+    - Push server Image
+    - Push main-ds-service Image
+    - Deploy Services To Dev
+    - Deploy Services To Production
+    - Execute OWASP Security Scan Prod
+  - name: prepare
+    jobs:
+    - Create Terraform Persistence
+    - Initialize
+  - name: build-and-test
+    jobs:
+    - Build UI
+    - Build server
+    - Execute server Functional Tests
+    - Execute server Contract Tests
+    - Execute UI Automated Tests
+  - name: publish-and-scan
+    jobs:
+    - Provision Docker Repositories
+    - Push UI
+    - Push server Image
+    - Push main-ds-service Image
+    - Deploy Services To Dev
+    - Deploy Services To Production
+    - Execute OWASP Security Scan Prod
 
 jobs:
   - name: Create Terraform Persistence
