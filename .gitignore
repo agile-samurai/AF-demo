@@ -71,11 +71,7 @@ MANIFEST
 
 .idea/
 
-<<<<<<< HEAD
-es-data/
-=======
 ## devops
 credentials.yaml
 credentials.yml
 rdso-accounts.txt
->>>>>>> master
