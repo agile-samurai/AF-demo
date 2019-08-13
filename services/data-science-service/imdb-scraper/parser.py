@@ -28,8 +28,10 @@ def parse_movie(html: str):
 
 if __name__ == "__main__":
     scraped_htmls = []
-    html_dir = pathlib.Path('data', 'movie_html')
-    json_dir = pathlib.Path('data', 'movie_json')
+    html_dir = pathlib.Path('data', 'imdb_html')
+    json_dir = pathlib.Path('data', 'imdb_json')
+    if not json_dir.is_dir():
+        json_dir.mkdir()
 
     file_list = []
     for x in html_dir.iterdir():
