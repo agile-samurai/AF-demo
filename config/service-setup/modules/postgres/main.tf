@@ -8,7 +8,7 @@ resource "aws_db_instance" "postgres" {
   username             = "${var.db_username}"
   password             = "${var.db_password}"
   skip_final_snapshot  = true
-  db_subnet_group_name = "${aws_db_subnet_group.postgres}"
+  db_subnet_group_name = "${aws_db_subnet_group.postgres.id}"
   # parameter_group_name = "postgres-9.6.9"
 }
 
