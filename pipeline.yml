@@ -403,6 +403,7 @@ jobs:
 
   ###################### ARTIFACT PUBLISH ############################
   - name: Provision ECR Repositories
+    serial: true
     public: true
     plan:
       - get: source
@@ -550,13 +551,13 @@ jobs:
     plan:
     - get: source
       passed:
-      - Push main-ds-service Image
+#      - Push main-ds-service Image
       - Push server Image
       - Push UI
       trigger: true
     - get: version
       passed:
-      - Push main-ds-service Image
+#      - Push main-ds-service Image
       - Push server Image
       - Push UI
       trigger: true
