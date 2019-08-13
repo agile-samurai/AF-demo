@@ -1,12 +1,43 @@
 from fuzzywuzzy import fuzz
 import hug
+from data import norbit
+from plot import make_image, save_image, jsonify_image
+
+
+def load_model():
+    pass
+
+
+@hug.post("/most_similar")
+def most_similar_movies(imdbID: hug.types.text):
+    model = load_model()
+
+    most_similar_movies = [
+        {"imdbID": "tt039", "title": "The Social Network", "director": "David Fincher"},
+        {"imdbID": "tt049983", "title": "Zodiac", "director": "David Fincher"},
+        {"imdbID": "tt04443", "title": "Apollo 13", "director": "Harold Zemeckis"},
+    ]
+    return most_similar_movies
+
+
+def make_plot(n):
+    p = make_image(n=n)
+    return jsonify_image(p)
+
+
+@hug.post("/make_plot")
+def show_test_plot(n):  # imdbID: hug.types.text):
+    return make_plot(n=400)
+    # print(f"Making plot for {imdbID}")
+    # image_loc = "img/test_plot.png"
+    # return image_loc
 
 
 def compare(primary_string, secondary_string):
     """
     Helper method with the scoring logic for the /similarity_score endpoint.
     """
-    fuzz_score = fuzz.ratio(primary_string, secondary_string)/100
+    fuzz_score = fuzz.ratio(primary_string, secondary_string) / 100
     return fuzz_score
 
 
@@ -40,22 +71,21 @@ def metrics():
 
     Currently has dummy values.
     """
-    return {'Model 1': 10,
-            'Model 2': 100,
-            'Model 3': 1000}
+    return {"Model 1": 10, "Model 2": 100, "Model 3": 1000}
 
 
 if __name__ == "__main__":
     """
     Demonstrate use of api as a module.
     """
-    comparison_string = 'Hello World.'
-    strings = [{'id': 1, 'body': 'Hello Wrrld.'},
-               {'id': 2, 'body': 'H3ll0 W0rld#'},
-               {'id': 3, 'body': 'Heck no dog.'},
-               ]
+    comparison_string = "Hello World."
+    strings = [
+        {"id": 1, "body": "Hello Wrrld."},
+        {"id": 2, "body": "H3ll0 W0rld#"},
+        {"id": 3, "body": "Heck no dog."},
+    ]
 
     print(f"Similarity to '{comparison_string}':")
     for string in strings:
-        score = similarity_score(comparison_string, string['body'])
+        score = similarity_score(comparison_string, string["body"])
         print(f"id {string['id']}, '{string['body']}': {score}")

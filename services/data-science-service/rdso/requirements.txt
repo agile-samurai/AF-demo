@@ -6,3 +6,4 @@ python-Levenshtein
 pandas
 gensim
 boto
+bokeh
