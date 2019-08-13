@@ -15,9 +15,10 @@
     "react-infinite-scroller": "^1.2.4",
     "react-particles-js": "^2.6.0",
     "react-router": "^5.0.0",
-    "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
-    "react-typist": "^2.0.5"
+    "react-typist": "^2.0.5",
+    "axios": "0.18.0",
+    "react-router-dom": "5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

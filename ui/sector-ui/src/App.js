@@ -1,11 +1,16 @@
 import React from 'react';
 import './App.css';
-import {ThemeProvider, withStyles} from '@material-ui/styles';
+import {withStyles} from '@material-ui/styles';
+import {Redirect, Route, Switch} from 'react-router-dom';
 
 import {createMuiTheme} from "@material-ui/core";
 import {green, grey} from "@material-ui/core/colors";
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
+import axios from 'axios';
+import {NotFoundPage} from "./components/NotFoundPage";
+import {Login} from "./components/Login";
+import {Home} from "./components/Home";
 
 const theme = createMuiTheme({
     palette: {
@@ -60,48 +65,29 @@ const useStyles = theme => ({
 });
 
 export class App extends React.Component {
-
     state = {
         score: 0,
         loaded: false
     };
 
-    constructor() {
-        super()
-    }
-
-    componentDidMount() {
-        fetch(`/api/hello`)
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-                this.setState({score: data});
-                this.setState({loaded: true})
-            });
-    }
-
     render() {
-
-        const {classes} = this.props;
-
-        const {score} = this.state;
-
-        let gridStyle = {
-            height: "100%",
-            alignContent: "center",
-            borderColor: "black",
-            borderWidth: 2,
-            paddingTop: 170,
-            justifyContent: "center",
-            width: "100%"
-        };
-        let chartOptions = {legend: false};
+        const {location} = this.props;
 
         return (
-            <div>
-                Welcome to the application!
-                {score}
-            </div>
+            <Switch location={location}>
+                <Route
+                    exact={true}
+                    path="/"
+                    component={Home}
+                />
+                <Route
+                    path="/login"
+                    component={Login}
+                />
+                <Route
+                    component={NotFoundPage}
+                />
+            </Switch>
         );
     }
 }
