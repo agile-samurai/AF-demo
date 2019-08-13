@@ -88,12 +88,11 @@ public class DataScienceAPIServiceTest {
 
     @Test
     public void getHelloWorldScore() {
-        String start = "3.0";
-        String expected = "3.03.00.81";
+        String expected = "3.0";
         when(restTemplate.postForEntity(anyString(),
                 any(HttpEntity.class),
                 ArgumentMatchers.<Class<String>>any()))
-                .thenReturn(ResponseEntity.ok(start));
+                .thenReturn(ResponseEntity.ok(expected));
 
         String actual = dataScienceAPIService.getHelloWorldScore();
 
