@@ -20,7 +20,7 @@
 
         <docker.image.prefix>records</docker.image.prefix>
         <sonar.exclusions>src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/*</sonar.exclusions>
-<!--        <sonar.sources>src/main/frontend/js,src/main/java</sonar.sources>-->
+        <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test/java</sonar.tests>
         <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
         <sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths>

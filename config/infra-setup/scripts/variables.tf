@@ -1,4 +1,4 @@
-variable "aws_region" {}
+variable "aws_infra_region" {}
 
 # variable "infra_ssh_key_name" {}
 

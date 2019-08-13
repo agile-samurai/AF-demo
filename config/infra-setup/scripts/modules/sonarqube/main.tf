@@ -11,7 +11,7 @@ resource "aws_key_pair" "key" {
 data "template_file" "user_data" {
   template = "${file("${path.module}/template/user_data.tpl")}"
 
-  vars {
+  vars = {
     cluster_name = "${var.ecs_cluster_name}"
   }
 }
@@ -22,21 +22,21 @@ resource "aws_security_group" "allow_service" {
   description = "${var.sg_description}"
   vpc_id      = "${var.vpc_id}"
 
-  ingress = {
+  ingress {
     from_port   = "${var.lb_target_group_port}"
     to_port     = "${var.lb_target_group_port}"
     protocol    = "${var.sg_protocol}"
     cidr_blocks = ["${var.sg_cidr_block}"]
   }
 
-  egress = {
+  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["${var.sg_cidr_block}"]
   }
 
-  tags {
+  tags = {
     Name = "${var.sg_description} - ${var.environment}"
   }
 }
@@ -46,13 +46,13 @@ resource "aws_security_group" "allow_service" {
 //Load Balancer Start
 resource "aws_lb" "lb" {
   name               = "${var.service_name}-${var.environment}-lb"
-  subnets            = ["${var.public-subnets}"]
+  subnets            = "${var.public-subnets}"
   load_balancer_type = "${var.load_balancer_type}"
   internal           = false
   idle_timeout       = 300
   security_groups    = ["${var.sg-allow-inbound}"]
 
-  tags {
+  tags = {
     Name        = "${var.service_name}-${var.environment}-lb"
     Environment = "${var.environment}"
   }
@@ -74,7 +74,7 @@ resource "aws_lb_target_group" "lb_target" {
     matcher             = 200
   }
 
-  tags {
+  tags = {
     Environment = "${var.environment}"
   }
 
@@ -99,7 +99,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
   name              = "${var.project}_${var.environment}_${var.service_name}"
   retention_in_days = 7
 
-  tags {
+  tags = {
     Project     = "${var.project}"
     Environment = "${var.environment}"
     Service     = "${var.service_name}"
@@ -240,7 +240,7 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
   threshold           = "85"
   unit                = "Percent"
 
-  dimensions {
+  dimensions = {
     ClusterName = "${var.ecs_cluster_name}"
     ServiceName = "${aws_ecs_service.service.name}"
   }
@@ -275,7 +275,7 @@ resource "aws_launch_configuration" "asg_conf" {
 resource "aws_autoscaling_group" "service_asg" {
   name = "${var.environment}_${aws_launch_configuration.asg_conf.name}_asg"
 
-  vpc_zone_identifier = ["${var.private-subnets}"]
+  vpc_zone_identifier = "${var.private-subnets}"
 
   min_size = "${var.service_desired_count}"
   max_size = "${var.service_desired_count}"
@@ -316,21 +316,21 @@ resource "aws_security_group" "sonarqube_rds_sg" {
   name_prefix = "${var.project}_${var.environment}_${var.service_name}_rds_sg"
   description = "Allow ${var.service_name} DB port traffic within cluster"
 
-  ingress = {
+  ingress {
     from_port   = "${var.sonarqube_db_port}"
     to_port     = "${var.sonarqube_db_port}"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress = {
+  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "${var.project}_${var.environment}_${var.service_name}_rds_sg"
   }
 }
@@ -338,7 +338,7 @@ resource "aws_security_group" "sonarqube_rds_sg" {
 resource "aws_db_subnet_group" "sonarqube_db_subnet_group" {
   name        = "${var.project}_${var.environment}_${var.service_name}_db_subnet_grp" //externalize as variable
   description = "SonarQube RDS DB subnets"                                            //externalize as variable
-  subnet_ids  = ["${var.private-subnets}"]
+  subnet_ids  = "${var.private-subnets}"
 }
 
 resource "aws_db_instance" "sonarqube_rds" {
@@ -353,7 +353,7 @@ resource "aws_db_instance" "sonarqube_rds" {
   engine_version         = "${lookup(var.sonarqube_rds_engine_version, var.sonarqube_rds_engine)}"
   vpc_security_group_ids = ["${aws_security_group.sonarqube_rds_sg.id}"]
   db_subnet_group_name   = "${aws_db_subnet_group.sonarqube_db_subnet_group.id}"
-  publicly_accessible    = false                                                                                    //externalize as variable
-  skip_final_snapshot    = true                                                                                     //externalize as variable
+  publicly_accessible    = false //externalize as variable
+  skip_final_snapshot    = true  //externalize as variable
   depends_on             = ["aws_db_subnet_group.sonarqube_db_subnet_group", "aws_security_group.sonarqube_rds_sg"]
 }

@@ -29,3 +29,7 @@ output "www-url" {
 output "data-url" {
   value = module.datascience.dns_name
 }
+
+output "server_dns_name" {
+  value = module.server.server_dns_name
+}

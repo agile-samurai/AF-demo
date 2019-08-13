@@ -81,7 +81,7 @@ groups:
     - Create Terraform Persistence
     - Initialize
     - Build UI
-    - Build server
+    - Build server and SonarQube
     - Execute server Functional Tests
     - Execute server Contract Tests
     - Execute UI Automated Tests
@@ -99,7 +99,7 @@ groups:
   - name: build-and-test
     jobs:
     - Build UI
-    - Build server
+    - Build server and SonarQube
     - Execute server Functional Tests
     - Execute server Contract Tests
     - Execute UI Automated Tests
@@ -206,11 +206,11 @@ jobs:
     plan:
       - get: source
         passed:
-          - Build server
+          - Build server and SonarQube
         trigger: true
       - get: version
         passed:
-          - Build server
+          - Build server and SonarQube
       - task: Execute Test
         privileged: true
         config:
@@ -231,7 +231,7 @@ jobs:
           caches:
             - path: maven
 
-  - name: Build server
+  - name: Build server and SonarQube
     public: true
     plan:
       - get: source
@@ -244,6 +244,24 @@ jobs:
         passed:
           - Initialize
         trigger: true
+      - task: SonarQube Scan
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/openjdk10-maven
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd source/ui/server
+              # must compile first with java10 for sonarqube
+              mvn clean install -DskipTests -Djava.version=10
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+          inputs:
+          - name: source
       - task: Build Server
         config:
           platform: linux
@@ -257,8 +275,8 @@ jobs:
             - -ec
             - |
               cd source/ui/server
-              mvn clean install -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
-              #mvn sonar:sonar  -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.host.url=https://sonarqube.prod.bytecubed.io -Dsonar.projectKey=rdso-challenge -Dsonar.projectName=rdso-challenge
+              # now build with java 12
+              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests   
           inputs:
           - name: source
           outputs:
@@ -304,11 +322,11 @@ jobs:
     plan:
       - get: source
         passed:
-          - Build server
+          - Build server and SonarQube
         trigger: true
       - get: version
         passed:
-          - Build server
+          - Build server and SonarQube
       - task: Execute Test
         privileged: true
         config:
@@ -403,8 +421,8 @@ jobs:
 
   ###################### ARTIFACT PUBLISH ############################
   - name: Provision ECR Repositories
-    serial: true
     public: true
+    serial: true
     plan:
       - get: source
         passed:
@@ -551,13 +569,13 @@ jobs:
     plan:
     - get: source
       passed:
-#      - Push main-ds-service Image
+      - Push main-ds-service Image
       - Push server Image
       - Push UI
       trigger: true
     - get: version
       passed:
-#      - Push main-ds-service Image
+      - Push main-ds-service Image
       - Push server Image
       - Push UI
       trigger: true
@@ -596,6 +614,8 @@ jobs:
             terraform refresh
             terraform workspace select dev
             terraform apply --auto-approve
+            #export SERVER_DNS_NAME=`terraform output server-dns-name`
+            #source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/actuator/health 200
         inputs:
         - name: source
         - name: version
@@ -679,29 +699,48 @@ jobs:
         - ./vars/terraform.tfvars
         vars:
           environment: prod
-
+    
   - name: Execute OWASP Security Scan Prod
-    serial: true
+    serial: false
     plan:
     - get: version
       trigger: true
       passed:
-        - Deploy Services To Production
+        - Deploy Services To Dev
+      # passed:
+      #   - Deploy Services To Production
     - task: Scan Environment
       privileged: true
+      timeout: 6m
       config:
         platform: linux
         image_resource:
           type: latest-docker-image
           source:
-            repository: owasp/zap2docker-live
+            repository: owasp/zap2docker-stable
+        outputs:
+            - name: scan
         run:
           path: /bin/bash
           args:
-          - -c
+          - -ce
           - |
             echo "starting scan"
-            cd
-            # /zap/zap-baseline.py -t http://wwww.theravenspoe.io/ | grep -q "FAIL-NEW: 0"
-            # [ $? -eq 0 ]  || exit 1
-            # echo "scan successful, no vulnerabilities found"
+            cd  #NEED THIS
+            #whoami; pwd #/home/zap
+            mkdir -p /zap/wrk
+            touch /zap/wrk/report_md
+            echo "-t http://google.com" > arguments.txt
+            #/zap/zap-baseline.py -h
+            /zap/zap-baseline.py -t http://google.com -T 3
+            echo "scan successful"
+            #pwd
+            #ls -all .
+            ps -ef
+            # need to kill this process: Xvfb :1 -screen 0 1024x768x16 -ac
+            kill -15 19
+            #kill `pidof zap`
+            ps -ef
+            echo "done"
+            exit 0      
+            
