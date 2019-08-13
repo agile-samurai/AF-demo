@@ -29,13 +29,13 @@ resource "aws_lambda_permission" "cloudwatch_allow" {
   source_arn    = aws_cloudwatch_log_group.container.arn
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_to_es" {
-  depends_on      = [aws_lambda_permission.cloudwatch_allow]
-  name            = "cloudwatch_logs_to_elasticsearch-challenge"
-  log_group_name  = aws_cloudwatch_log_group.container.name
-  filter_pattern  = ""
-  destination_arn = module.log-forwarding.log_forward_lambda_arn
-}
+# resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_to_es" {
+#   depends_on      = [aws_lambda_permission.cloudwatch_allow]
+#   name            = "cloudwatch_logs_to_elasticsearch-challenge"
+#   log_group_name  = aws_cloudwatch_log_group.container.name
+#   filter_pattern  = ""
+#   destination_arn = module.log-forwarding.log_forward_lambda_arn
+# }
 
 provider "aws" {
   version = "~> 2.0"
