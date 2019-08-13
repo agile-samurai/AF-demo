@@ -3,7 +3,7 @@
 *.log
 
 *.ctxt
-
+es-data/
 .mtj.tmp/
 
 # Package Files #
@@ -71,4 +71,11 @@ MANIFEST
 
 .idea/
 
+<<<<<<< HEAD
 es-data/
+=======
+## devops
+credentials.yaml
+credentials.yml
+rdso-accounts.txt
+>>>>>>> master

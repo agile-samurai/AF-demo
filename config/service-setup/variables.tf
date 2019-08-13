@@ -78,3 +78,13 @@ variable "base_domain" {
 variable "aws_account_id" {
 
 }
+
+variable "postgres_username" {
+  description = "Root username for postgres"
+  default     = "test"
+}
+
+variable "postgres_password" {
+  description = "Root password for postgres"
+  default     = "changeme"
+}

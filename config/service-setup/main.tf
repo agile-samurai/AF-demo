@@ -29,13 +29,13 @@ resource "aws_lambda_permission" "cloudwatch_allow" {
   source_arn    = aws_cloudwatch_log_group.container.arn
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_to_es" {
-  depends_on      = [aws_lambda_permission.cloudwatch_allow]
-  name            = "cloudwatch_logs_to_elasticsearch-challenge"
-  log_group_name  = aws_cloudwatch_log_group.container.name
-  filter_pattern  = ""
-  destination_arn = module.log-forwarding.log_forward_lambda_arn
-}
+# resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_to_es" {
+#   depends_on      = [aws_lambda_permission.cloudwatch_allow]
+#   name            = "cloudwatch_logs_to_elasticsearch-challenge"
+#   log_group_name  = aws_cloudwatch_log_group.container.name
+#   filter_pattern  = ""
+#   destination_arn = module.log-forwarding.log_forward_lambda_arn
+# }
 
 provider "aws" {
   version = "~> 2.0"
@@ -103,27 +103,6 @@ module "elasticsearch" {
 
 }
 
-module "kafka" {
-  source                      = "./modules/kafka"
-  vpc_id                      = module.network.vpc_id
-  region                      = var.region
-  environment                 = terraform.workspace
-  private_subnets             = module.network.private_subnets
-  public_subnets              = module.network.public_subnets
-  zookeeper_svc_count         = 1
-  broker_svc_count            = 1
-  ecs_cluster_name            = module.ecs-cluster.ecs_cluster_name
-  ecs_cluster_id              = module.ecs-cluster.ecs_cluster_id
-  sg-allow-ssh                = module.ecs-cluster.sg-allow-ssh
-  sg-allow-cluster            = module.ecs-cluster.sg-allow-cluster
-  ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
-  ecs_autoscale_role_arn      = module.ecs.ecs_autoscale_role_arn
-  ecs_service_role_arn        = module.ecs.ecs_service_role_arn
-  ecs_instance_role_name      = module.ecs.ecs_instance_role_name
-  ecs_instance_ip             = module.ecs-cluster.dns_name
-  zone_id                     = aws_route53_zone.primary.zone_id
-}
-
 module "mongodb" {
   source           = "./modules/mongo"
   vpc_id           = module.network.vpc_id
@@ -137,17 +116,17 @@ module "mongodb" {
   MONGO_INITDB_ROOT_PASSWORD = var.db_pass
 }
 
-module "postgres" {
-  source = "./modules/postgres"
+# module "postgres" {
+#   source = "./modules/postgres"
 
-  username     = var.db_user
-  rds_password = var.db_pass
-  db_name      = "postgres"
+#   db_username = var.postgres_username
+#   db_password = var.postgres_password
+#   db_name     = "postgres"
 
-  private_subnets = module.network.private_subnets
-  public_subnets  = module.network.public_subnets
-  vpc_id          = module.network.vpc_id
-}
+#   private_subnets = module.network.private_subnets
+#   public_subnets  = module.network.public_subnets
+#   vpc_id          = module.network.vpc_id
+# }
 
 module "www" {
   source = "./modules/ui"
@@ -217,9 +196,9 @@ module "server" {
   loadbalancer_port        = 80
   zone_id                  = aws_route53_zone.primary.zone_id
 
-  postgres_username          = var.db_user
-  postgres_password          = var.db_pass
-  postgres_url               = module.postgres.postgres_url
+  # postgres_username          = var.postgres_username
+  # postgres_password          = var.postgres_password
+  # postgres_url               = module.postgres.postgres_url
   data_science_url           = module.datascience.dns_name
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
