@@ -39,7 +39,7 @@ resource "aws_lambda_permission" "cloudwatch_allow" {
 
 provider "aws" {
   version = "~> 2.0"
-  region  = "us-west-2"
+  region  = "us-east-1"
 }
 
 data "aws_availability_zones" "available" {

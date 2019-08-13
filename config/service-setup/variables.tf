@@ -1,5 +1,5 @@
 variable "region" {
-  default = "us-west-2"
+  default = "us-east-1"
 }
 
 variable "ami" {
@@ -8,7 +8,7 @@ variable "ami" {
 
   default = {
     # us-west-1      = "ami-bdafdbdd"
-    us-west-2 = "ami-ec75908c"
+    us-east-1 = "ami-cb2305a1"
   }
   # us-west-2 = "ami-644a431b"
 
@@ -25,7 +25,7 @@ variable "ec2_ami" {
 
   default = {
     # us-west-1      = "ami-bdafdbdd"
-    us-west-2 = "ami-ec75908c"
+    us-east-1 = "ami-cb2305a1"
   }
   # us-west-2 = "ami-b70554c8"
 
