@@ -119,9 +119,9 @@ module "mongodb" {
 module "postgres" {
   source = "./modules/postgres"
 
-  db_user = var.postgres_username
-  db_pass = var.postgres_password
-  db_name = "postgres"
+  db_username = var.postgres_username
+  db_password = var.postgres_password
+  db_name     = "postgres"
 
   private_subnets = module.network.private_subnets
   public_subnets  = module.network.public_subnets
