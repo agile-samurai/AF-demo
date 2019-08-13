@@ -57,9 +57,7 @@ variable "infra_version" {
   description = "Version of infrastructure deployed"
 }
 
-variable "image-version" {
-  default = "latest"
-}
+variable "images_version" {}
 
 //variable "tag" {}
 
