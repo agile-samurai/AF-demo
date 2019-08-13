@@ -257,7 +257,8 @@ jobs:
             - -ec
             - |
               cd source/ui/server
-              mvn clean install -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso -Dsonar.projectName=rdso ### do tests
+              mvn clean install -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
+              #mvn sonar:sonar  -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.host.url=https://sonarqube.prod.bytecubed.io -Dsonar.projectKey=rdso-challenge -Dsonar.projectName=rdso-challenge
           inputs:
           - name: source
           outputs:
@@ -538,31 +539,9 @@ jobs:
       - get: version
         passed:
           - Provision ECR Repositories
-      - task: Build Test Project
-        params:
-          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
-          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: us-east-1
-          AWS_ACCOUNT_ID: ((aws_account_id))
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: carlomazzaferro/concourse-python-minimal
-          run:
-            path: sh
-            args:
-            - -ec
-            - |
-              cp -r source/services/data-science-service/** docker/
-          inputs:
-            - name: source
-          outputs:
-            - name: docker
       - put: main-ds-service-docker-image
         params:
-          build: docker
+          build: source/services/data-science-service/rdso
           tag_file: version/number
 
 ###################### DEPLOY SERVICE ############################

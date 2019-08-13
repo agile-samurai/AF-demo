@@ -136,7 +136,7 @@ module "www" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/ui:${var.image-version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/ui:${var.images_version}"
   container_family   = "www"
 
   instance_count             = 1
@@ -179,7 +179,7 @@ module "server" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/server:${var.image-version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/server:${var.images_version}"
   container_family   = "server"
   base_domain        = aws_route53_zone.primary.name
 
@@ -213,7 +213,7 @@ module "datascience" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/data-science-service:${var.image-version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/data-science-service:${var.images_version}"
   container_family   = "data"
   base_domain        = aws_route53_zone.primary.name
 
