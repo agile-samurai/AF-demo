@@ -116,17 +116,17 @@ module "mongodb" {
   MONGO_INITDB_ROOT_PASSWORD = var.db_pass
 }
 
-module "postgres" {
-  source = "./modules/postgres"
+# module "postgres" {
+#   source = "./modules/postgres"
 
-  db_username = var.postgres_username
-  db_password = var.postgres_password
-  db_name     = "postgres"
+#   db_username = var.postgres_username
+#   db_password = var.postgres_password
+#   db_name     = "postgres"
 
-  private_subnets = module.network.private_subnets
-  public_subnets  = module.network.public_subnets
-  vpc_id          = module.network.vpc_id
-}
+#   private_subnets = module.network.private_subnets
+#   public_subnets  = module.network.public_subnets
+#   vpc_id          = module.network.vpc_id
+# }
 
 module "www" {
   source = "./modules/ui"
@@ -196,9 +196,9 @@ module "server" {
   loadbalancer_port        = 80
   zone_id                  = aws_route53_zone.primary.zone_id
 
-  postgres_username          = var.postgres_username
-  postgres_password          = var.postgres_password
-  postgres_url               = module.postgres.postgres_url
+  # postgres_username          = var.postgres_username
+  # postgres_password          = var.postgres_password
+  # postgres_url               = module.postgres.postgres_url
   data_science_url           = module.datascience.dns_name
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
