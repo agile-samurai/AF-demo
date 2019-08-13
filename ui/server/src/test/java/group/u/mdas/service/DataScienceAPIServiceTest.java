@@ -1,12 +1,6 @@
 package group.u.mdas.service;
 
-import group.u.mdas.models.entity.TextClassificationMongo;
-import group.u.mdas.models.entity.TextClassificationElasticsearch;
-import group.u.mdas.models.entity.TextClassificationPostgres;
 import group.u.mdas.models.web.DataScienceHealthCheckResponse;
-import group.u.mdas.repository.TextClassificationRepositoryElasticsearch;
-import group.u.mdas.repository.TextClassificationRepositoryMongo;
-import group.u.mdas.repository.TextClassificationRepositoryPostgres;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -14,8 +8,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,40 +18,13 @@ public class DataScienceAPIServiceTest {
 
     private RestTemplate restTemplate;
     private DataScienceAPIService dataScienceAPIService;
-    private TextClassificationRepositoryPostgres textClassificationRepositoryPostgres;
 
     @Before
     public void setUp() {
         restTemplate = mock(RestTemplate.class);
-        textClassificationRepositoryPostgres =
-                mock(TextClassificationRepositoryPostgres.class);
-        TextClassificationRepositoryMongo textClassificationRepositoryMongo =
-                mock(TextClassificationRepositoryMongo.class);
-        TextClassificationRepositoryElasticsearch classificationRepositoryElasticsearchMock = mock(TextClassificationRepositoryElasticsearch.class);
-
-        when(textClassificationRepositoryPostgres.save(any()))
-                .thenReturn(new TextClassificationPostgres("text 2",
-                        "comparison text 2",
-                        "0.81"));
-        when(textClassificationRepositoryPostgres.findById(any()))
-                .thenReturn(Optional.of(new TextClassificationPostgres("text 1",
-                        "comparison text 1",
-                        "3.0")));
-
-        when(textClassificationRepositoryMongo.save(any(TextClassificationMongo.class))).thenReturn(
-                new TextClassificationMongo("text 1",
-                "comparison text 1",
-                "3.0"));
-        when(classificationRepositoryElasticsearchMock.save(any()))
-                .thenReturn(new TextClassificationElasticsearch("text 2",
-                        "comparison text 2",
-                        "0.81"));
 
         String url = "http://testUrl";
-        dataScienceAPIService = new DataScienceAPIService(restTemplate,
-                url,
-                textClassificationRepositoryPostgres,
-                textClassificationRepositoryMongo, classificationRepositoryElasticsearchMock);
+        dataScienceAPIService = new DataScienceAPIService(restTemplate, url);
     }
 
     @Test
@@ -133,20 +98,6 @@ public class DataScienceAPIServiceTest {
         String actual = dataScienceAPIService.getHelloWorldScore();
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void getHelloWorldScore_shouldReturnNull_whenClassificationNotPresent() {
-        String start = "3.0";
-        when(restTemplate.postForEntity(anyString(),
-                any(HttpEntity.class),
-                ArgumentMatchers.<Class<String>>any()))
-                .thenReturn(ResponseEntity.ok(start));
-        when(textClassificationRepositoryPostgres.findById(any())).thenReturn(Optional.empty());
-
-        String actual = dataScienceAPIService.getHelloWorldScore();
-
-        assertNull(actual);
     }
 
     @Test
