@@ -6,7 +6,7 @@ resource "aws_db_instance" "postgres" {
   instance_class      = "db.t2.micro"
   name                = "awardreporting"
   username            = "${var.db_user}"
-  password            = "${var.db_password}"
+  password            = "${var.db_pass}"
   skip_final_snapshot = true
 
   # parameter_group_name = "postgres-9.6.9"

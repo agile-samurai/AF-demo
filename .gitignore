@@ -70,3 +70,7 @@ share/python-wheels/
 MANIFEST
 
 .idea/
+
+## devops
+credentials.yaml
+credentials.yml
