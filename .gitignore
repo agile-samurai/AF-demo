@@ -70,3 +70,5 @@ share/python-wheels/
 MANIFEST
 
 .idea/
+
+es-data/
