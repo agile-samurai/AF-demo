@@ -16,8 +16,7 @@ services:
     image: mdas/ui-backend
     container_name: ui-backend
     depends_on:
-      - mongo
-      - elastic-search
+      - postgres
     restart: on-failure
     ports:
       - "8082:8080"
@@ -27,9 +26,6 @@ services:
       - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - ELASTICSEARCH_HOST=http://elastic
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_CLUSTERNAME=docker-cluster
 
   postgres:
     image: postgres
@@ -40,26 +36,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=mysecretpassword
-
-  mongo:
-    image: mongo:4.0.4
-    container_name: mongo-container
-    restart: on-failure
-    volumes:
-      - "mongo-data:/data/db"
-    ports:
-      - 27018:27017
-  elastic-search:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
-    restart: on-failure
-    volumes:
-      - "./es-data:/usr/share/elasticsearch/data"
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      cluster.name: elasticsearch
-      discovery.type: single-node
 
   data-science-service:
     container_name: data-science-interface
@@ -73,5 +49,4 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 volumes:
-  mongo-data:
   es-data:

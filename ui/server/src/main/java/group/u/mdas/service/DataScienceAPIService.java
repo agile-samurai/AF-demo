@@ -1,14 +1,7 @@
 package group.u.mdas.service;
 
-
-import group.u.mdas.models.entity.TextClassificationElasticsearch;
-import group.u.mdas.models.entity.TextClassificationMongo;
-import group.u.mdas.models.entity.TextClassificationPostgres;
 import group.u.mdas.models.web.DataScienceHealthCheckResponse;
 import group.u.mdas.models.web.TextClassificationResponse;
-import group.u.mdas.repository.TextClassificationRepositoryElasticsearch;
-import group.u.mdas.repository.TextClassificationRepositoryMongo;
-import group.u.mdas.repository.TextClassificationRepositoryPostgres;
 import org.awaitility.Awaitility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +22,12 @@ public class DataScienceAPIService {
     private static final String HEALTH_CHECK_SUCCESS_MESSAGE = "Up and running";
     private RestTemplate restTemplate;
     private String dataScienceBaseURL;
-    private TextClassificationRepositoryPostgres textClassificationRepositoryPostgres;
-    private TextClassificationRepositoryMongo textClassificationRepositoryMongo;
-    private TextClassificationRepositoryElasticsearch textClassificationRepositoryElasticsearch;
     private Logger logger = LoggerFactory.getLogger(DataScienceAPIService.class);
 
     public DataScienceAPIService(RestTemplate restTemplate,
-                                 @Value("${data.science.service.baseurl}") String dataScienceBaseURL,
-                                 TextClassificationRepositoryPostgres textClassificationRepositoryPostgres,
-                                 TextClassificationRepositoryMongo textClassificationRepositoryMongo, TextClassificationRepositoryElasticsearch textClassificationRepositoryElasticsearch) {
+                                 @Value("${data.science.service.baseurl}") String dataScienceBaseURL) {
         this.restTemplate = restTemplate;
         this.dataScienceBaseURL = dataScienceBaseURL;
-        this.textClassificationRepositoryPostgres = textClassificationRepositoryPostgres;
-        this.textClassificationRepositoryMongo = textClassificationRepositoryMongo;
-        this.textClassificationRepositoryElasticsearch = textClassificationRepositoryElasticsearch;
     }
 
     void waitForAPIReady() {
@@ -79,35 +64,7 @@ public class DataScienceAPIService {
                             httpEntity,
                             String.class
                             );
-            String score = helloWorldScore.getBody();
-
-            TextClassificationPostgres textClassificationPostgres = new TextClassificationPostgres(
-                    textClassificationResponse.getText(),
-                    textClassificationResponse.getComparisonText(),
-                    score);
-
-            TextClassificationMongo textClassificationMongo = new TextClassificationMongo(
-                    textClassificationResponse.getText(),
-                    textClassificationResponse.getComparisonText(),
-                    score);
-
-            TextClassificationElasticsearch textClassificationElasticsearch = new TextClassificationElasticsearch(
-                    textClassificationResponse.getText(),
-                    textClassificationResponse.getComparisonText(),
-                    score);
-
-            TextClassificationMongo classificationMongo = textClassificationRepositoryMongo.save(textClassificationMongo);
-            TextClassificationPostgres classificationPostgres = textClassificationRepositoryPostgres
-                    .save(textClassificationPostgres);
-            final TextClassificationElasticsearch classificationElastic = textClassificationRepositoryElasticsearch.save(textClassificationElasticsearch);
-            Optional<TextClassificationPostgres> classificationOptional = textClassificationRepositoryPostgres
-                    .findById(classificationPostgres.getId());
-
-            if(classificationOptional.isPresent()) {
-                return classificationOptional.get().getScore()
-                        + classificationMongo.getScore()
-                        + classificationElastic.getScore();
-            }
+            return helloWorldScore.getBody();
         } catch (Exception e) {
             e.printStackTrace();
             logger.debug("Failed to make call to python service. Check the service. Continuing");
