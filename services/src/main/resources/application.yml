@@ -6,6 +6,10 @@ app:
     supervisor:
       username: business-supervisor
       password: password
+  system:
+    user:
+      username: system-user
+      password: password
 
 logging:
   level:

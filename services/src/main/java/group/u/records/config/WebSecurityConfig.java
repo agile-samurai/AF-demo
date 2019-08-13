@@ -34,6 +34,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     @Value("${app.business.supervisor.password}")
     private String businessSupervisorPassword;
 
+    @Value("${app.system.user.username}")
+    private String systemUserName;
+    @Value("${app.system.user.password}")
+    private String systemUserPassword;
+
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
@@ -53,6 +59,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
         logger.debug("Busines User username;  " + businessSupervisorUserName );
         return new InMemoryUserDetailsManager(asList(
+                User.withDefaultPasswordEncoder()
+                        .username(systemUserName)
+                        .password(systemUserPassword)
+                        .roles("SYSTEM")
+                        .build(),
                 User.withDefaultPasswordEncoder()
                         .username(businessUserName)
                         .password(businessUserPassword)
