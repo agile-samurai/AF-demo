@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>group.u.mdas</groupId>
+    <groupId>group.u.records</groupId>
     <artifactId>ui-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -18,7 +18,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>12</java.version>
 
-        <docker.image.prefix>mdas</docker.image.prefix>
+        <docker.image.prefix>records</docker.image.prefix>
         <sonar.exclusions>src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/*</sonar.exclusions>
 <!--        <sonar.sources>src/main/frontend/js,src/main/java</sonar.sources>-->
         <sonar.tests>src/test/java</sonar.tests>
