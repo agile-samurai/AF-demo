@@ -1,4 +1,19 @@
+app:
+  jwt:
+    secret: secret
+  business:
+    user:
+      username: business-user
+      password: password
+    supervisor:
+      username: business-supervisor
+      password: password
+  system:
+    user:
+      username: system-user
+      password: password
 
+data.science.service.baseurl: http://data-science-interface:8080/api/v1
 
 logging:
   level:
