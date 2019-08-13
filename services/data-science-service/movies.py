@@ -1,4 +1,6 @@
 import pandas as pd
+import json
+from utils.bucket import Bucket
 
 
 def secondary_genre(x):
@@ -12,7 +14,7 @@ def secondary_genre(x):
         return x[0]
 
 
-def make_df():
+def movie_df():
     mv = pd.read_csv(
         "https://raw.githubusercontent.com/sidooms/MovieTweetings/master/latest/movies.dat",
         sep="::",
@@ -28,3 +30,15 @@ def make_df():
         lambda x: secondary_genre(x.split("|")[1:]) if type(x) == str else x
     )
     return mv
+
+
+def get_json_files():
+    pass
+
+
+def imdb_df(data):
+    return pd.DataFrame.from_dict(json.loads(data))
+
+
+if __name__ == "__main__":
+    imdb = imdb_df()
