@@ -1,19 +1,26 @@
+import json
 import requests
 import pandas as pd
 from tqdm import tqdm
+import os
 import pathlib
 
 
 def scrape_movie(movie_id: str):
     """
-    Scrapes the IMDB movie page for a given movie_id
+    Scrapes the OMDB api for a given movie_id
 
     :param movie_id: 7 digit number that represents IMDB id from URL
-    :return: str of page HTML
+    :return: dict of OMDB movie data
     """
-    url = 'https://www.imdb.com/title/tt' + movie_id + '/'
-    r = requests.get(url)
-    return r.text
+    omdb_api_key = os.environ['OMDB_API_KEY']
+    base_url = f'http://www.omdbapi.com/?apikey={omdb_api_key}&plot=full&i='
+    imdb_id = f'tt{movie_id}'
+    r = requests.get(f'{base_url}{imdb_id}')
+    if r.status_code == 200:
+        return json.loads(r.text)
+    else:
+        return
 
 
 def extract_title_year(title: str):
@@ -56,10 +63,9 @@ def split_genre(genre):
 
 if __name__ == '__main__':
 
-    html_dir = pathlib.Path('data', 'imdb_html')
-    if not html_dir.is_dir():
-        html_dir.mkdir()
-
+    json_dir = pathlib.Path('data', 'omdb_json')
+    if not json_dir.is_dir():
+        json_dir.mkdir()
     # Read MovieTweetings data file
     movie_tweets_file = pathlib.Path('data', 'movies.dat')
     movie_tweets_data = pd.read_csv(str(movie_tweets_file), sep='::',
@@ -78,8 +84,8 @@ if __name__ == '__main__':
             continue
         else:
             ttid = 'tt' + movie_row['imdb_id']
-            writefile = html_dir / f'{ttid}.html'
+            writefile = json_dir / f'{ttid}.json'
             if not writefile.is_file():
-                movie_html = scrape_movie(movie_row['imdb_id'])
+                movie_json = scrape_movie(movie_row['imdb_id'])
                 with writefile.open('w') as outfile:
-                    outfile.write(movie_html)
+                    json.dump(movie_json, outfile, indent=2)
