@@ -1,22 +1,38 @@
+
+
+logging:
+  level:
+    group.u: DEBUG
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %logger.%M - %msg%n"
+
+info:
+  version: ${platform.version}
+
+elasticsearch:
+  clustername: docker-cluster
+  host: elastic
+  port: 9300
+
+cloud:
+  aws:
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
 environment: local
 
 spring:
   data:
     rest:
       detection-strategy: ANNOTATED
+    jest:
+      uri: http://localhost:9200
+
   jackson:
     serialization:
       write-dates-as-timestamps: false
-  jpa:
-    hibernate:
-      ddl-auto: create
-  datasource:
-    url: jdbc:postgresql://postgres:5432/postgres
-    username: postgres
-    password: mysecretpassword
-    hikari:
-      connectionTimeout: 20000
-      maximumPoolSize: 5
 
 server:
   port: 8080
@@ -25,11 +41,7 @@ server:
 
 spring.profiles: local
 
-data.science.service.baseurl: http://data-science-interface:8080
-
----
-
-spring.profiles: embedded
+data.science.service.baseurl: http://data-science-interface:8080/api/v1
 
 ---
 
@@ -37,17 +49,8 @@ spring.profiles: contractTests
 
 
 # use static DS endpoint when running for contract tests
-data.science.service.baseurl: http://data-science-interface:8080
+data.science.service.baseurl: http://data-science-interface:8080/api/v1
 
 ---
 
-spring.profiles: ft
----
-
-spring.profiles: dev
----
-
-spring.profiles: qa
----
-
-spring.profiles: prod
+spring.profiles: embedded

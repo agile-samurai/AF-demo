@@ -16,7 +16,7 @@ services:
     image: mdas/ui-backend
     container_name: ui-backend
     depends_on:
-      - postgres
+      - elastic
     restart: on-failure
     ports:
       - "8082:8080"
@@ -26,6 +26,21 @@ services:
       - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - ELASTICSEARCH_HOST=http://elastic
+      - ELASTICSEARCH_PORT=9200
+      - ELASTICSEARCH_CLUSTERNAME=docker-cluster
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    restart: on-failure
+    volumes:
+      - "./es-data:/usr/share/elasticsearch/data"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      cluster.name: elasticsearch
+      discovery.type: single-node
 
   postgres:
     image: postgres
