@@ -1,0 +1,52 @@
+
+
+logging:
+  level:
+    group.u: DEBUG
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %logger.%M - %msg%n"
+
+info:
+  version: ${platform.version}
+
+cloud:
+  aws:
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+
+environment: local
+
+
+
+server:
+  port: 8080
+
+---
+
+spring.profiles: local
+
+data.science.service.baseurl: http://data-science-interface:8080
+
+---
+
+spring.profiles: contractTests
+
+
+# use static DS endpoint when running for contract tests
+data.science.service.baseurl: http://data-science-interface:8080
+
+
+---
+
+spring.profiles: ft
+---
+
+spring.profiles: dev
+---
+
+spring.profiles: qa
+---
+
+spring.profiles: prod
