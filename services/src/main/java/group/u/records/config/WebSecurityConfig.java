@@ -1,5 +1,8 @@
 package group.u.records.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -7,26 +10,29 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static java.util.Arrays.asList;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class ResourceServerConfig  extends WebSecurityConfigurerAdapter implements WebMvcConfigurer{
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/home").setViewName("home");
-        registry.addViewController("/").setViewName("home");
-        registry.addViewController("/hello").setViewName("hello");
-        registry.addViewController("/login").setViewName("login");
-    }
+    private Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
+    @Value("${app.business.user.username}")
+    private String businessUserName;
+    @Value("${app.business.user.password}")
+    private String businessUserPassword;
+
+    @Value("${app.business.supervisor.username}")
+    private String businessSupervisorUserName;
+    @Value("${app.business.supervisor.password}")
+    private String businessSupervisorPassword;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -44,13 +50,19 @@ public class ResourceServerConfig  extends WebSecurityConfigurerAdapter implemen
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("password")
-                        .roles("USER")
-                        .build();
 
-        return new InMemoryUserDetailsManager(user);
+        logger.debug("Busines User username;  " + businessSupervisorUserName );
+        return new InMemoryUserDetailsManager(asList(
+                User.withDefaultPasswordEncoder()
+                        .username(businessUserName)
+                        .password(businessUserPassword)
+                        .roles("USER")
+                        .build(),
+                User.withDefaultPasswordEncoder()
+                        .username(businessSupervisorUserName)
+                        .password(businessSupervisorPassword)
+                        .roles("SUPERVISOR")
+                        .build()
+        ));
     }
 }

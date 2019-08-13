@@ -1,4 +1,11 @@
-
+app:
+  business:
+    user:
+      username: business-user
+      password: password
+    supervisor:
+      username: business-supervisor
+      password: password
 
 logging:
   level:
