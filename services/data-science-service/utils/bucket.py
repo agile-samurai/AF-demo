@@ -47,7 +47,7 @@ class Bucket(Mapping):
 
         # identify any common prefix
         self._prefix = os.path.commonprefix(list(self._keys))
-        self._keys = set([k.replace(self._prefix, "") for k in self._keys])
+        # self._keys = set([k.replace(self._prefix, "") for k in self._keys])
 
     def __len__(self) -> int:
         return len(self._keys)
