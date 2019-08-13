@@ -1,4 +1,6 @@
 app:
+  jwt:
+    secret: secret
   business:
     user:
       username: business-user

@@ -39,6 +39,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     @Value("${app.system.user.password}")
     private String systemUserPassword;
 
+    @Value("${app.jwt.secret}")
+    private String secret;
+
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -49,15 +52,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .httpBasic();
 
 
-        http.addFilterAfter(new JWTSecurityEnhancementFilter(), BasicAuthenticationFilter.class);
-        http.addFilterAfter(new JWTSecurityEnhancementFilter(), BasicAuthenticationFilter.class);
+        http.addFilterAfter(new JWTSecurityEnhancementFilter(secret), BasicAuthenticationFilter.class);
     }
 
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-
-        logger.debug("Busines User username;  " + businessSupervisorUserName );
+        logger.debug("Business User username;  " + businessSupervisorUserName );
         return new InMemoryUserDetailsManager(asList(
                 User.withDefaultPasswordEncoder()
                         .username(systemUserName)

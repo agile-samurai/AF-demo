@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,9 +29,8 @@ public class JWTSecurityEnhancementFilter implements Filter {
     private Logger logger = LoggerFactory.getLogger(JWTSecurityEnhancementFilter.class);
     private Algorithm algorithm;
 
-    public JWTSecurityEnhancementFilter() throws UnsupportedEncodingException {
-        algorithm = Algorithm.HMAC256("secret");
-
+    public JWTSecurityEnhancementFilter(@Value("${app.jwt.secret}") String secret ) throws UnsupportedEncodingException {
+        algorithm = Algorithm.HMAC256(secret);
     }
 
     @Override
