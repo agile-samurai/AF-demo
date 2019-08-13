@@ -8,11 +8,13 @@ import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -41,17 +43,26 @@ public class JWTSecurityEnhancementFilter implements Filter {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null) {
-            auth = extractJWT((HttpServletRequest) servletRequest);
-
-        }
-
+        auth = resumeSession((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, auth);
         SecurityContextHolder.getContext().setAuthentication(auth);
         setJWTResponseHeader(auth, (HttpServletResponse) servletResponse);
 
         auth = SecurityContextHolder.getContext().getAuthentication();
         logger.debug("Authentication:  " + auth.getName());
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private Authentication resumeSession(HttpServletRequest servletRequest,
+                                         HttpServletResponse servletResponse,
+                                         Authentication auth) {
+        if (auth == null) {
+            try {
+                auth = extractJWT(servletRequest);
+            }catch( Exception e ){
+                servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        }
+        return auth;
     }
 
     private void setJWTResponseHeader(Authentication auth, HttpServletResponse servletResponse) throws UnsupportedEncodingException {
