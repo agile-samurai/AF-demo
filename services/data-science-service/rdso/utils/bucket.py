@@ -13,8 +13,11 @@ class Bucket(Mapping):
     Is a Mapping from 'name' to file stream
     """
 
-    def __init__(self, bucket=None, root=None):
+    def __init__(self, bucket=None, root=None, quiet=False, **kwargs):
         cfg = botocore.client.Config(read_timeout=10000)
+        for k in kwargs:
+            os.environ[k] = kwargs[k]
+        self.quiet = quiet
         self._s3 = boto3.client(
             "s3",
             aws_access_key_id=os.getenv("aws_access_key_id"),
@@ -82,10 +85,12 @@ class Bucket(Mapping):
         if not item:
             return None
         if self._prefix:
-            print("Getting from S3: ", self._prefix + item)
+            if not self.quiet:
+                print("Getting from S3: ", self._prefix + item)
             response = self._s3.get_object(Bucket=self._bucket, Key=self._prefix + item)
         else:
-            print("Getting from S3: ", item)
+            if not self.quiet:
+                print("Getting from S3: ", item)
             response = self._s3.get_object(
                 Bucket=self._bucket, Key=self._root + "/" + item
             )
