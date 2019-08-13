@@ -4,11 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -53,10 +55,11 @@ public class JWTSecurityEnhancementFilter implements Filter {
     }
 
     private void setJWTResponseHeader(Authentication auth, HttpServletResponse servletResponse) throws UnsupportedEncodingException {
+
         String jwt = JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(auth.getName())
-                .withClaim(ROLES, auth.getAuthorities().toString())
+                .withClaim(ROLES, auth.getAuthorities().toArray(new GrantedAuthority[1])[0].getAuthority())
                 .sign(algorithm);
 
         servletResponse.setHeader(SECURITY_TOKEN_HEADER, jwt);
@@ -72,7 +75,7 @@ public class JWTSecurityEnhancementFilter implements Filter {
         logger.debug("Decoded jwt:  " + jwt.getClaims());
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                jwt.getSubject(), null, asList(new SimpleGrantedAuthority("ROLE_USER")));
+                jwt.getSubject(), null, asList(new SimpleGrantedAuthority(jwt.getClaims().get(ROLES).asString())));
 
         return authenticationToken;
     }
