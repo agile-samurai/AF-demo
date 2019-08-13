@@ -80,11 +80,11 @@ variable "ENVIRONMENT_AUTHHOST_INTERNAL" {
   default = "127.0.0.1"
 }
 
-variable "postgres_username" {}
-variable "postgres_password" {}
-variable "postgres_url" {default="foo"}
+variable "postgres_username" { default = "postgres" }
+variable "postgres_password" { default = "changeme" }
+variable "postgres_url" { default = "foo" }
 
-variable "region"{}
+variable "region" {}
 
 variable "cloud_watch_log_group_name" {}
 variable "es_endpoint" {}
