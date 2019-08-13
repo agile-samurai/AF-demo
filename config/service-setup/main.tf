@@ -1,10 +1,10 @@
-# terraform {
-#   backend "s3" {
-#     bucket = "mdas-challenge-ugroup-new"
-#     key    = "mdas-terraform.tfstate"
-#     region = "us-east-1"
-#   }
-# }
+terraform {
+  backend "s3" {
+    bucket = "rdso-challenge2"
+    key    = "rdso-terraform.tfstate"
+    region = "us-east-1"
+  }
+}
 
 resource "aws_cloudwatch_log_group" "container" {
   name = "logs-${terraform.workspace}"
