@@ -30,8 +30,8 @@ if __name__ == "__main__":
     scraped_htmls = []
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
-    html_dir = data_dir / 'imdb_html'
-    json_dir = data_dir / 'imdb_json')
+    html_dir = data_dir / 'movies_html'
+    json_dir = data_dir / 'movies_json'
     if not json_dir.is_dir():
         json_dir.mkdir()
 

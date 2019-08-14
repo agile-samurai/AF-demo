@@ -1,3 +1,4 @@
+import boto3
 import click
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence, TaggedDocument
 import json
@@ -42,15 +43,31 @@ class TaggedLineDocument(object):
             yield TaggedDocument(doc, [self.labels_list[idx]])
 
 
+def train_doc2vec(corpus: TaggedLineDocument):
+    # Train model
+    print('Training model')
+    cores = multiprocessing.cpu_count()
+    model = Doc2Vec(vector_size=300, window=10, min_count=0, alpha=0.025, min_alpha=0.025,
+                    workers=cores, epochs=20)
+    model.build_vocab(corpus)
+    model.train(corpus, epochs=model.epochs, total_examples=model.corpus_count)
+    return model
+
+
 @click.command()
 @click.option('--local', '-l', is_flag=True, help="Load local data files instead of from S3")
-def cli(local):
+@click.option('--version', '-v', default='0.0.0', help='Version number to use in model filename')
+@click.option('--push', '-p', is_flag=True, help="Push model to S3 when finished training")
+def cli(local, version, push):
     cwd = pathlib.Path('.').resolve()
     models_dir = cwd.parents[0] / 'models'
+    if not models_dir.is_dir():
+        models_dir.mkdir()
+
     if local:
-        print("Loading local imdb_json data files")
+        print("Loading local movies_json data files")
         data_dir = cwd.parents[0] / 'data'
-        json_dir = data_dir / 'imdb_json'
+        json_dir = data_dir / 'movies_json'
         movies_list = []
         for json_file in tqdm(json_dir.iterdir()):
             if json_file.is_file():
@@ -62,27 +79,51 @@ def cli(local):
         movies_list = movies.get_json_files()
 
     movies_df = pd.DataFrame(movies_list)
-    movies_df.dropna(subset=['description'], inplace=True)
+    # Drop movies that don't have a description or a genre
+    movies_df.dropna(subset=['description', 'genre'], inplace=True)
+    # Replace NaN with empty string for keywords
     movies_df['keywords'].fillna(value='', inplace=True)
+    # Concat descriptions & keywords
     movies_text = list(movies_df['description'] + ' ' + movies_df['keywords'])
     movies_text = nlp_clean(movies_text)
+    # Attach labels to keep with the documents
     movies_df['imdb_id'] = movies_df['url'].apply(lambda x: pd.Series(x.split('/')[2]))
-    movies_labels = list(zip(movies_df.index, movies_df['imdb_id']))
+    movies_df['top_genre'] = movies_df['genre'].apply(lambda x: pd.Series(x[0]))
+    movies_labels = list(zip(movies_df.index, movies_df['imdb_id'], movies_df['top_genre']))
     tagged_corpus = TaggedLineDocument(movies_text, movies_labels)
 
-    # Train model
-    print('Training model')
-    cores = multiprocessing.cpu_count()
-    model = Doc2Vec(vector_size=300, window=10, min_count=0, alpha=0.025, min_alpha=0.025,
-                    workers=cores, epochs=20)
-    model.build_vocab(tagged_corpus)
-    model.train(tagged_corpus, epochs=model.epochs, total_examples=model.corpus_count)
+    d2v_model = train_doc2vec(tagged_corpus)
 
     # Saving the model
-    model.save(str(models_dir / 'movies_doc2vec.model'))
-    print("Model saved.")
+    print(f"Saving model version {version}")
+    model_filename = f'movies_doc2vec.{version}.model'
+    d2v_model.save(str(models_dir / model_filename))
+
+    # Push model to S3
+    if push:
+        bucket_name = 'rdso-challenge2'
+        try:
+            profile = os.environ['AWS_PROFILE']
+            session = boto3.Session(profile_name=profile)
+            s3 = session.client('s3')
+        except KeyError:
+            try:
+                s3 = boto3.client(
+                    "s3",
+                    aws_access_key_id=os.environ["aws_access_key_id"],
+                    aws_secret_access_key=os.environ["aws_secret_access_key"],
+                )
+            except KeyError:
+                raise ValueError("No AWS credentials found")
+
+        for model_f in models_dir.iterdir():
+            if model_filename in str(model_f):
+                s3.upload_file(str(model_f), bucket_name,
+                               'models/' + str(model_f.stem))
+        print(f'Pushed model version {version} to S3')
 
 
 if __name__ == "__main__":
-    os.environ['AWS_PROFILE'] = 'mdas-ravi10'
+    # For local development
+    # os.environ['AWS_PROFILE'] = 'mdas-ravi10'
     cli()

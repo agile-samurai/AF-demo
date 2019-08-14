@@ -1,7 +1,8 @@
 import pandas as pd
 import json
 from tqdm import tqdm
-from .bucket import Bucket
+# TODO: Resolve local import errors with/without '.' before bucket
+from bucket import Bucket
 
 
 def secondary_genre(x):
@@ -33,7 +34,7 @@ def movie_df():
     return mv
 
 
-def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
+def get_json_files(n: int = None, s3_folder="data/movies_json", **kwargs) -> list:
     list_of_dicts = []
     print(f"Getting data from {s3_folder}")
 
