@@ -41,8 +41,7 @@ resource "aws_ecs_task_definition" "service" {
      { "name": "PERSISTENCE_MONGO_URL", "value" :"${var.PERSISTENCE_MONGO_URL}"},
 
      { "name": "DATA_SCIENCE_SERVICE_BASEURL", "value" :"http://${var.data_science_url}"},
-     { "name": "ELASTICSEARCH_HOST", "value" :"http://${var.es_endpoint}"},
-     { "name": "ELASTICSEARCH_PORT", "value" :"80"},
+     { "name": "SPRING_DATA_JEST_URI", "value" :"http://${var.es_endpoint}"},
 
      { "name": "SPRING_DATA_MONGODB_HOST", "value" :"${var.SPRING_DATA_MONGODB_HOST}"},
      { "name": "SPRING_DATA_MONGODB_USERNAME", "value" :"${var.SPRING_DATA_MONGODB_USERNAME}"},
@@ -102,7 +101,7 @@ resource "aws_alb_target_group" "front_end" {
     healthy_threshold = 2
     unhealthy_threshold = 10
     protocol = "HTTP"
-    path = "/actuator/health"
+    path = "${var.health_check_path}"
     interval = 32
     timeout = 30
     matcher = "${var.matcher_ports}"
