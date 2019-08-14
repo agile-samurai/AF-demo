@@ -1,9 +1,9 @@
 import json
-import requests
-import pandas as pd
-from tqdm import tqdm
 import os
 import pathlib
+import pandas as pd
+import requests
+from tqdm import tqdm
 
 
 def scrape_movie(movie_id: str):
