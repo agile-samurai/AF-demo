@@ -1,6 +1,7 @@
 import pandas as pd
 import json
-from rdso.utils.bucket import Bucket
+from tqdm import tqdm
+from utils.bucket import Bucket
 
 
 def secondary_genre(x):
@@ -32,14 +33,14 @@ def movie_df():
     return mv
 
 
-def get_json_files(n: int = None, s3_folder="data/movie_json", **kwargs) -> list:
+def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
     list_of_dicts = []
     print(f"Getting data from {s3_folder}")
     b = Bucket("rdso-challenge2", s3_folder, quiet=True, **kwargs)
     file_list = list(b)[:n]
-    print("Done getting data.")
-    for jfile in file_list:
-        shortened_file = jfile[len(s3_folder) + 1 :]
+    print("Done getting s3 file list.")
+    for jfile in tqdm(file_list):
+        shortened_file = jfile[len(s3_folder) + 1:]
         f = b[str(shortened_file)]
         json_string = f.read()
         movie_dict = json.loads(json_string)

@@ -1,7 +1,7 @@
-import requests
 import pandas as pd
-from tqdm import tqdm
 import pathlib
+import requests
+from tqdm import tqdm
 
 
 def scrape_movie(movie_id: str):
