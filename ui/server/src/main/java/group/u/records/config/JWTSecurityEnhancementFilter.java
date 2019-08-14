@@ -40,6 +40,13 @@ public class JWTSecurityEnhancementFilter implements Filter {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        logger.debug("Filter route:  " + ((HttpServletRequest) servletRequest).getRequestURI());
+
+        if(((HttpServletRequest) servletRequest).getRequestURI().toLowerCase().contains("health")){
+            filterChain.doFilter(servletRequest,servletResponse);
+            return;
+        }
+
         auth = resumeSession((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, auth);
         SecurityContextHolder.getContext().setAuthentication(auth);
         setJWTResponseHeader(auth, (HttpServletResponse) servletResponse);
@@ -59,11 +66,11 @@ public class JWTSecurityEnhancementFilter implements Filter {
                 servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
         }
+
         return auth;
     }
 
     private void setJWTResponseHeader(Authentication auth, HttpServletResponse servletResponse) throws UnsupportedEncodingException {
-
         String jwt = JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(auth.getName())
