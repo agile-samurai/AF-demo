@@ -19,7 +19,7 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_ecs_task_sg"
   }
 }
@@ -43,7 +43,7 @@ resource "aws_security_group" "allow_all_80_default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_sg_80"
   }
 }
@@ -67,7 +67,7 @@ resource "aws_security_group" "allow_all_8080_default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_sg_8080"
   }
 }
@@ -91,7 +91,7 @@ resource "aws_security_group" "allow_all_443_default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_sg_443"
   }
 }
@@ -115,7 +115,7 @@ resource "aws_security_group" "allow_ssh_default" {
     cidr_blocks = ["${aws_vpc.main.cidr_block}"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_sg_ssh"
   }
 }
@@ -139,7 +139,7 @@ resource "aws_security_group" "allow_mysql" {
     cidr_blocks = ["${aws_vpc.main.cidr_block}"]
   }
 
-  tags {
+  tags = {
     Name = "${var.environment}_sg_mysql"
   }
 }
@@ -171,7 +171,7 @@ resource "aws_security_group" "allow_all_inbound" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "allow inbound - ${var.environment}"
   }
 }
@@ -195,7 +195,7 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "allow ssh - ${var.environment}"
   }
 }
@@ -219,7 +219,7 @@ resource "aws_security_group" "allow_cluster" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "allow cluster - ${var.environment}"
   }
 

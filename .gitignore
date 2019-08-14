@@ -89,3 +89,5 @@ config/**/plan
 /**/*.srl
 /**/cluster_*.txt
 /**/liquid_*.txt
+#devops
+.scannerwork

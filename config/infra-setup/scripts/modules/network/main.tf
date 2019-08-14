@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags {
+  tags = {
     Name = "${var.environment}_infra_vpc"
   }
 }
@@ -20,7 +20,7 @@ resource "aws_subnet" "main" {
   depends_on              = ["aws_internet_gateway.main"]
   map_public_ip_on_launch = true
 
-  tags {
+  tags = {
     Name = "${var.environment}_subnet_public"
   }
 }
@@ -32,7 +32,7 @@ resource "aws_subnet" "private" {
   cidr_block        = "${cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)}"
   depends_on        = ["aws_internet_gateway.main"]
 
-  tags {
+  tags = {
     Name = "${var.environment}_subnet_private"
   }
 }
@@ -40,7 +40,7 @@ resource "aws_subnet" "private" {
 resource "aws_internet_gateway" "main" {
   vpc_id = "${aws_vpc.main.id}"
 
-  tags {
+  tags = {
     Name = "${var.environment}_ig"
   }
 }

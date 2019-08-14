@@ -1,10 +1,10 @@
-# terraform {
-#   backend "s3" {
-#     bucket         = "mdas-state-demo"
-#     key            = "key"
-#     region         = "us-east-1"
-#   }
-# }
+terraform {
+  backend "s3" {
+    bucket = "rdso-challenge2"
+    key    = "infra.tfstate"
+    region = "us-east-1"
+  }
+}
 
 # Fetch AZs in the current region
 data "aws_availability_zones" "available" {}
@@ -45,7 +45,7 @@ module "sonarqube" {
   iam_instance_profile        = "${module.iam.iam_instance_profile}"
   vpc_id                      = "${module.network.vpc_id}"
   vpc-cidr                    = "${var.cidr_block}"
-  region                      = "${var.aws_region}"
+  region                      = "${var.aws_infra_region}"
   ecs_cluster_name            = "${module.ecs.ecs_cluster_name}"
   cluster_id                  = "${module.ecs.ecs_cluster_id}"
   sg-allow-ssh                = "${module.network.sg-allow-ssh}"
