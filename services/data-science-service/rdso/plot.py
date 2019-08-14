@@ -29,3 +29,28 @@ def jsonify_image(p):
 def save_image(p, filename, format="png"):
     if format == "png":
         export_png(p, filename=filename)
+
+
+def sc_plot_genre_colors(mdf):
+    colormap = dict(
+        zip(mdf.primary_genre.unique(), Category20[len(mdf.primary_genre.unique())])
+    )
+    mdf["color"] = mdf.primary_genre.map(lambda x: colormap[x])
+
+    source = ColumnDataSource(
+        data=dict(
+            x=mdf.random_x,
+            y=mdf.random_y,
+            name=mdf.name,
+            year=mdf.year,
+            genre=mdf.primary_genre,
+            color=mdf.color,
+        )
+    )
+
+    TOOLTIPS = [("name", "@name"), ("year", "@year"), ("genre", "@genre")]
+
+    p = figure(tooltips=TOOLTIPS, title="Movie Clusters")
+
+    p.circle("x", "y", size=12, alpha=0.6, color="color", source=source)
+    return p

@@ -72,6 +72,8 @@ def imdb_df(data):
     df["total_min"] = df.duration.apply(
         lambda x: translate_duration(x) if type(x) == str else x
     )
+    imdb["imdb_id"] = imdb.film_id.apply(lambda x: x[2:])
+
     try:
         df["film_director"] = df.director.apply(lambda x: x["name"])
         df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
@@ -80,6 +82,13 @@ def imdb_df(data):
     # df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
     # df["num_directors"] = df.director.apply(lambda x: len(x["name"]))
     return df
+
+
+def merged_movie_data(n):
+    imdf = imdb_df(get_json_files(n))
+    mv = movie_df()
+    mdf = imdb.merge(mv, how="left", on="imdb_id")
+    return mdf
 
 
 if __name__ == "__main__":
