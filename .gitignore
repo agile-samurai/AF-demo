@@ -20,7 +20,7 @@ hs_err_pid*
 **/target/**
 *.iml
 
-.terraform/
+**/*/.terraform/
 
 **/node_modules
 .DS_Store
@@ -69,11 +69,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-.idea/
-
 ## devops
-credentials.yaml
-credentials.yml
+credentials.y*
 rdso-accounts.txt
 
 # Data Science data and models
@@ -82,3 +79,13 @@ services/data-science-service/models/*
 
 # Terraform plan ouput files
 config/**/plan
+
+# HSM cert files
+/**/*.crt
+/**/*.csr
+/**/*.key
+/**/*.zip
+/**/*.pub
+/**/*.srl
+/**/cluster_*.txt
+/**/liquid_*.txt
