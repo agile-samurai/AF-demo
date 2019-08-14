@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from tqdm import tqdm
-from utils.bucket import Bucket
+from .utils.bucket import Bucket
 
 
 def secondary_genre(x):
@@ -41,7 +41,7 @@ def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
     file_list = list(b)[:n]
     print("Done getting s3 file list.")
     for jfile in tqdm(file_list):
-        shortened_file = jfile[len(s3_folder) + 1:]
+        shortened_file = jfile[len(s3_folder) + 1 :]
         f = b[str(shortened_file)]
         json_string = f.read()
         movie_dict = json.loads(json_string)
