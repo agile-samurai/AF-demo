@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
-from tqdm import tqdm
 import json
 import pathlib
+from tqdm import tqdm
 
 
 def parse_movie(html: str):
@@ -60,4 +60,4 @@ if __name__ == "__main__":
                 with writefile.open('w') as outfile:
                     json.dump(parsed_movie, outfile, indent=2)
         except KeyError:
-            print("Movie with no release date")
+            continue

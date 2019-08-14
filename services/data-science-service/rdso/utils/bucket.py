@@ -17,13 +17,22 @@ class Bucket(Mapping):
         cfg = botocore.client.Config(read_timeout=10000)
         for k in kwargs:
             os.environ[k] = kwargs[k]
+        try:
+            profile = os.environ['AWS_PROFILE']
+            session = boto3.Session(profile_name=profile)
+            self._s3 = session.client('s3', config=cfg)
+        except KeyError:
+            try:
+                self._s3 = boto3.client(
+                    "s3",
+                    aws_access_key_id=os.getenv("aws_access_key_id"),
+                    aws_secret_access_key=os.getenv("aws_secret_access_key"),
+                    config=cfg,
+                )  # type: boto3.client
+            except KeyError:
+                raise ValueError("No AWS credentials found")
+
         self.quiet = quiet
-        self._s3 = boto3.client(
-            "s3",
-            aws_access_key_id=os.getenv("aws_access_key_id"),
-            aws_secret_access_key=os.getenv("aws_secret_access_key"),
-            config=cfg,
-        )  # type: boto3.client
 
         if not bucket:
             self._bucket = os.getenv("stel_s3_bucket")
@@ -38,13 +47,26 @@ class Bucket(Mapping):
         else:
             self._root = str(root)
 
+        # Helper function for s3 pagination
+        def get_all_s3_objects(s3, **base_kwargs):
+            continuation_token = None
+            while True:
+                list_kwargs = dict(MaxKeys=1000, **base_kwargs)
+                if continuation_token:
+                    list_kwargs['ContinuationToken'] = continuation_token
+                response = s3.list_objects_v2(**list_kwargs)
+                yield from response.get('Contents', [])
+                if not response.get('IsTruncated'):  # At the end of the list?
+                    break
+                continuation_token = response.get('NextContinuationToken')
+
         # Get the list of files under the specified directory
         self._keys = set(
             [
                 k["Key"]
-                for k in self._s3.list_objects_v2(
-                    Bucket=self._bucket, Prefix=self._root
-                )["Contents"]
+                for k in get_all_s3_objects(self._s3,
+                                            Bucket=self._bucket, Prefix=self._root
+                                            )
             ]
         )
 
