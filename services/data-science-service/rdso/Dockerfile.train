@@ -1,0 +1,8 @@
+FROM python:3.7
+
+COPY . /app
+RUN mdkir data
+WORKDIR /app
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+ENTRYPOINT python vectorize.py -p -v $MODEL_VERSION
