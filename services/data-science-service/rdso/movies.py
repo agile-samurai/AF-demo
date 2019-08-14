@@ -36,6 +36,7 @@ def movie_df():
 def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
     list_of_dicts = []
     print(f"Getting data from {s3_folder}")
+
     b = Bucket("rdso-challenge2", s3_folder, quiet=True, **kwargs)
     file_list = list(b)[:n]
     print("Done getting s3 file list.")
@@ -48,10 +49,28 @@ def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
     return list_of_dicts
 
 
+def translate_duration(x):
+    x = x.strip("PT")
+    if "H" in x:
+        hours, mins = x.split("H")
+    else:
+        hours = 0
+        mins = x
+    if "M" in x:
+        mins, _ = mins.split("M")
+    else:
+        mins = 0
+    total_time = int(hours) * 60 + int(mins)
+    return total_time
+
+
 def imdb_df(data):
     df = pd.DataFrame(data)
     df.drop(["@context", "@type"], axis=1, inplace=True)
     df["film_id"] = df.url.apply(lambda x: "tt" + x.strip("/title/"))
+    df["total_min"] = df.duration.apply(
+        lambda x: translate_duration(x) if type(x) == str else x
+    )
     try:
         df["film_director"] = df.director.apply(lambda x: x["name"])
         df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))

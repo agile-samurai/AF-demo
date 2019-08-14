@@ -4,7 +4,7 @@ from bokeh.io import export_png
 import numpy as np
 
 
-def make_image(n):
+def make_test_image(n):
     N = n
     x = np.random.random(size=N) * 100
     y = np.random.random(size=N) * 100
