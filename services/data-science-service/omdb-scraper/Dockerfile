@@ -1,6 +1,8 @@
 FROM python:3.7
 
 COPY . /app
+COPY ../push_to_s3.sh /app
+RUN mkdir data
 WORKDIR /app
 
 # OMDB_API_KEY must be exported at runtime for scraper.py to work
