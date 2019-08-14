@@ -1,7 +1,6 @@
 from fuzzywuzzy import fuzz
 import hug
-from data import norbit
-from plot import make_test_image, save_image, jsonify_image
+from .plot import make_test_image, save_image, jsonify_image
 
 
 def load_model():
@@ -26,11 +25,21 @@ def make_plot(n):
 
 
 @hug.post("/make_plot")
-def show_test_plot(n):  # imdbID: hug.types.text):
+def show_test_plot(n):
+    """Creates test plot with anything posted
+
+    Parameters
+    ----------
+    n : int
+        Dummy parameter that should be an integer
+
+    Returns
+    -------
+    dict
+        Returns a JSON dict that contains a test plot; should be paired with
+        BokehJS library and React component on the front-end
+    """
     return make_plot(n=400)
-    # print(f"Making plot for {imdbID}")
-    # image_loc = "img/test_plot.png"
-    # return image_loc
 
 
 def compare(primary_string, secondary_string):
