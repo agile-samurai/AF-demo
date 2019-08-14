@@ -3,72 +3,68 @@ import React from 'react';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
 import axios from 'axios';
+import { connect } from 'react-redux'
 
-export class Login extends React.Component {
-
+class Login extends React.Component {
     constructor(props) {
         super(props);
-
-        // this.requestUseRejected = this.requestUseRejected.bind(this);
-        // this.responseUseRejected = this.responseUseRejected.bind(this);
-
-        axios.defaults.validateStatus = this.validateState;
-
-        axios.defaults.auth = {
+        this.state = {
             username: '',
             password: ''
         };
 
-        // axios.interceptors.request.use(
-        //     this.requestUseFulfilled,
-        //     this.requestUseRejected
-        // );
-        //
-        // axios.interceptors.response.use(
-        //     this.responseUseFulfilled,
-        //     this.responseUseRejected
-        // );
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    validateState(status) {
-        return (status >= 200 && status < 400);
+    handleUsernameChange(event) {
+        this.setState({username: event.target.value});
     }
 
-    // requestUseFulfilled(config) {
-    //     return CookieInformationHelper.getAccessToken().then((accessToken) => {
-    //         if (accessToken != null) {
-    //             config.headers.Authorization = 'Bearer ' + accessToken;
-    //         }
-    //         config.headers.Accept = (!!config.headers.Accept ? `${config.headers.Accept}, ` : '') + 'application/json';
-    //         config.headers.ContentType = 'application/json;charset=UTF-8';
-    //         return config;
-    //     });
-    // }
-    //
-    // requestUseRejected(error) {
-    //     const errorMessage = error.response.data.message || 'An error occurred.';
-    //     this.props.openGlobalModal(GlobalModalType.INFO_MODAL, '', errorMessage);
-    //     return Promise.reject(error);
-    // }
-    //
-    // responseUseFulfilled(config) {
-    //     return Promise.resolve(config);
-    // }
-    //
-    // responseUseRejected(error) {
-    //     const errorMessage = error.response.data.message || 'An error occurred.';
-    //     this.props.openGlobalModal(GlobalModalType.INFO_MODAL, '', errorMessage);
-    //     return Promise.reject(error.response);
-    // }
+    handlePasswordChange(event) {
+        this.setState({password: event.target.value});
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+
+        axios.get(`/api/hello/stuff`, // TODO add a /login controller endpoint
+            {
+                auth: {
+                    username: this.state.username,
+                    password: this.state.password
+                }
+            })
+            .then(data => {
+                const jwt = data.headers['x-authentication'];
+                this.props.setJWT(jwt);
+                this.props.history.push('/');
+            });
+    }
 
     render() {
         return (
-            <div>
-                Login page
-                {/*{score}*/}
-            </div>
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    Username:
+                    <input type="text" value={this.state.username} onChange={this.handleUsernameChange} />
+                    Password:
+                    <input type="text" value={this.state.password} onChange={this.handlePasswordChange} />
+                </label>
+                <input type="submit" value="Submit" />
+            </form>
         );
     }
 }
 
-export default withRouter(Login);
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => ({
+    setJWT: (jwt) => dispatch({
+        type: 'SET_JWT',
+        jwt
+    })
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
