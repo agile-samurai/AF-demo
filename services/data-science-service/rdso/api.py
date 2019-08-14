@@ -1,7 +1,7 @@
 from fuzzywuzzy import fuzz
 import hug
 from data import norbit
-from plot import make_image, save_image, jsonify_image
+from plot import make_test_image, save_image, jsonify_image
 
 
 def load_model():
@@ -21,7 +21,7 @@ def most_similar_movies(imdbID: hug.types.text):
 
 
 def make_plot(n):
-    p = make_image(n=n)
+    p = make_test_image(n=n)
     return jsonify_image(p)
 
 
