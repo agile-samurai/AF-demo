@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -19,7 +20,7 @@ import static java.util.Arrays.asList;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
     @Value("${app.business.user.username}")
@@ -42,13 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic();
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/health");
+    }
 
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().permitAll().and()
+                .httpBasic();
 
         http.addFilterAfter(new JWTSecurityEnhancementFilter(secret), BasicAuthenticationFilter.class);
     }
@@ -56,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        logger.debug("Business User username;  " + businessSupervisorUserName );
+        logger.debug("Business User username;  " + businessSupervisorUserName);
         return new InMemoryUserDetailsManager(asList(
                 User.withDefaultPasswordEncoder()
                         .username(systemUserName)
@@ -71,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 User.withDefaultPasswordEncoder()
                         .username(businessSupervisorUserName)
                         .password(businessSupervisorPassword)
-                        .roles("SUPERVISOR")
+                        .roles("SUPERVISOR", "USER")
                         .build()
         ));
     }
