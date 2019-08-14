@@ -1,7 +1,6 @@
 from fuzzywuzzy import fuzz
 import hug
-from .plot import make_test_image, save_image, jsonify_image
-
+from plot import make_test_image, save_image, jsonify_image
 
 def load_model():
     pass
