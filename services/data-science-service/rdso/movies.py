@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from tqdm import tqdm
-from bucket import Bucket
+from .bucket import Bucket
 
 
 def secondary_genre(x):
