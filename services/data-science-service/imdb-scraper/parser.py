@@ -31,7 +31,7 @@ if __name__ == "__main__":
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
     html_dir = data_dir / 'imdb_html'
-    json_dir = data_dir / 'imdb_json')
+    json_dir = data_dir / 'imdb_json'
     if not json_dir.is_dir():
         json_dir.mkdir()
 
