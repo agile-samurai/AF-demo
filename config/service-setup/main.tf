@@ -180,7 +180,7 @@ module "datascience" {
   container_family   = "data"
   base_domain        = aws_route53_zone.primary.name
 
-  health_check_path = "/health/check"
+  health_check_path = "/metrics"
   instance_count    = 1
   timeout           = 20
   container_port    = 8080
