@@ -67,8 +67,8 @@ if __name__ == '__main__':
     if not json_dir.is_dir():
         json_dir.mkdir()
     # Read MovieTweetings data file
-    movie_tweets_file = pathlib.Path('data', 'movies.dat')
-    movie_tweets_data = pd.read_csv(str(movie_tweets_file), sep='::',
+    movie_tweets_data = pd.read_csv("https://raw.githubusercontent.com/sidooms/"
+                                    "MovieTweetings/master/latest/movies.dat", sep='::',
                                     names=['imdb_id', 'title', 'genres'],
                                     dtype={'imdb_id': str},
                                     engine='python')

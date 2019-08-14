@@ -57,13 +57,13 @@ def split_genre(genre):
 if __name__ == '__main__':
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
-    html_dir = data_dir / 'imdb_html'
+    html_dir = data_dir / 'movies_html'
     if not html_dir.is_dir():
         html_dir.mkdir()
 
     # Read MovieTweetings data file
-    movie_tweets_file = data_dir / 'movies.dat'
-    movie_tweets_data = pd.read_csv(str(movie_tweets_file), sep='::',
+    movie_tweets_data = pd.read_csv("https://raw.githubusercontent.com/sidooms/"
+                                    "MovieTweetings/master/latest/movies.dat", sep='::',
                                     names=['imdb_id', 'title', 'genres'],
                                     dtype={'imdb_id': str},
                                     engine='python')

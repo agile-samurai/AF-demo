@@ -61,10 +61,13 @@ def train_doc2vec(corpus: TaggedLineDocument):
 def cli(local, version, push):
     cwd = pathlib.Path('.').resolve()
     models_dir = cwd.parents[0] / 'models'
+    if not models_dir.is_dir():
+        models_dir.mkdir()
+
     if local:
-        print("Loading local imdb_json data files")
+        print("Loading local movies_json data files")
         data_dir = cwd.parents[0] / 'data'
-        json_dir = data_dir / 'imdb_json'
+        json_dir = data_dir / 'movies_json'
         movies_list = []
         for json_file in tqdm(json_dir.iterdir()):
             if json_file.is_file():
@@ -92,21 +95,35 @@ def cli(local, version, push):
     d2v_model = train_doc2vec(tagged_corpus)
 
     # Saving the model
+    print(f"Saving model version {version}")
     model_filename = f'movies_doc2vec.{version}.model'
     d2v_model.save(str(models_dir / model_filename))
-    print("Model saved.")
 
     # Push model to S3
     if push:
         bucket_name = 'rdso-challenge2'
-        s3 = boto3.client('s3')
+        try:
+            profile = os.environ['AWS_PROFILE']
+            session = boto3.Session(profile_name=profile)
+            s3 = session.client('s3')
+        except KeyError:
+            try:
+                s3 = boto3.client(
+                    "s3",
+                    aws_access_key_id=os.environ["aws_access_key_id"],
+                    aws_secret_access_key=os.environ["aws_secret_access_key"],
+                )
+            except KeyError:
+                raise ValueError("No AWS credentials found")
+
         for model_f in models_dir.iterdir():
             if model_filename in str(model_f):
                 s3.upload_file(str(model_f), bucket_name,
                                'models/' + str(model_f.stem))
-        print(f'Saved model version {version} to S3')
+        print(f'Pushed model version {version} to S3')
 
 
 if __name__ == "__main__":
-    os.environ['AWS_PROFILE'] = 'mdas-ravi10'
+    # For local development
+    # os.environ['AWS_PROFILE'] = 'mdas-ravi10'
     cli()
