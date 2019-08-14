@@ -1,7 +1,9 @@
+click
 fuzzywuzzy
 gevent
 gunicorn
 hug
+nltk
 python-Levenshtein
 pandas
 gensim
