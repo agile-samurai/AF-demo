@@ -50,7 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().anyRequest().permitAll().and()
-                .httpBasic();
+                .httpBasic()
+                .and().csrf().disable();
 
         http.addFilterAfter(new JWTSecurityEnhancementFilter(secret), BasicAuthenticationFilter.class);
     }

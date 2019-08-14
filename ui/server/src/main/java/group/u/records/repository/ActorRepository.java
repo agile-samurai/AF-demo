@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface ActorRepository extends ElasticsearchRepository<Actor, UUID> {
+
 }
