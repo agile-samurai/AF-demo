@@ -22,28 +22,28 @@ public class Actor {
                     @InnerField(suffix = "verbatim", type = Keyword)
             }
     )
-    private String fullName;
+    private String name;
 
     public Actor(){}
 
-    public Actor(String fullName) {
-        this.fullName = fullName;
-        this.id = UUID.nameUUIDFromBytes(fullName.getBytes());
+    public Actor(String name) {
+        this.name = name;
+        this.id = UUID.nameUUIDFromBytes(name.getBytes());
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
     @Override
     public String toString() {
         return "Actor{" +
                 "id=" + id +
-                ", fullName='" + fullName + '\'' +
+                ", fullName='" + name + '\'' +
                 '}';
     }
 }

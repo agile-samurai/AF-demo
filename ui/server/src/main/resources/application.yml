@@ -1,4 +1,10 @@
 app:
+  aws:
+    region: us-east-1
+    accessKeyId: FAKEACCESSKEY
+    secretAccessKey: FAKESECRET
+    bucketName: rdso-challenge2
+    folder: data/movies_json
   jwt:
     secret: secret
   business:
@@ -26,8 +32,8 @@ info:
 
 elasticsearch:
   clustername: docker-cluster
-  host: elastic
-  port: 9300
+  host: http://localhost
+  port: 9200
 
 cloud:
   aws:

@@ -1,15 +1,20 @@
 package group.u.records.models;
 
+import group.u.records.models.data.Movie;
+
 import java.time.LocalDate;
 import java.util.List;
 
 public class MovieDetails {
-    private final String name;
-    private final List<Actor> actors;
+    private String name;
+    private List<Actor> actors;
     private String summary;
     private List<String> keywords;
     private String contentRating;
 
+    public MovieDetails(Movie movie ){
+        this(movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now());
+    }
     public MovieDetails(String name, List<Actor> actors, String summary,
                         List<String> keywords, String contentRating, LocalDate releaseDate) {
         this.name = name;

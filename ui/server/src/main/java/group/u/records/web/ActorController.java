@@ -27,7 +27,7 @@ public class ActorController {
     @GetMapping
     public ResponseEntity<Page<Actor>> search(@RequestParam("search") String searchString ){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(matchQuery("fullName", searchString)
+                .withQuery(matchQuery("name", searchString)
                         .fuzziness(Fuzziness.TWO))
                 .build();
 
