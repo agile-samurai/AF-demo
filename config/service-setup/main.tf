@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "rdso-challenge2"
-    key    = "rdso-terraform.tfstate"
+    key    = "rdso.tfstate"
     region = "us-east-1"
   }
 }
@@ -158,7 +158,7 @@ module "server" {
   SPRING_DATA_MONGODB_PORT = 27017
   instance_count           = 1
   timeout                  = 80
-  container_port           = 80
+  container_port           = 8080
   loadbalancer_port        = 80
   zone_id                  = aws_route53_zone.primary.zone_id
 
@@ -166,6 +166,10 @@ module "server" {
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = var.region
+  logs_bucket                = "rdso-challenge2-logs"
+
+  access_key    = var.access_key
+  access_secret = var.access_secret
 }
 
 module "datascience" {
@@ -183,7 +187,7 @@ module "datascience" {
   health_check_path = "/metrics"
   instance_count    = 1
   timeout           = 20
-  container_port    = 8080
+  container_port    = 8000
   loadbalancer_port = 80
   zone_id           = aws_route53_zone.primary.zone_id
 

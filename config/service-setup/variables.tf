@@ -86,3 +86,7 @@ variable "postgres_password" {
   description = "Root password for postgres"
   default     = "changeme"
 }
+
+variable "access_key" {}
+
+variable "access_secret" {}
