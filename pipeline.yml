@@ -297,7 +297,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -DskipTests -Djava.version=10
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -417,7 +417,7 @@ jobs:
                 mv sonar* sonar-scanner
                 export PROJECT_VERSION=`cat version/number`
                 sonar-scanner/bin/sonar-scanner -h
-                sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
+                sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso-dss -Dsonar.projectName=rdso-dss -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
   - name: Execute server Contract Tests
     public: true
     plan:
@@ -643,8 +643,12 @@ jobs:
             terraform refresh
             terraform workspace select dev
             terraform apply --auto-approve
-            #export SERVER_DNS_NAME=`terraform output server-dns-name`
-            #source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/actuator/health 200
+            
+            echo "Waiting for server to come up"
+            export SERVER_DNS_NAME=`terraform output server_dns_name`
+            cd ../..
+            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            echo "Server is up!!"
         inputs:
         - name: source
         - name: version
