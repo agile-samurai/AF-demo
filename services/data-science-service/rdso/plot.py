@@ -79,7 +79,7 @@ def sc_plot_genre_colors(mdf):
     return p
 
 
-def sc_plot_for_one(mdf: DataFrame, imdbID: str) -> Bokeh.Figure:
+def sc_plot_for_one(mdf, imdbID: str):
     """Creates and colorizes a scatterplot of all movies in the dataset, with
     one IMDB entry specified as the one in question. That one has a big X over it.
     All the movies that are in the same genre as the specified film are colorized
