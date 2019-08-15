@@ -35,6 +35,7 @@ public class MovieDetail {
                 '}';
     }
 
+    private UUID id;
     private String name;
 
     public String getGenre() {
@@ -47,11 +48,16 @@ public class MovieDetail {
     private String contentRating;
 
     public MovieDetail(Movie movie ){
-        this(UUID.randomUUID(), movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now(), movie.getGenre().get(0));
+        this(movie.getId(), movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now(), movie.getGenre().get(0));
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public MovieDetail(UUID id, String name, List<Actor> actors, String summary,
                        List<String> keywords, String contentRating, LocalDate releaseDate, String genre) {
+        this.id = id;
         this.name = name;
         this.actors = actors;
         this.summary = summary;
