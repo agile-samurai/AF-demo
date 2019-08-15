@@ -81,7 +81,7 @@ public class S3DataServiceTest {
 
     private String testMovie(){
         Movie movie = new Movie("name","image","r",
-                new ArrayList(), "fake description", new ArrayList());
+                new ArrayList(), "fake description", new ArrayList(), "fakeurl");
         try {
             return new ObjectMapper().writeValueAsString(movie);
         } catch (JsonProcessingException e) {
