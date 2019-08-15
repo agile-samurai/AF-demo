@@ -30,7 +30,6 @@ resource "aws_subnet" "private" {
   count  = "${var.az_count}"
   vpc_id = "${aws_vpc.main.id}"
 
-  # availability_zone = "us-east-1b"
   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
   cidr_block        = "${cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)}"
   depends_on        = ["aws_internet_gateway.main"]
