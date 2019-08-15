@@ -29,7 +29,7 @@ class Login extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        axios.get(`/api/actors`, // TODO add a /login controller endpoint
+        axios.get(`/api/actors`,
             {
                 auth: {
                     username: this.state.username,
@@ -50,7 +50,7 @@ class Login extends React.Component {
                     Username:
                     <input type="text" value={this.state.username} onChange={this.handleUsernameChange} />
                     Password:
-                    <input type="text" value={this.state.password} onChange={this.handlePasswordChange} />
+                    <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
                 </label>
                 <input type="submit" value="Submit" />
             </form>
