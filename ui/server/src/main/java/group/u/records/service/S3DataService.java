@@ -1,9 +1,7 @@
 package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.Actor;
 import group.u.records.models.MovieDetail;
-import group.u.records.models.MovieTitle;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +17,9 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,7 +31,6 @@ public class S3DataService {
     private S3Client s3Client;
     private Logger logger = LoggerFactory.getLogger(S3DataService.class);
     private ObjectMapper objectMapper;
-    private Map<UUID, Actor> actorList;
 
     public S3DataService(@Value("${aws.bucketName}") String bucketName,
                          @Value("${aws.folder}") String folder,
@@ -47,8 +46,6 @@ public class S3DataService {
         this.region = Region.of(regionAsString);
         this.folder = folder;
         this.s3Client = s3Client;
-
-        actorList = new HashMap<UUID, Actor>();
     }
 
     public List<MovieDetail> loadAllMovies(ActorRepository actorRepository) {
@@ -61,14 +58,11 @@ public class S3DataService {
             try {
                 String json = IOUtils.toString(response.readAllBytes());
                 Movie movie = objectMapper.readValue(json, Movie.class);
-                movie.enrichModel();
 
                 try {
-                    enrichActors(movie, actorRepository);
-//                    movie.getActor().forEach(ActoractorRepository::save);
+                    movie.getActor().forEach(actorRepository::save);
                     logger.debug("Saved Movie description  " + json);
                 }catch( Exception e ){
-                    e.printStackTrace();
                     logger.error("Issue while saving movie:  " + e.getMessage());
                 }
 
@@ -83,17 +77,7 @@ public class S3DataService {
         return extractedMovies.stream().map(MovieDetail::new).collect(toList());
     }
 
-    private void enrichActors(Movie movie, ActorRepository actorRepository) {
+    public void save(UUID dossierId, String dossierEncryptedContent) {
 
-        for(Actor actor : movie.getActor()){
-            UUID id = actor.enrichModel();
-            if( !actorList.containsKey(id) ) actorList.put(id, actor );
-
-            Actor workingActor = actorList.get(id);
-            workingActor.addTitle(MovieTitle.from(movie));
-
-            actorRepository.save(workingActor);
-        }
     }
-
 }
