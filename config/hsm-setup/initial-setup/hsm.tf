@@ -70,13 +70,14 @@ module "ec2" {
 
   tags = {
     "Env" = "Public"
+    "Name" = "HSM Client instance"
   }
 }
 
 resource "aws_security_group_rule" "hsm_sg_rule" {
   from_port         = 22
   protocol          = "tcp"
-  cidr_blocks       = ["50.225.11.6/32"]
+  cidr_blocks       = ["50.225.11.6/32", "10.0.1.0/24"]
   to_port           = 22
   type              = "ingress"
   security_group_id = module.vpc.default_security_group_id
