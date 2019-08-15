@@ -643,8 +643,8 @@ jobs:
             terraform refresh
             terraform workspace select dev
             terraform apply --auto-approve
-            #export SERVER_DNS_NAME=`terraform output server-dns-name`
-            #source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/actuator/health 200
+            export SERVER_DNS_NAME=`terraform output server-dns-name`
+            source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/health 200
         inputs:
         - name: source
         - name: version
