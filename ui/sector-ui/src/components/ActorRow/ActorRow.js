@@ -13,8 +13,14 @@ export default class ActorSearch extends React.Component {
         const processedMovies = actor.titles.map(movie => { // TODO move into a separate component
             return (
                 <div className="movie-card" key={movie.id}>
-                    <div><img src={movie.image} height={174} /></div>
-                    <div className="movie-title">{movie.name}</div>
+                    <div className="image-wrapper">
+                        <img src={movie.image} height={174} />
+                    </div>
+                    <div className="movie-title-wrapper">
+                        <div className="movie-title">
+                            {movie.name}
+                        </div>
+                    </div>
                 </div>
             )
         });

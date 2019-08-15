@@ -37,7 +37,7 @@ const mainSection = {
     alignItems: 'center'
 };
 
-class ActorSearch extends React.Component {
+export default class ActorSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -93,22 +93,25 @@ class ActorSearch extends React.Component {
     handleChange(event) {
         const searchTerm = event.target.value;
 
-        axios.get(`/api/actors`, {
-            params: {
-                search: searchTerm
-            },
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
-            }
-        })
-        .then(response => {
-            this.setState({
-                searchTerm,
-                actorSearchResults: response.data.content
+        this.setState({
+            searchTerm
+        }, () => {
+            axios.get(`/api/actors`, {
+                params: {
+                    search: searchTerm
+                },
+                auth: {  // TODO remove
+                    username: 'business-user',
+                    password: 'password'
+                }
+            })
+            .then(response => {
+                this.setState({
+                    actorSearchResults: response.data.content
+                });
             });
         });
     }
 }
 
-export default ActorSearch;
+

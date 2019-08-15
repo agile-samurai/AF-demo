@@ -1,3 +1,7 @@
+.actor-card:not(:first-child) {
+    margin-top: 130px;
+}
+
 .actor-name {
     font-size: 60px;
 }
@@ -17,10 +21,9 @@
 }
 
 .movies {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 100px 20px;
     margin-top: 38px;
 }
 
@@ -28,11 +31,34 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: center;
     width: 182px;
     height: 242px;
+    justify-self: center;
+    background: #e6e6e6;
 }
 
-.movie-card:not(:first-child) {
-    margin-left: 52px;
+.image-wrapper {
+    margin-top: 32px;
 }
+
+.movie-title-wrapper {
+    height: 28px;
+    width: 142px;
+    padding: 20px;
+    background: #1e1e1e;
+    color: hsla(0,0%,100%,.87);
+    margin-top: 29px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.movie-title {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
 
