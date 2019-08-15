@@ -109,11 +109,8 @@ def load_model(api):
 def most_similar_movies(imdbID: hug.types.text):
     if not imdbID.startswith('tt'):
         imdbID = 'tt' + imdbID
-    movie_url = '/title/' + imdbID + '/'
-    print(f'Movie url to find: {movie_url}')
-    print(f'Length of movies_df: {len(movies_df)}')
-    selected_movie = movies_df[movies_df['url'] == movie_url]
-    if len(selected_movie == 0):
+    selected_movie = movies_df[movies_df['film_id'] == imdbID]
+    if len(selected_movie) == 0:
         return {'Error': 'Movie ID not found in dataset'}
 
     selected_text = selected_movie['description'].values[0] + ' ' \
