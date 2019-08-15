@@ -1,14 +1,8 @@
 from fuzzywuzzy import fuzz
 import hug
-<<<<<<< HEAD
-from plot import make_test_image, save_image, jsonify_image
-=======
 import plot
 import movies
 
-# from .plot import make_test_image, save_image, jsonify_image
-
->>>>>>> Add full plot plot and endpoint
 
 def load_model():
     pass
