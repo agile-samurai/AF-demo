@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 initiate_hsm_setup() {
+  printf "\n\n*** Provisioning HSM infrastructure ***\n"
   if terraform plan -out plan; then
     printf "\n\n=: Terraform plan succeeded\n\n=: Applying plan\n"
 
@@ -8,6 +9,10 @@ initiate_hsm_setup() {
       printf "\n\n=: Terraform applied successfully\n\n=: Copying HSM Cluster id\n"
 
       ID_FILE=cluster_id.txt
+      KEY_FILE=key.pem
+      IP_FILE=ec2ip.txt
+      PASS_FILE=pass.txt
+      HSM_IP_FILE=hsmip.txt
       STATE_FILE=cluster_state.txt
       if [[ -f "$STATE_FILE" ]]; then
         if ! grep -Fxq "UNINITIALIZED" ${STATE_FILE}; then
@@ -16,8 +21,12 @@ initiate_hsm_setup() {
         fi
       fi
       if [[ -f "$ID_FILE" ]]; then
-        cp ${ID_FILE} ../post-setup
-        printf "\n\n=: HSM Cluster ID file copied to post-setup/\n"
+        mv -f ${ID_FILE} ../post-setup
+        mv -f ${KEY_FILE} ../ec2-provisioning
+        mv -f ${IP_FILE} ../ec2-provisioning
+        mv -f ${PASS_FILE} ../ec2-provisioning
+        mv -f ${HSM_IP_FILE} ../ec2-provisioning
+        printf "\n\n=: HSM Cluster ID file copied to post-setup/\nEC2 instance key and IP file copied to config root"
         cd -
       else
         printf "\n\n=: HSM Cluster ID file could not be found\n"
@@ -34,6 +43,7 @@ initiate_hsm_setup() {
 }
 
 verify_identity() {
+  printf "\n\n*** Verifying HSM identity ***\n"
   cd post-setup
   CLUSTER_ID="$(< ${ID_FILE})"
 
@@ -92,6 +102,7 @@ verify_identity() {
 }
 
 sign_csr() {
+  printf "\n\n*** Signing Cluster CSR ***\n"
   password=test-pass
   country=US
   state=Virginia
@@ -110,9 +121,19 @@ sign_csr() {
 }
 
 initialize_hsm() {
-   aws cloudhsmv2 initialize-cluster --region us-west-1 --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt
+  printf "\n\n*** Initializing HSM module ***\n"
+
+  if aws cloudhsmv2 initialize-cluster --region us-west-1 --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
+    mv -f customerCA.crt ../ec2-provisioning
+    cd -
+    return 0
+  else
+    return 1
+  fi
 }
+
 init() {
+  printf "\n\n*** Initializing Terraform ***\n"
   cd initial-setup
   terraform init
 }
@@ -120,16 +141,16 @@ init() {
 trap "exit" INT
 echo "pid is $$"
 
-printf "\n\n*** Initializing Terraform ***\n"
 init
-printf "\n\n*** Provisioning HSM infrastructure ***\n"
 initiate_hsm_setup
 sleep 5s
-printf "\n\n*** Verifying HSM identity ***\n"
 verify_identity
-printf "\n\n*** Signing Cluster CSR ***\n"
 sign_csr
-printf "\n\n*** Initializing HSM module ***\n"
-initialize_hsm
+if initialize_hsm; then
+  cd ec2-provisioning
+  terraform init
+  terraform plan -out plan
+  terraform apply plan
+fi
 
 printf "\n\n\n********* Done *********\n"

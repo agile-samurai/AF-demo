@@ -4,10 +4,6 @@ locals {
   cluster_state = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state
 }
 
-output "admin-user-password" {
-  value = local.admin_password
-}
-
 resource "local_file" "cluster_id_file" {
   count = 1
   content = local.cluster_id
@@ -17,6 +13,26 @@ resource "local_file" "cluster_id_file" {
 resource "local_file" "cluster_state_file" {
   content = local.cluster_state
   filename = "${path.module}/cluster_state.txt"
+}
+
+resource "local_file" "ec2_key" {
+  sensitive_content = tls_private_key.hsm_key.private_key_pem
+  filename = "${path.module}/key.pem"
+}
+
+resource "local_file" "ec2-ip" {
+  content = aws_eip.this.public_ip
+  filename = "${path.module}/ec2ip.txt"
+}
+
+resource "local_file" "hsm-ip" {
+  content = aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address
+  filename = "${path.module}/hsmip.txt"
+}
+
+resource "local_file" "user_pass" {
+  sensitive_content = local.admin_password
+  filename = "${path.module}/pass.txt"
 }
 
 output "hsm_cluster_id" {
