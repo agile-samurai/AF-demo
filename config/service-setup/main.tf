@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 locals {
-  region = "${var.region[terraform.workspace]}"
+  region = "${var.aws_region[terraform.workspace]}"
 }
 
 resource "aws_cloudwatch_log_group" "container" {
@@ -28,14 +28,14 @@ module "log-forwarding" {
   source           = "./modules/log-forwarding"
   es_endpoint      = module.elasticsearch.ElasticSearchEndpoint
   container_family = "containers"
-  cwl_endpoint     = "logs.${var.region[terraform.workspace]}.amazonaws.com"
+  cwl_endpoint     = "logs.${local.region}.amazonaws.com"
 }
 
 resource "aws_lambda_permission" "cloudwatch_allow" {
   statement_id  = "cloudwatch_allow_challenge"
   action        = "lambda:InvokeFunction"
   function_name = module.log-forwarding.log_forward_lambda_arn
-  principal     = "logs.${var.region[terraform.workspace]}.amazonaws.com"
+  principal     = "logs.${local.region}.amazonaws.com"
   source_arn    = aws_cloudwatch_log_group.container.arn
 }
 
@@ -102,7 +102,7 @@ module "elasticsearch" {
   source         = "./modules/elasticsearch"
   public-subnets = module.network.public_subnets
   vpc_id         = module.network.vpc_id
-  region         = var.region[terraform.workspace]
+  region         = "${local.region}"
   #cidr_block     = var.cidr_block[terraform.workspace]
   instance_type = "m4.large.elasticsearch"
 
@@ -139,7 +139,7 @@ module "www" {
   zone_id                    = aws_route53_zone.primary.zone_id
   server_url                 = module.server.dns_name
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region[terraform.workspace]
+  region                     = "${local.region}"
 }
 
 module "server" {
@@ -170,7 +170,7 @@ module "server" {
   data_science_url           = module.datascience.dns_name
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region[terraform.workspace]
+  region                     = "${local.region}"
   logs_bucket                = "rdso-challenge2-logs"
 
   access_key    = var.access_key
@@ -197,7 +197,7 @@ module "datascience" {
   zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region[terraform.workspace]
+  region                     = "${local.region}"
 }
 
 
@@ -222,5 +222,5 @@ module "ds-spaCy-model" {
   #zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region[terraform.workspace]
+  region                     = "${local.region}"
 }
