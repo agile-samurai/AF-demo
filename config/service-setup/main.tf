@@ -187,9 +187,34 @@ module "datascience" {
   health_check_path = "/metrics"
   instance_count    = 1
   timeout           = 20
-  container_port    = 8000
+  container_port    = 8000 #from container dockerfile
   loadbalancer_port = 80
   zone_id           = aws_route53_zone.primary.zone_id
+
+  cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
+  region                     = var.region
+}
+
+
+module "ds-spaCy-model" {
+  source = "./modules/spaCy"
+
+  execution_role_arn = module.ecs.ecs_task_execution_role_arn
+  cluster_id         = module.ecs-cluster.ecs_cluster_id
+  vpc_id             = module.network.vpc_id
+  private_subnets    = module.network.private_subnets
+  public_subnets     = module.network.public_subnets
+
+  docker_image     = "jgontrum/spacyapi:en_v2"
+  container_family = "spaCy"
+  #base_domain      = aws_route53_zone.primary.name
+
+  health_check_path = "/ui"
+  instance_count    = 1
+  timeout           = 20
+  container_port    = 80 #from container dockerfile
+  loadbalancer_port = 80
+  #zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = var.region
