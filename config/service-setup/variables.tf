@@ -1,7 +1,3 @@
-# variable "region" {
-#   default = "us-east-1"
-# }
-
 variable "ecr_image_region" {
   default = "us-east-1"
 }
@@ -50,6 +46,19 @@ variable "cidr_block" {
     test    = "10.1.0.0/16",
     ft      = "10.1.0.0/16",
     prod    = "10.1.0.0/16"
+  }
+}
+
+variable "region" {
+  type        = map(string)
+  description = "region"
+
+  default = {
+    default = "us-east-1",
+    dev     = "us-east-1",
+    test    = "us-east-2",
+    prod    = "us-west-1"
+    ft      = "us-west-2",
   }
 }
 
