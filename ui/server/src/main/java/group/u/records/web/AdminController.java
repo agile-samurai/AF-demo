@@ -19,11 +19,6 @@ public class AdminController {
         this.detailsService = detailsService;
     }
 
-    @GetMapping("/stuff")
-    public ResponseEntity<String> speak(){
-        return ok( "Done" );
-    }
-
     @PostMapping("/ingest")
     public ResponseEntity ingest(){
         detailsService.loadMovieDetails();

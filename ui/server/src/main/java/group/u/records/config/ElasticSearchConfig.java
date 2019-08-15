@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticSearchConfig {
 
-    private Logger logger = LoggerFactory.getLogger(ElasticSearchConfig.class);
-
     @Value("${elasticsearch.host}")
     private String EsHost;
 
@@ -37,5 +35,4 @@ public class ElasticSearchConfig {
 
         return fact.getObject();
     }
-
 }
