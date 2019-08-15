@@ -12,6 +12,10 @@ provider "aws" {
   region  = "us-east-1"
 }
 
+locals {
+  region = "${var.region[terraform.workspace]}"
+}
+
 resource "aws_cloudwatch_log_group" "container" {
   name = "logs-${terraform.workspace}"
 
