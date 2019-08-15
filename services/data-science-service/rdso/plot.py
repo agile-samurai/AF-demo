@@ -79,7 +79,29 @@ def sc_plot_genre_colors(mdf):
     return p
 
 
-def sc_plot_for_one(mdf, imdbID):
+def sc_plot_for_one(mdf: DataFrame, imdbID: str) -> Bokeh.Figure:
+    """Creates and colorizes a scatterplot of all movies in the dataset, with
+    one IMDB entry specified as the one in question. That one has a big X over it.
+    All the movies that are in the same genre as the specified film are colorized
+    but everything else is grayed out.
+
+    Parameters
+    ----------
+    mdf : Pandas DataFrame
+        A DataFrame merged between the movies df and the omdb data
+    imdbID : str
+        IMDB id, does not include tt, but is the number after
+
+    Returns
+    -------
+    Bokeh.Figure
+        Description of returned object.
+
+    """
+    # for now, this populates random values, but eventually, this should use the
+    # first two principal components of the Doc2Vec model to populate the x and y vars
+    mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
+    mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
     item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
     colormap = dict(
         zip(mdf.primary_genre.unique(), Category20[len(mdf.primary_genre.unique())])
