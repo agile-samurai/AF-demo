@@ -19,16 +19,15 @@ from nltk.corpus import stopwords
 import movies
 
 
-tokenizer = RegexpTokenizer(r'\w+')
-stopword_set = set(stopwords.words('english'))
-
-
 def nlp_clean(data: iter):
     """
     This function does all text cleaning using two objects above
     :param data:
     :return:
     """
+    tokenizer = RegexpTokenizer(r'\w+')
+    stopword_set = set(stopwords.words('english'))
+
     clean_data = []
     for d in data:
         new_str = d.lower()
@@ -94,7 +93,7 @@ def cli(local, version, push):
     # Attach labels to keep with the documents
     movies_df['imdb_id'] = movies_df['url'].apply(lambda x: pd.Series(x.split('/')[2]))
     movies_df['top_genre'] = movies_df['genre'].apply(lambda x: pd.Series(x[0]))
-    movies_labels = list(zip(movies_df.index, movies_df['imdb_id'], movies_df['top_genre']))
+    movies_labels = list(movies_df['imdb_id'])
     tagged_corpus = TaggedLineDocument(movies_text, movies_labels)
 
     d2v_model = train_doc2vec(tagged_corpus)
