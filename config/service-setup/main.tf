@@ -187,7 +187,7 @@ module "datascience" {
   health_check_path = "/metrics"
   instance_count    = 1
   timeout           = 20
-  container_port    = 8080
+  container_port    = 8000
   loadbalancer_port = 80
   zone_id           = aws_route53_zone.primary.zone_id
 
