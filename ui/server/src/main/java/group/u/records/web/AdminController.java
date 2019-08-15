@@ -1,6 +1,7 @@
 package group.u.records.web;
 
 import group.u.records.service.EntertainmentDetailsService;
+import group.u.records.service.S3DataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,19 +16,13 @@ public class AdminController {
 
     private EntertainmentDetailsService detailsService;
 
-    public AdminController(EntertainmentDetailsService detailsService ){
+    public AdminController(EntertainmentDetailsService detailsService){
         this.detailsService = detailsService;
-    }
-
-    @GetMapping("/stuff")
-    public ResponseEntity<String> speak(){
-        return ok( "Done" );
     }
 
     @PostMapping("/ingest")
     public ResponseEntity ingest(){
         detailsService.loadMovieDetails();
-
         return ok().build();
     }
 }

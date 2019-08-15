@@ -49,7 +49,7 @@ class ActorSearch extends React.Component {
         super(props);
         this.state = {
             searchTerm: '',
-            actorSearchResults: ['first actor', 'second actor']
+            actorSearchResults: []
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -59,9 +59,9 @@ class ActorSearch extends React.Component {
 
         const formattedActorResults = actorSearchResults.map(actorSearchResult => {
             return (
-                <div>
+                <div key={actorSearchResult.id}>
                     Actor name:
-                    {actorSearchResult}
+                    {actorSearchResult.fullName}
                 </div>
             );
         });
@@ -88,7 +88,7 @@ class ActorSearch extends React.Component {
                         margin="normal"
                         InputProps={{
                             startAdornment: <InputAdornment position="start">
-                                <SearchIcon className='search-icon' fontSize='20'/>
+                                <SearchIcon className='search-icon'/>
                             </InputAdornment>,
                         }}
                     />
@@ -102,21 +102,20 @@ class ActorSearch extends React.Component {
 
     handleChange(event) {
         const searchTerm = event.target.value;
-        console.log(searchTerm);
 
         axios.get(`/api/actors`, {
             params: {
                 search: searchTerm
             },
-            auth: {
+            auth: {  // TODO remove
                 username: 'business-user',
                 password: 'password'
             }
         })
-        .then(data => {
+        .then(response => {
             this.setState({
                 searchTerm,
-                actorSearchResults: data
+                actorSearchResults: response.data.content
             });
         });
     }
