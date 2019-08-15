@@ -1,8 +1,7 @@
 package group.u.records.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.MovieDetails;
+import group.u.records.models.MovieDetail;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import org.apache.commons.io.IOUtils;
@@ -48,7 +47,7 @@ public class S3DataService {
         this.s3Client = s3Client;
     }
 
-    public List<MovieDetails> loadAllMovies(ActorRepository actorRepository) {
+    public List<MovieDetail> loadAllMovies(ActorRepository actorRepository) {
         logger.debug("Loading services from data store" );
         ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(folder).build();
         List<Movie> extractedMovies = new ArrayList();
@@ -74,7 +73,7 @@ public class S3DataService {
             logger.debug(obj.key());
         });
 
-        return extractedMovies.stream().map(MovieDetails::new).collect(toList());
+        return extractedMovies.stream().map(MovieDetail::new).collect(toList());
     }
 
 }

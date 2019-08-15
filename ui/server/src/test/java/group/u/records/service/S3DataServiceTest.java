@@ -2,14 +2,12 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.MovieDetails;
+import group.u.records.models.MovieDetail;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,7 +48,7 @@ public class S3DataServiceTest {
         when(iterables.contents()).thenReturn(iterable);
         when(client.listObjectsV2Paginator(any(ListObjectsV2Request.class))).thenReturn(iterables);
 
-        List<MovieDetails> movies =  service.loadAllMovies(actorRepository);
+        List<MovieDetail> movies =  service.loadAllMovies(actorRepository);
         assertThat(movies).hasSize(0);
     }
 
@@ -78,7 +75,7 @@ public class S3DataServiceTest {
         when(iterables.contents()).thenReturn(iterable);
         when(client.listObjectsV2Paginator(any(ListObjectsV2Request.class))).thenReturn(iterables);
 
-        List<MovieDetails> movies =  service.loadAllMovies(actorRepository);
+        List<MovieDetail> movies =  service.loadAllMovies(actorRepository);
         assertThat(movies).hasSize(1);
     }
 
