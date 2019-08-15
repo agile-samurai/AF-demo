@@ -1,6 +1,6 @@
 import React from 'react';
 import {withRouter} from "react-router";
-import ShowElementByRole from "./ShowElementByRole";
+import ShowElementByRole from "../ShowElementByRole/ShowElementByRole";
 
 class Home extends React.Component {
     render() {
