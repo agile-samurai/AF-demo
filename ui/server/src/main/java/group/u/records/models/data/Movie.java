@@ -7,6 +7,19 @@ import java.util.List;
 public class Movie {
     private String name;
     private String image;
+
+    public Movie() {
+    }
+
+    public Movie(String name, String image, String contentRating, List<String> genre, String description, List<Actor> actor) {
+        this.name = name;
+        this.image = image;
+        this.contentRating = contentRating;
+        this.genre = genre;
+        this.description = description;
+        this.actor = actor;
+    }
+
     private String contentRating;
     private List<String> genre;
     private String description;
