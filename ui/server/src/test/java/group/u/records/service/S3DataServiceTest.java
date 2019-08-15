@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -81,7 +82,7 @@ public class S3DataServiceTest {
 
     private String testMovie(){
         Movie movie = new Movie("name","image","r",
-                new ArrayList(), "fake description", new ArrayList(), "fakeurl");
+                asList("drama"), "fake description", new ArrayList());
         try {
             return new ObjectMapper().writeValueAsString(movie);
         } catch (JsonProcessingException e) {
