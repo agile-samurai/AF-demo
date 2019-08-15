@@ -1,0 +1,21 @@
+.text-field {
+    width: 72%;
+}
+
+.text-field > div {
+    color: #FFF;
+}
+
+.MuiInput-underline:before {
+    border-bottom: 1px solid #FFF !important;
+}
+
+.text-field input {
+    font-size: 90px;
+    margin-left: 30px;
+}
+
+.search-icon {
+    font-size: 40px !important;
+    margin-left: 20px;
+}
