@@ -115,9 +115,9 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
-  - name: destroy
-    jobs:
-    - terraform-destroy-all-envs
+  # - name: destroy
+  #   jobs:
+  #   - terraform-destroy-all-envs
 
 jobs:
   - name: Create Terraform Persistence
