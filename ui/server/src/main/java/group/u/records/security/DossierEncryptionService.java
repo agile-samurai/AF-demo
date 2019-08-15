@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.UUID;
+
 @Service
 public class DossierEncryptionService {
 
@@ -26,5 +29,15 @@ public class DossierEncryptionService {
             logger.debug("Error while serializing dossier:  " + dossier.getId());
         }
         return "";
+    }
+
+    public Dossier decrypt(UUID id, String encryptedContent) {
+        try {
+            return objectMapper.readValue(gatewayClient.decrypt(id,encryptedContent), Dossier.class);
+        } catch (IOException e) {
+            //Todo: Log user access explicitly.
+            throw new SecurityException( "Unauthorized access to dossier" );
+
+        }
     }
 }

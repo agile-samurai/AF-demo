@@ -33,4 +33,5 @@ public class EntertainmentDetailsService {
         dataService.processMovies(actorRepository, moviePublicSummaryRepository, dossierBuilderService );
     }
 
+
 }

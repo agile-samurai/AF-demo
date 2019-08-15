@@ -5,9 +5,9 @@ import java.util.UUID;
 
 public class Dossier {
     private UUID id;
-    private final String name;
-    private final String summary;
-    private final List<Genre> genres;
+    private String name;
+    private String summary;
+    private List<Genre> genres;
 
     public String getName() {
         return name;
@@ -27,6 +27,8 @@ public class Dossier {
         this.summary = summary;
         this.genres = genres;
     }
+
+    public Dossier(){}
 
     public UUID getId() {
         return id;
