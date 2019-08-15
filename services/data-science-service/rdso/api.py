@@ -54,6 +54,13 @@ def get_all_movie_plot():
     return plot.jsonify_image(p)
 
 
+@hug.post("/highlighted_film_plot")
+def get_highlighted_plot(imdbID: hug.types.text):
+    mdf = movies.merged_movie_data(1000)
+    p = plot.sc_plot_for_one(mdf, imdbID)
+    return plot.jsonify_image(p)
+
+
 def compare(primary_string, secondary_string):
     """
     Helper method with the scoring logic for the /similarity_score endpoint.
