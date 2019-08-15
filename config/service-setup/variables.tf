@@ -49,7 +49,7 @@ variable "cidr_block" {
   }
 }
 
-variable "region" {
+variable "aws_region" {
   type        = map(string)
   description = "region"
 

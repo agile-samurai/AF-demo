@@ -614,7 +614,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
         TF_VAR_access_key: ((aws_secret_access_key))
         TF_VAR_ecr_image_region: us-east-1
-        TF_VAR_region: us-east-1
+        #TF_VAR_aws_region: us-east-1
         TF_VAR_base_domain: ((base_domain))
         TF_VAR_access_key: ((aws_access_key_id))
         TF_VAR_access_secret: ((aws_secret_access_key))
@@ -642,6 +642,8 @@ jobs:
             terraform workspace new dev || true
             terraform refresh
             terraform workspace select dev
+            export TF_LOG=debug
+            `cat git/.git/HEAD`
             terraform apply --auto-approve
             
             echo "Waiting for server to come up"
@@ -696,7 +698,7 @@ jobs:
           - |
             echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
             echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
-            echo region = \"us-east-1\" >> vars/terraform.tfvars
+            #echo region = \"us-east-1\" >> vars/terraform.tfvars
             echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
             echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
             echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
