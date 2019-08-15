@@ -1,6 +1,6 @@
 # This script requires AWS credentials available via environment variables,
 # either AWS_PROFILE and a credentials file or
-# aws_access_key_id and aws_secret_access_key
+# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 # in order to load or save data to/from S3.
 
 import boto3
@@ -114,16 +114,17 @@ def cli(local, version, push):
             try:
                 s3 = boto3.client(
                     "s3",
-                    aws_access_key_id=os.environ["aws_access_key_id"],
-                    aws_secret_access_key=os.environ["aws_secret_access_key"],
+                    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
                 )
             except KeyError:
                 raise ValueError("No AWS credentials found")
 
         for model_f in models_dir.iterdir():
             if model_filename in str(model_f):
-                s3.upload_file(str(model_f), bucket_name,
-                               'models/' + str(model_f.stem))
+                with open(str(model_f), 'rb') as outfile:
+                    s3.upload_fileobj(outfile, bucket_name,
+                                      'models/' + str(model_f.stem) + str(model_f.suffix))
         print(f'Pushed model version {version} to S3')
 
 
