@@ -62,8 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
 
-    public S3Client getS3Client(@Value("${aws.accessKeyId}") String accessKeyId,
-                                @Value("${aws.secretAccessKey}") String secretAccessKey,
+    public S3Client getS3Client(@Value("${aws.access.key.id}") String accessKeyId,
+                                @Value("${aws.secret.access.key}") String secretAccessKey,
                                 @Value("${aws.region}") String regionAsString
                                 ){
         return S3Client.builder()
