@@ -1,7 +1,8 @@
 import pandas as pd
 import json
 from tqdm import tqdm
-from utils.bucket import Bucket
+# TODO: Resolve local import errors with/without '.' before bucket
+from bucket import Bucket
 
 
 def secondary_genre(x):
@@ -33,14 +34,15 @@ def movie_df():
     return mv
 
 
-def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
+def get_json_files(n: int = None, s3_folder="data/movies_json", **kwargs) -> list:
     list_of_dicts = []
     print(f"Getting data from {s3_folder}")
+
     b = Bucket("rdso-challenge2", s3_folder, quiet=True, **kwargs)
     file_list = list(b)[:n]
     print("Done getting s3 file list.")
     for jfile in tqdm(file_list):
-        shortened_file = jfile[len(s3_folder) + 1:]
+        shortened_file = jfile[len(s3_folder) + 1 :]
         f = b[str(shortened_file)]
         json_string = f.read()
         movie_dict = json.loads(json_string)
@@ -48,10 +50,30 @@ def get_json_files(n: int = None, s3_folder="data/imdb_json", **kwargs) -> list:
     return list_of_dicts
 
 
+def translate_duration(x):
+    x = x.strip("PT")
+    if "H" in x:
+        hours, mins = x.split("H")
+    else:
+        hours = 0
+        mins = x
+    if "M" in x:
+        mins, _ = mins.split("M")
+    else:
+        mins = 0
+    total_time = int(hours) * 60 + int(mins)
+    return total_time
+
+
 def imdb_df(data):
     df = pd.DataFrame(data)
     df.drop(["@context", "@type"], axis=1, inplace=True)
     df["film_id"] = df.url.apply(lambda x: "tt" + x.strip("/title/"))
+    df["total_min"] = df.duration.apply(
+        lambda x: translate_duration(x) if type(x) == str else x
+    )
+    df["imdb_id"] = df.film_id.apply(lambda x: x[2:])
+
     try:
         df["film_director"] = df.director.apply(lambda x: x["name"])
         df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
@@ -60,6 +82,13 @@ def imdb_df(data):
     # df["director_id"] = df.director.apply(lambda x: x["url"].strip("/name/nm"))
     # df["num_directors"] = df.director.apply(lambda x: len(x["name"]))
     return df
+
+
+def merged_movie_data(n):
+    imdf = imdb_df(get_json_files(n))
+    mv = movie_df()
+    mdf = imdb.merge(mv, how="left", on="imdb_id")
+    return mdf
 
 
 if __name__ == "__main__":

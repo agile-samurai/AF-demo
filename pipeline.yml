@@ -92,6 +92,7 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
+    - Execute main-ds-service Tests
   - name: prepare
     jobs:
     - Create Terraform Persistence
@@ -103,6 +104,7 @@ groups:
     - Execute server Functional Tests
     - Execute server Contract Tests
     - Execute UI Automated Tests
+    - Execute main-ds-service Tests
   - name: publish-and-scan
     jobs:
     - Provision ECR Repositories
@@ -294,11 +296,6 @@ jobs:
   #       passed:
   #         - Initialize
   #     - task: Execute Test
-  #       params:
-  #         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
-  #         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-  #         AWS_DEFAULT_REGION: us-east-1
-  #         TESTING: 1
   #       config:
   #         platform: linux
   #         image_resource:
@@ -348,47 +345,43 @@ jobs:
             - path: maven
 
 ###################### CONTRACT TESTS ############################
-  # - name: Execute main-ds-service Contract Tests
-  #   public: true
-  #   plan:
-  #     - get: source
-  #       trigger: true
-  #       passed: [Execute main-ds-service Unit and Integration Tests]
-  #     - get: version
-  #       passed: [Execute main-ds-service Unit and Integration Tests]
-  #     - task: Execute Test
-  #       privileged: true
-  #       config:
-  #         platform: linux
-  #         image_resource:
-  #           type: docker-image
-  #           source:
-  #             repository: carlomazzaferro/maven-java-10-aws
-  #         inputs:
-  #           - name: source
-  #         params:
-  #           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
-  #           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-  #           AWS_ACCOUNT_ID: ((aws_account_id))
-  #           CONTRACT_TESTS: true
-  #         run:
-  #           path: entrypoint.sh
-  #           args:
-  #             - bash
-  #             - -exc
-  #             - |
-  #               pwd
-  #               # setup maven cache
-  #               M2_HOME="${HOME}/.m2"
-  #               M2_CACHE="$(pwd)/maven"
-  #               [[ -d "${M2_CACHE}" && ! -d "${M2_HOME}" ]] && ln -s "${M2_CACHE}" "${M2_HOME}"
-  #               # prepare and run tests
-  #               # debugging the run
-
-  #               docker-compose -f source/docker-compose.yml up -d --build data-science-service
-  #               source/wait-for-status-code-at-url.sh localhost:8083/health/check 200
-  #               mvn clean test -f source/services/data-science-service/contract-tests/pom.xml
-
+  - name: Execute main-ds-service Tests
+    public: true
+    plan:
+      - get: source
+        trigger: true
+        passed: [Initialize]
+      - get: version
+        passed: [Initialize]
+      - task: Execute Test
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: python
+              tag: 3.7
+          inputs:
+            - name: source
+            - name: version
+          run:
+            path: /bin/bash
+            args:
+              - -exc
+              - |
+                cd source/services/data-science-service
+                pip install --upgrade pip && pip install -r tests_require.txt
+                pip list
+                /usr/local/bin/pytest --junitxml results.xml
+                echo "Push results to sonarqube"
+                wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+                unzip -qq sonar-*
+                rm sonar-*.zip
+                mv sonar* sonar-scanner
+                export PROJECT_VERSION=`cat version/number`
+                sonar-scanner/bin/sonar-scanner -h
+                sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
   - name: Execute server Contract Tests
     public: true
     plan:

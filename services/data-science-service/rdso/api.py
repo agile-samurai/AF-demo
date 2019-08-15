@@ -1,7 +1,7 @@
 from fuzzywuzzy import fuzz
 import hug
-from data import norbit
-from plot import make_image, save_image, jsonify_image
+import plot
+import movies
 
 
 def load_model():
@@ -20,17 +20,39 @@ def most_similar_movies(imdbID: hug.types.text):
     return most_similar_movies
 
 
-def make_plot(n):
-    p = make_image(n=n)
-    return jsonify_image(p)
+@hug.post("/make_test_plot")
+def show_test_plot(n=None):
+    """Creates test plot with anything posted
+
+    Parameters
+    ----------
+    n : int
+        Dummy parameter that should be an integer
+
+    Returns
+    -------
+    dict
+        Returns a JSON dict that contains a test plot; should be paired with
+        BokehJS library and React component on the front-end
+    """
+    if not n:
+        n = 500
+    p = plot.make_test_image(n=n)
+    return plot.jsonify_image(p)
 
 
-@hug.post("/make_plot")
-def show_test_plot(n):  # imdbID: hug.types.text):
-    return make_plot(n=400)
-    # print(f"Making plot for {imdbID}")
-    # image_loc = "img/test_plot.png"
-    # return image_loc
+@hug.get("/all_movie_scatter_plot")
+def get_all_movie_plot():
+    mdf = movies.merged_movie_data(1000)
+    p = plot.sc_plot_genre_colors(mdf)
+    return plot.jsonify_image(p)
+
+
+@hug.post("/highlighted_film_plot")
+def get_highlighted_plot(imdbID: hug.types.text):
+    mdf = movies.merged_movie_data(1000)
+    p = plot.sc_plot_for_one(mdf, imdbID)
+    return plot.jsonify_image(p)
 
 
 def compare(primary_string, secondary_string):

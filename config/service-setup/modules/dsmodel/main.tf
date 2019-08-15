@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "container" {
     "healthCheck": {
 
         "startPeriod": 300,
-        "command": [ "CMD-SHELL", "curl -f http://localhost:8080/health/check  || exit 1" ],
+        "command": [ "CMD-SHELL", "curl -f http://localhost:8080/metrics  || exit 1" ],
         "interval": 40,
         "timeout": 10,
         "retries": 10

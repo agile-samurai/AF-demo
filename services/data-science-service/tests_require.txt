@@ -1,1 +1,8 @@
 pytest
+coverage
+pandas
+hug
+boto3
+fuzzywuzzy
+bokeh
+tqdm

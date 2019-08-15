@@ -2,8 +2,8 @@
 version: '3.7'
 
 services:
-  ui-frontend:
-    image: mdas/sector-ui
+  sector-ui:
+    image: records/sector-ui
     restart: on-failure
     depends_on:
       - ui-backend
@@ -15,7 +15,7 @@ services:
       - ./ui/sector-ui/build:/build
 
   ui-backend:
-    image: mdas/ui-backend
+    image: records/ui-backend
     container_name: ui-backend
     depends_on:
       - elastic

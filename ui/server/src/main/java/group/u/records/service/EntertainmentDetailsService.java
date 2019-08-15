@@ -25,7 +25,7 @@ public class EntertainmentDetailsService {
 
     public List<MovieDetails> getMovieDetails(String movieId){
         List<MovieDetails> results = new ArrayList();
-        for( int i = 0; i < 1000; i++ ){
+        for( int i = 0; i < 100; i++ ){
             results.add(generateMovieDetail());
         }
         return results;
@@ -34,7 +34,9 @@ public class EntertainmentDetailsService {
     private MovieDetails generateMovieDetail() {
         ArrayList actors = new ArrayList();
         for( int i = 0; i < new Random().nextInt(30); i++ ){
-            actors.add( new Actor(Faker.instance().name().fullName()));
+            Actor actor = new Actor(Faker.instance().name().fullName());
+            logger.debug("Actor:  " + actor );
+            actors.add(actor);
         }
         return new MovieDetails(
                 Faker.instance().ancient().god() + " & the " + Faker.instance().ancient().hero(),
