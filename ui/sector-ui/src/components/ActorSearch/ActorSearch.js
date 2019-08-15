@@ -43,16 +43,29 @@ const mainSection = {
     alignItems: 'center'
 };
 
+
 class ActorSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            actorName: ''
+            searchTerm: '',
+            actorSearchResults: ['first actor', 'second actor']
         };
         this.handleChange = this.handleChange.bind(this);
     }
 
     render() {
+        const {searchTerm, actorSearchResults} = this.state;
+
+        const formattedActorResults = actorSearchResults.map(actorSearchResult => {
+            return (
+                <div>
+                    Actor name:
+                    {actorSearchResult}
+                </div>
+            );
+        });
+
         return (
             <div style={actorSearchStyle} className='actor-search'>
                 <AppBar position="static">
@@ -69,7 +82,7 @@ class ActorSearch extends React.Component {
                     <TextField
                         id="standard-name"
                         placeholder="Search for actor"
-                        value={this.state.actorName}
+                        value={searchTerm}
                         className="text-field"
                         onChange={this.handleChange}
                         margin="normal"
@@ -80,25 +93,32 @@ class ActorSearch extends React.Component {
                         }}
                     />
                 </div>
-                <div>
-                    {actorSearchResults}
+                <div className='search-results'>
+                    {formattedActorResults}
                 </div>
             </div>
         );
     }
 
     handleChange(event) {
-        console.log(event.target.value);
-        this.setState({
-            actorName: event.target.value
-        });
+        const searchTerm = event.target.value;
+        console.log(searchTerm);
 
-        // axios.get(`/api/processing/stuff`)
-        //     .then(data => {
-        //         const jwt = data.headers['x-authentication'];
-        //         this.props.setJWT(jwt);
-        //         this.props.history.push('/');
-        //     });
+        axios.get(`/api/actors`, {
+            params: {
+                search: searchTerm
+            },
+            auth: {
+                username: 'business-user',
+                password: 'password'
+            }
+        })
+        .then(data => {
+            this.setState({
+                searchTerm,
+                actorSearchResults: data
+            });
+        });
     }
 }
 

@@ -3,11 +3,11 @@
 }
 
 .text-field > div {
-    color: #FFF;
+    color: white;
 }
 
 .MuiInput-underline:before {
-    border-bottom: 1px solid #FFF !important;
+    border-bottom: 1px solid white !important;
 }
 
 .text-field input {
@@ -18,4 +18,8 @@
 .search-icon {
     font-size: 40px !important;
     margin-left: 20px;
+}
+
+.search-results {
+    background: white;
 }
