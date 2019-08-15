@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "container" {
     "healthCheck": {
 
         "startPeriod": 300,
-        "command": [ "CMD-SHELL", "curl -f http://localhost:${var.container_port}/${var.health_check_path}  || exit 1" ],
+        "command": [ "CMD-SHELL", "curl -f http://localhost:${var.container_port}/${var.health_check_path} || exit 1" ],
         "interval": 40,
         "timeout": 10,
         "retries": 10
@@ -194,10 +194,10 @@ resource "aws_security_group" "lb" {
   }
 }
 
-resource "aws_route53_record" "container" {
-  zone_id = "${var.zone_id}"
-  name = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
-  type = "CNAME"
-  ttl = "300"
-  records = ["${aws_alb.lb.dns_name}"]
-}
+# resource "aws_route53_record" "container" {
+#   zone_id = "${var.zone_id}"
+#   name = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
+#   type = "CNAME"
+#   ttl = "300"
+#   records = ["${aws_alb.lb.dns_name}"]
+# }
