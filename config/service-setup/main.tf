@@ -6,6 +6,12 @@ terraform {
   }
 }
 
+
+provider "aws" {
+  version = "~> 2.0"
+  region  = "us-east-1"
+}
+
 resource "aws_cloudwatch_log_group" "container" {
   name = "logs-${terraform.workspace}"
 
@@ -35,11 +41,6 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_to_es" {
   log_group_name  = aws_cloudwatch_log_group.container.name
   filter_pattern  = ""
   destination_arn = module.log-forwarding.log_forward_lambda_arn
-}
-
-provider "aws" {
-  version = "~> 2.0"
-  region  = "us-east-1"
 }
 
 data "aws_availability_zones" "available" {
@@ -98,23 +99,23 @@ module "elasticsearch" {
   public-subnets = module.network.public_subnets
   vpc_id         = module.network.vpc_id
   region         = var.region
-  vpc_cidr       = var.cidr_block
+  cidr_block     = var.cidr_block[terraform.workspace]
   instance_type  = "m4.large.elasticsearch"
 
 }
 
-module "mongodb" {
-  source           = "./modules/mongo"
-  vpc_id           = module.network.vpc_id
-  cluster_id       = module.ecs-cluster.ecs_cluster_id
-  ecs_cluster_name = module.ecs-cluster.ecs_cluster_name
-  private_subnets  = module.network.private_subnets
-  public_subnets   = module.network.public_subnets
-  vpc_cidr         = var.cidr_block
+# module "mongodb" {
+#   source           = "./modules/mongo"
+#   vpc_id           = module.network.vpc_id
+#   cluster_id       = module.ecs-cluster.ecs_cluster_id
+#   ecs_cluster_name = module.ecs-cluster.ecs_cluster_name
+#   private_subnets  = module.network.private_subnets
+#   public_subnets   = module.network.public_subnets
+#   cidr_block       = var.cidr_block[terraform.workspace]
 
-  MONGO_INITDB_ROOT_USERNAME = var.db_user
-  MONGO_INITDB_ROOT_PASSWORD = var.db_pass
-}
+#   MONGO_INITDB_ROOT_USERNAME = var.db_user
+#   MONGO_INITDB_ROOT_PASSWORD = var.db_pass
+# }
 
 module "www" {
   source = "./modules/ui"
@@ -124,7 +125,7 @@ module "www" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/ui:${var.images_version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/ui:${var.images_version}"
   container_family   = "www"
 
   instance_count             = 1
@@ -145,13 +146,13 @@ module "server" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/server:${var.images_version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/server:${var.images_version}"
   container_family   = "server"
   base_domain        = aws_route53_zone.primary.name
 
-  SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
-  SPRING_DATA_MONGODB_USERNAME = var.db_user
-  SPRING_DATA_MONGODB_PASSWORD = var.db_pass
+  # SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
+  # SPRING_DATA_MONGODB_USERNAME = var.db_user
+  # SPRING_DATA_MONGODB_PASSWORD = var.db_pass
 
   KAFKA_INTERNAL_IP        = module.ecs-cluster.dns_name
   PERSISTENCE_MONGO_URL    = module.ecs-cluster.dns_name
@@ -180,7 +181,7 @@ module "datascience" {
   vpc_id             = module.network.vpc_id
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
-  docker_image       = "${var.aws_account_id}.dkr.ecr.us-east-1.amazonaws.com/data-science-service:${var.images_version}"
+  docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/data-science-service:${var.images_version}"
   container_family   = "data"
   base_domain        = aws_route53_zone.primary.name
 

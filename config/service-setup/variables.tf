@@ -1,40 +1,44 @@
-variable "region" {
+# variable "region" {
+#   default = "us-east-1"
+# }
+
+variable "ecr_image_region" {
   default = "us-east-1"
 }
 
-variable "ami" {
-  type        = map(string)
-  description = "AWS ECS AMI id"
+# variable "ami" {
+#   type        = map(string)
+#   description = "AWS ECS AMI id"
 
-  default = {
-    # us-west-1      = "ami-bdafdbdd"
-    us-east-1 = "ami-cb2305a1"
-  }
-  # us-west-2 = "ami-644a431b"
+#   default = {
+#     # us-west-1      = "ami-bdafdbdd"
+#     us-east-1 = "ami-cb2305a1"
+#   }
+#   # us-west-2 = "ami-644a431b"
 
-  # eu-west-1      = "ami-13f84d60"
-  # eu-central-1   = "ami-c3253caf"
-  # ap-northeast-1 = "ami-e9724c87"
-  # ap-southeast-1 = "ami-5f31fd3c"
-  # ap-southeast-2 = "ami-83af8ae0"
-}
+#   # eu-west-1      = "ami-13f84d60"
+#   # eu-central-1   = "ami-c3253caf"
+#   # ap-northeast-1 = "ami-e9724c87"
+#   # ap-southeast-1 = "ami-5f31fd3c"
+#   # ap-southeast-2 = "ami-83af8ae0"
+# }
 
-variable "ec2_ami" {
-  type        = map(string)
-  description = "AWS EC2 AMI id"
+# variable "ec2_ami" {
+#   type        = map(string)
+#   description = "AWS EC2 AMI id"
 
-  default = {
-    # us-west-1      = "ami-bdafdbdd"
-    us-east-1 = "ami-cb2305a1"
-  }
-  # us-west-2 = "ami-b70554c8"
+#   default = {
+#     # us-west-1      = "ami-bdafdbdd"
+#     us-east-1 = "ami-cb2305a1"
+#   }
+#   # us-west-2 = "ami-b70554c8"
 
-  # eu-west-1      = "ami-13f84d60"
-  # eu-central-1   = "ami-c3253caf"
-  # ap-northeast-1 = "ami-e9724c87"
-  # ap-southeast-1 = "ami-5f31fd3c"
-  # ap-southeast-2 = "ami-83af8ae0"
-}
+#   # eu-west-1      = "ami-13f84d60"
+#   # eu-central-1   = "ami-c3253caf"
+#   # ap-northeast-1 = "ami-e9724c87"
+#   # ap-southeast-1 = "ami-5f31fd3c"
+#   # ap-southeast-2 = "ami-83af8ae0"
+# }
 
 variable "cidr_block" {
   type        = map(string)
@@ -61,20 +65,19 @@ variable "images_version" {}
 
 //variable "tag" {}
 
-variable "db_user" {
-  description = "Root username for mongo"
-}
+# variable "db_user" {
+#   description = "Root username for mongo"
+# }
 
-variable "db_pass" {
-  description = "Root password for mongo"
-}
+# variable "db_pass" {
+#   description = "Root password for mongo"
+# }
 
 variable "base_domain" {
   default = "ugrouptech.com"
 }
 
 variable "aws_account_id" {
-
 }
 
 variable "postgres_username" {

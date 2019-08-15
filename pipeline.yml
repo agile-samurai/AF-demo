@@ -694,7 +694,7 @@ jobs:
           args:
           - -ec
           - |
-            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
             echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
             echo region = \"us-east-1\" >> vars/terraform.tfvars
             echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
@@ -713,25 +713,21 @@ jobs:
     - put: terraform
       params:
         env:
-          AWS_REGION: us-east-1
-        env_name: prod
+          AWS_REGION: ((prod_aws_region))
+        env_name: prod #terraform workspace
         plan_only: true
         terraform_source: source/config/service-setup
         var_files:
         - ./vars/terraform.tfvars
-        vars:
-          environment: prod
     - put: terraform
       params:
         env:
-          AWS_REGION: us-east-1
-        env_name: prod
+          AWS_REGION: ((prod_aws_region))
+        env_name: prod #terraform workspace
         plan_run: true
         terraform_source: source/config/service-setup
         var_files:
         - ./vars/terraform.tfvars
-        vars:
-          environment: prod
     
   - name: Execute OWASP Security Scan Prod
     serial: false
