@@ -31,9 +31,9 @@ public class S3DataService {
     private S3Client s3Client;
     private Logger logger = LoggerFactory.getLogger(S3DataService.class);
 
-    public S3DataService(@Value("${app.aws.bucketName}") String bucketName,
-                         @Value("${app.aws.folder}") String folder,
-                         @Value("${app.aws.region}") String regionAsString,
+    public S3DataService(@Value("${aws.bucketName}") String bucketName,
+                         @Value("${aws.folder}") String folder,
+                         @Value("${aws.region}") String regionAsString,
                          S3Client s3Client ) {
 
         logger.debug("Bucket Name:  " + bucketName );

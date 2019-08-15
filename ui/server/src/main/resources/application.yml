@@ -1,10 +1,14 @@
+aws:
+  access:
+    key:
+      id: FAKEACCESSKEY
+  secret:
+    access:
+      key: FAKESECRET
+  region: us-east-1
+  bucketName: rdso-challenge2
+  folder: data/movies_json
 app:
-  aws:
-    region: us-east-1
-    accessKeyId: FAKEACCESSKEY
-    secretAccessKey: FAKESECRET
-    bucketName: rdso-challenge2
-    folder: data/movies_json
   jwt:
     secret: secret
   business:
