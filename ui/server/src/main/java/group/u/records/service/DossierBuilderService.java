@@ -36,9 +36,10 @@ public class DossierBuilderService {
 
 
     public void generateDossier(MovieDetail movieDetail) {
-        Dossier dossier = new Dossier(UUID.randomUUID(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
+        Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
                 imageProvider.getJson())));
         logger.debug("Generating dossier for:  "  + movieDetail);
+        logger.debug("About to save dossier:  " + dossier.getId());
         dossierRepository.save(dossier);
     }
 }
