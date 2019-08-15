@@ -23,6 +23,7 @@ public class EntertainmentDetailsService {
 
 
     public void loadMovieDetails() {
+        actorRepository.deleteAll();
         dataService.loadAllMovies(actorRepository).forEach(
                 dossierBuilderService::generateDossier
         );

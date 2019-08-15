@@ -1,0 +1,38 @@
+.actor-name {
+    font-size: 60px;
+}
+
+.aliases {
+    margin-top: 12px;
+}
+
+.aliases .alias-chip {
+    background: #2f2f2f;
+    color: rgba(255, 255, 255, 0.87);
+    font-size: 14px;
+}
+
+.alias-chip:not(:first-child) {
+    margin-left: 16px;
+}
+
+.movies {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 38px;
+}
+
+.movie-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 182px;
+    height: 242px;
+}
+
+.movie-card:not(:first-child) {
+    margin-left: 52px;
+}
+

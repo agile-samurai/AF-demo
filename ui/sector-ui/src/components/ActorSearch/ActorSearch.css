@@ -1,18 +1,10 @@
 .actor-search {
     min-height: 100vh;
-    background: #121212
+    background: #fffef7;
 }
 
-.text-field {
+.text-field, .search-results {
     width: 72%;
-}
-
-.text-field > div {
-    color: white;
-}
-
-.MuiInput-underline:before {
-    border-bottom: 1px solid white !important;
 }
 
 .text-field input {
@@ -20,14 +12,13 @@
     margin-left: 30px;
 }
 
+.search-results {
+    margin-top: 50px;
+}
+
 .search-icon {
     font-size: 40px !important;
     margin-left: 20px;
-}
-
-.search-results {
-    background: white;
-    width: 72%;
 }
 
 .search-results-wrapper {
@@ -36,8 +27,4 @@
     justify-content: center;
     align-items: flex-start;
     width: 100%;
-}
-
-.actor-card {
-    height: 100px;
 }
