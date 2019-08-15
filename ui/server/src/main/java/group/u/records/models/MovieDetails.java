@@ -15,6 +15,7 @@ public class MovieDetails {
     public MovieDetails(Movie movie ){
         this(movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now());
     }
+
     public MovieDetails(String name, List<Actor> actors, String summary,
                         List<String> keywords, String contentRating, LocalDate releaseDate) {
         this.name = name;

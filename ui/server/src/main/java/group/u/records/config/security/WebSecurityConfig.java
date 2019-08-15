@@ -1,5 +1,6 @@
-package group.u.records.config;
+package group.u.records.config.security;
 
+import group.u.records.config.security.filters.JWTSecurityEnhancementFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +15,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import static java.util.Arrays.asList;
 
@@ -58,19 +55,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable();
 
         http.addFilterAfter(new JWTSecurityEnhancementFilter(secret), BasicAuthenticationFilter.class);
-    }
-
-    @Bean
-
-    public S3Client getS3Client(@Value("${aws.access.key.id}") String accessKeyId,
-                                @Value("${aws.secret.access.key}") String secretAccessKey,
-                                @Value("${aws.region}") String regionAsString
-                                ){
-        return S3Client.builder()
-                .region(Region.of(regionAsString))
-                .credentialsProvider(StaticCredentialsProvider
-                        .create(AwsBasicCredentials.create(accessKeyId,
-                                secretAccessKey))).build();
     }
 
     @Bean

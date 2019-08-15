@@ -30,12 +30,14 @@ public class S3DataService {
     private String bucketName;
     private S3Client s3Client;
     private Logger logger = LoggerFactory.getLogger(S3DataService.class);
+    private ObjectMapper objectMapper;
 
     public S3DataService(@Value("${aws.bucketName}") String bucketName,
                          @Value("${aws.folder}") String folder,
                          @Value("${aws.region}") String regionAsString,
-                         S3Client s3Client ) {
-
+                         S3Client s3Client,
+                         ObjectMapper objectMapper ) {
+        this.objectMapper = objectMapper;
         logger.debug("Bucket Name:  " + bucketName );
         logger.debug("Folder:  " + folder );
         logger.debug("Region:  " + regionAsString );
@@ -46,9 +48,7 @@ public class S3DataService {
         this.s3Client = s3Client;
     }
 
-
     public List<MovieDetails> loadAllMovies(ActorRepository actorRepository) {
-
         logger.debug("Loading services from data store" );
         ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(folder).build();
         List<Movie> extractedMovies = new ArrayList();
@@ -57,11 +57,7 @@ public class S3DataService {
             logger.debug("Response String:  " + response.response().toString());
             try {
                 String json = IOUtils.toString(response.readAllBytes());
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-                Movie movie = mapper.readValue(json, Movie.class);
+                Movie movie = objectMapper.readValue(json, Movie.class);
 
                 try {
                     movie.getActor().forEach(actorRepository::save);
