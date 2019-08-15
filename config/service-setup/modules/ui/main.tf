@@ -1,10 +1,10 @@
 resource "aws_ecs_task_definition" "service" {
   family = "${var.container_family}"
   requires_compatibilities = [
-    "FARGATE"]
-  network_mode = "awsvpc"
-  cpu = "${var.cpu}"
-  memory = "${var.memory}"
+  "FARGATE"]
+  network_mode       = "awsvpc"
+  cpu                = "${var.cpu}"
+  memory             = "${var.memory}"
   execution_role_arn = "${var.execution_role_arn}"
 
   container_definitions = <<DEFINITION
@@ -45,14 +45,14 @@ resource "aws_ecs_service" "service" {
   launch_type = "FARGATE"
   depends_on = [
     "aws_alb_target_group.front_end",
-    "aws_alb.lb"]
+  "aws_alb.lb"]
 
   # Track the latest ACTIVE revision
   task_definition = "${aws_ecs_task_definition.service.family}:${max("${aws_ecs_task_definition.service.revision}", "${aws_ecs_task_definition.service.revision}")}"
 
   network_configuration {
     security_groups = [
-      "${aws_security_group.lb.id}"]
+    "${aws_security_group.lb.id}"]
     subnets = "${var.private_subnets}"
   }
 
@@ -97,10 +97,10 @@ resource "aws_alb_listener" "front_end" {
   port = "${var.loadbalancer_port}"
   protocol = "HTTP"
 
-    default_action {
-      target_group_arn = "${aws_alb_target_group.front_end.id}"
-      type = "forward"
-    }
+  default_action {
+    target_group_arn = "${aws_alb_target_group.front_end.id}"
+    type = "forward"
+  }
 }
 //
 //resource "aws_alb_listener" "front_end_https" {
@@ -141,16 +141,16 @@ resource "aws_security_group" "lb" {
   }
 
   ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 8080
+    protocol = "tcp"
+    from_port = 443
+    to_port = 8080
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    protocol    = "tcp"
-    from_port   = 8080
-    to_port     = 8080
+    protocol = "tcp"
+    from_port = 8080
+    to_port = 8080
     cidr_blocks = ["0.0.0.0/0"]
   }
 

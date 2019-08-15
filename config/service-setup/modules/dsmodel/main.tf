@@ -194,10 +194,10 @@ resource "aws_security_group" "lb" {
   }
 }
 
-resource "aws_route53_record" "container" {
-  zone_id = "${var.zone_id}"
-  name = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
-  type = "CNAME"
-  ttl = "300"
-  records = ["${aws_alb.lb.dns_name}"]
-}
+# resource "aws_route53_record" "container" {
+#   zone_id = "${var.zone_id}"
+#   name = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
+#   type = "CNAME"
+#   ttl = "300"
+#   records = ["${aws_alb.lb.dns_name}"]
+# }
