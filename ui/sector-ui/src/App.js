@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import {Redirect, Route, Switch} from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
 import {NotFoundPage} from "./components/NotFoundPage/NotFoundPage";
