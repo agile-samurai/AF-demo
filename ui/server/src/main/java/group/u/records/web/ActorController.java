@@ -4,6 +4,9 @@ import group.u.records.models.Actor;
 import group.u.records.repository.ActorRepository;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +22,22 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/actors")
 public class ActorController {
     private ActorRepository actorRepository;
+//    private Sort sort = new Sort(Sort.Direction.ASC, "name");
 
     public ActorController(ActorRepository actorRepository ){
         this.actorRepository = actorRepository;
     }
 
     @GetMapping
-    public ResponseEntity<Page<Actor>> search(@RequestParam("search") String searchString ){
+    public ResponseEntity<Page<Actor>> search(@RequestParam("search") String searchString,
+                                              @RequestParam(value = "quantity", required = false, defaultValue = "10") int quantity,
+                                              @RequestParam(value = "cursor", required = false, defaultValue="0") int cursor){
+        PageRequest pageRequest = PageRequest.of(cursor, quantity);
+
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(matchQuery("name", searchString)
                         .fuzziness(Fuzziness.TWO))
+                .withPageable(pageRequest)
                 .build();
 
         return ok(actorRepository.search(searchQuery));

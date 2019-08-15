@@ -42,9 +42,14 @@ export default class ActorSearch extends React.Component {
         super(props);
         this.state = {
             searchTerm: '',
-            actorSearchResults: []
+            actorSearchResults: [],
+            cursor: 0
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.ACTORS_ENDPOINT = '/api/actors';
+
+        this.setUpInfiniteScroll();
+
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     render() {
@@ -71,7 +76,7 @@ export default class ActorSearch extends React.Component {
                         placeholder="Search for actor"
                         value={searchTerm}
                         className="text-field"
-                        onChange={this.handleChange}
+                        onChange={this.handleInputChange}
                         margin="normal"
                         InputProps={{
                             spellCheck: false,
@@ -90,28 +95,60 @@ export default class ActorSearch extends React.Component {
         );
     }
 
-    handleChange(event) {
+    setUpInfiniteScroll() {
+        window.onscroll = () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                this.loadMore();
+            }
+        };
+    }
+
+    loadMore() {
+        const {searchTerm, cursor} = this.state;
+
+        axios.get(this.ACTORS_ENDPOINT, {
+            params: {
+                search: searchTerm,
+                cursor: cursor + 1
+            },
+            auth: {  // TODO remove
+                username: 'business-user',
+                password: 'password'
+            }
+        })
+        .then(response => {
+            this.setState({
+                actorSearchResults: this.state.actorSearchResults.concat(response.data.content),
+                cursor: cursor + 1
+            });
+        });
+    }
+
+    handleInputChange(event) {
         const searchTerm = event.target.value;
 
         this.setState({
             searchTerm
         }, () => {
-            axios.get(`/api/actors`, {
-                params: {
-                    search: searchTerm
-                },
-                auth: {  // TODO remove
-                    username: 'business-user',
-                    password: 'password'
-                }
-            })
-            .then(response => {
-                this.setState({
-                    actorSearchResults: response.data.content
-                });
+            this.doSearch(searchTerm, this.state.cursor);
+        });
+    }
+
+    doSearch(searchTerm) {
+        axios.get(this.ACTORS_ENDPOINT, {
+            params: {
+                search: searchTerm,
+                cursor: 0
+            },
+            auth: {  // TODO remove
+                username: 'business-user',
+                password: 'password'
+            }
+        })
+        .then(response => {
+            this.setState({
+                actorSearchResults: response.data.content
             });
         });
     }
 }
-
-
