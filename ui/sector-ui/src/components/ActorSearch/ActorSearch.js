@@ -13,7 +13,6 @@ import axios from "axios/index";
 const toolbarStyles = {
     justifyContent: 'space-between',
     height: '120px',
-    background: '#121212'
 };
 
 const starPowerStyles = {
@@ -29,11 +28,6 @@ const starPowerStyles = {
 
 const starStyles = {
     fontWeight: 'bold'
-};
-
-const actorSearchStyle = {
-    height: '100vh',
-    background: '#121212'
 };
 
 const mainSection = {
@@ -59,7 +53,7 @@ class ActorSearch extends React.Component {
 
         const formattedActorResults = actorSearchResults.map(actorSearchResult => {
             return (
-                <div key={actorSearchResult.id}>
+                <div key={actorSearchResult.id} className="actor-card">
                     Actor name:
                     {actorSearchResult.fullName}
                 </div>
@@ -67,7 +61,7 @@ class ActorSearch extends React.Component {
         });
 
         return (
-            <div style={actorSearchStyle} className='actor-search'>
+            <div className='actor-search'>
                 <AppBar position="static">
                     <Toolbar variant="dense" style={toolbarStyles}>
                         <Typography variant="h6" color="inherit" style={starPowerStyles}>
@@ -87,14 +81,17 @@ class ActorSearch extends React.Component {
                         onChange={this.handleChange}
                         margin="normal"
                         InputProps={{
+                            spellCheck: false,
                             startAdornment: <InputAdornment position="start">
                                 <SearchIcon className='search-icon'/>
                             </InputAdornment>,
                         }}
                     />
                 </div>
-                <div className='search-results'>
-                    {formattedActorResults}
+                <div className='search-results-wrapper'>
+                    <div className='search-results'>
+                        {formattedActorResults}
+                    </div>
                 </div>
             </div>
         );
