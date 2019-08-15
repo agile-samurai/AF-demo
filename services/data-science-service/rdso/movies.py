@@ -72,7 +72,7 @@ def imdb_df(data):
     df["total_min"] = df.duration.apply(
         lambda x: translate_duration(x) if type(x) == str else x
     )
-    imdb["imdb_id"] = imdb.film_id.apply(lambda x: x[2:])
+    df["imdb_id"] = df.film_id.apply(lambda x: x[2:])
 
     try:
         df["film_director"] = df.director.apply(lambda x: x["name"])
