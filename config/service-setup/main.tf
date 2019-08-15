@@ -197,7 +197,7 @@ module "datascience" {
 
 
 module "ds-spaCy-model" {
-  source = "./modules/spaCy"
+  source = "./modules/dsmodel-spaCy"
 
   execution_role_arn = module.ecs.ecs_task_execution_role_arn
   cluster_id         = module.ecs-cluster.ecs_cluster_id
