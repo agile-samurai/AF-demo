@@ -2,14 +2,12 @@ import boto3
 from fuzzywuzzy import fuzz
 from gensim.models.doc2vec import Doc2Vec
 import hug
-import plot
-import movies
 import os
 import pandas as pd
 import pathlib
 import plot
 import movies
-
+import vectorize
 
 doc2vec_model = None
 movies_df = None
@@ -97,11 +95,22 @@ def infer_vectors(doc: hug.types.text):
 
 @hug.post("/most_similar")
 def most_similar_movies(imdbID: hug.types.text):
-    most_similar_movies = [
-        {"imdbID": "tt039", "title": "The Social Network", "director": "David Fincher"},
-        {"imdbID": "tt049983", "title": "Zodiac", "director": "David Fincher"},
-        {"imdbID": "tt04443", "title": "Apollo 13", "director": "Harold Zemeckis"},
-    ]
+    if not imdbID.startswith('tt'):
+        imdbID = 'tt' + imdbID
+    movie_url = '/title/' + imdbID + '/'
+    selected_movie = movies_df[movies_df['url'] == movie_url]
+
+    selected_text = selected_movie['description'].values[0] + ' ' + selected_movie['keywords'].values[0]
+    cleaned_text = vectorize.nlp_clean([selected_text])[0]
+    new_vector = doc2vec_model.infer_vector(cleaned_text)
+    most_similar = doc2vec_model.most_similar([new_vector])
+
+    most_similar_movies = []
+    for sim_movie in most_similar:
+        sim_id = sim_movie[0]
+        movie = movies_df[movies_df['url'] == '/title/' + sim_id + '/']
+        most_similar_movies.append(movie.to_dict())
+
     return most_similar_movies
 
 
