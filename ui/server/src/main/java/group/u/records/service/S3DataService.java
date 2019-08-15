@@ -1,6 +1,7 @@
 package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.u.records.content.Dossier;
 import group.u.records.models.MovieDetail;
 import group.u.records.models.MoviePublicSummary;
 import group.u.records.models.data.Movie;
@@ -25,7 +26,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class S3DataService {
+public class S3DataService implements DataService {
     private Region region;
     private String folder;
     private String bucketName;
@@ -86,6 +87,7 @@ public class S3DataService {
         return extractedMovies.stream().map(MovieDetail::new).collect(toList());
     }
 
+    @Override
     public void save(UUID dossierId, String dossierEncryptedContent) {
         createBucket(s3Client);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -94,6 +96,28 @@ public class S3DataService {
                 .build();
 
         s3Client.putObject(putObjectRequest, RequestBody.fromString(dossierEncryptedContent));
+    }
+
+    @Override
+    public String get(UUID dossierid) {
+        Dossier dossier = null;
+        ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(dossierStorageBucket).key(dossierid.toString()).build());
+
+        //Todo: Make this more reusable.
+        try {
+            return IOUtils.toString(response.readAllBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Todo: Discuss this flow.
+        return "";
+    }
+
+    @Override
+    public void delete(UUID dossierId) {
+
     }
 
     private void createBucket(S3Client s3Client) {

@@ -2,16 +2,14 @@ package group.u.records.service;
 
 import group.u.records.content.Dossier;
 import group.u.records.content.Genre;
-import group.u.records.ds.MovieSimilarityProvider;
 import group.u.records.ds.GenreDistributionImageProvider;
+import group.u.records.ds.MovieSimilarityProvider;
 import group.u.records.ds.PredictiveAutoRedactProvider;
 import group.u.records.models.MovieDetail;
 import group.u.records.security.DossierRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
