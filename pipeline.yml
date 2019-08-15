@@ -115,6 +115,9 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
+  - name: destroy
+    jobs:
+    - terraform-destroy-all-envs
 
 jobs:
   - name: Create Terraform Persistence
@@ -153,6 +156,38 @@ jobs:
         trigger: true
       - put: version
         params: {bump: minor}
+  # - name: terraform-destroy-all-envs  
+  #   public: false
+  #   plan:
+  #   - put: terraform
+  #     get_params: 
+  #       action: destroy
+  #     params:
+  #       terraform_source: source/config/service-setup
+  #       action:
+  #       env_name: dev
+  #   - put: terraform
+  #     get_params: 
+  #       action: destroy
+  #     params:
+  #       terraform_source: source/config/service-setup
+  #       action:
+  #       env_name: test
+  #   - put: terraform
+  #     get_params: 
+  #       action: destroy
+  #     params:
+  #       terraform_source: source/config/service-setup
+  #       action:
+  #       env_name: prod
+  #   - put: terraform
+  #     get_params: 
+  #       action: destroy
+  #     params:
+  #       terraform_source: source/config/
+  #       action:
+  #       env_name: prod
+   
 
 ###################### BUILD SERVICES ############################
   - name: Build UI
@@ -449,7 +484,7 @@ jobs:
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
-          env_name: terraform
+          env_name: terraform   #workspace
           var_files: [./vars/terraform.tfvars]
           vars:
             environment: terraform

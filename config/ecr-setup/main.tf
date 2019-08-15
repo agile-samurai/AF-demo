@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    config = {
-      dynamodb_table = "dynamodb-terraform-state-lock"
-    }
+    # config = {
+    #   dynamodb_table = "dynamodb-terraform-state-lock"
+    # }
   }
 }
 
