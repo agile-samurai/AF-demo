@@ -86,6 +86,7 @@ config/**/plan
 /**/*.key
 /**/*.zip
 /**/*.pub
+/**/*.pem
 /**/*.srl
 /**/cluster_*.txt
 /**/liquid_*.txt

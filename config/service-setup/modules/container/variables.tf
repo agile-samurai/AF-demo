@@ -88,3 +88,9 @@ variable "region" {}
 
 variable "cloud_watch_log_group_name" {}
 variable "es_endpoint" {}
+
+variable "logs_bucket" {}
+
+variable "access_key" {}
+
+variable "access_secret" {}
