@@ -1,3 +1,8 @@
+# This script requires AWS credentials available via environment variables,
+# either AWS_PROFILE and a credentials file or
+# aws_access_key_id and aws_secret_access_key
+# in order to load or save data to/from S3.
+
 import boto3
 import click
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence, TaggedDocument
