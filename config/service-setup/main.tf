@@ -167,6 +167,9 @@ module "server" {
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = var.region
   logs_bucket                = "rdso-challenge2-logs"
+
+  access_key    = var.access_key
+  access_secret = var.access_secret
 }
 
 module "datascience" {

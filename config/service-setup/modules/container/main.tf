@@ -49,7 +49,10 @@ resource "aws_ecs_task_definition" "service" {
      { "name": "SPRING_DATA_MONGODB_HOST", "value" :"${var.SPRING_DATA_MONGODB_HOST}"},
      { "name": "SPRING_DATA_MONGODB_USERNAME", "value" :"${var.SPRING_DATA_MONGODB_USERNAME}"},
      { "name": "SPRING_DATA_MONGODB_PASSWORD", "value" :"${var.SPRING_DATA_MONGODB_PASSWORD}"},
-     { "name": "SPRING_DATA_MONGODB_PORT", "value" :"${var.SPRING_DATA_MONGODB_PORT}"}
+     { "name": "SPRING_DATA_MONGODB_PORT", "value" :"${var.SPRING_DATA_MONGODB_PORT}"},
+
+     { "name": "AWS_ACCESS_KEY_ID", "value" :"${var.access_key}"},
+     { "name": "AWS_SECRET_ACCESS_KEY", "value" :"${var.access_secret}"}
    ]
  }
 ]
