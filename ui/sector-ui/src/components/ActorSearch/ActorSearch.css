@@ -27,3 +27,28 @@ body {
     align-items: flex-start;
     width: 100%;
 }
+
+.search-toolbar {
+    justify-content: space-between;
+    height: 120px;
+}
+
+.star-power-text {
+    height: 28px;
+    width: 71px;
+    font-size: 24px;
+    letter-spacing: -1.65px;
+    line-height: 28px;
+    font-weight: normal;
+}
+
+.star-text {
+    font-weight: bold;
+}
+
+.main-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}

@@ -1,7 +1,6 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
@@ -10,32 +9,6 @@ import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
 import ActorRow from "../ActorRow/ActorRow";
-
-const toolbarStyles = {
-    justifyContent: 'space-between',
-    height: '120px',
-};
-
-const starPowerStyles = {
-    height: '28px',
-    width: '71px',
-    fontFamily: 'Roboto',
-    fontSize: '24px',
-    letterSpacing: '-1.65px',
-    lineHeight: '28px',
-    fontWeight: 'normal'
-};
-
-const starStyles = {
-    fontWeight: 'bold'
-};
-
-const mainSection = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-};
 
 export default class ActorSearch extends React.Component {
     constructor(props) {
@@ -61,16 +34,16 @@ export default class ActorSearch extends React.Component {
         return (
             <div className='actor-search'>
                 <AppBar position="static">
-                    <Toolbar variant="dense" style={toolbarStyles}>
-                        <Typography variant="h6" color="inherit" style={starPowerStyles}>
-                            <span style={starStyles}>star</span>pwr
-                        </Typography>
+                    <Toolbar variant="dense" className="search-toolbar">
+                        <div className="star-power-text">
+                            <span className="star-text">star</span>pwr
+                        </div>
                         <IconButton edge="end" color="inherit" aria-label="menu">
                             <MenuIcon/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <div style={mainSection}>
+                <div className="main-section">
                     <TextField
                         id="standard-name"
                         placeholder="Search for actor"
