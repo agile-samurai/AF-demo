@@ -22,29 +22,33 @@ def load_movies_df(api):
     global movies_df
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
+    if not data_dir.is_dir():
+        data_dir.mkdir()
     movies_df_file = data_dir / 'movies_df.pkl'
 
     # If movies_df.pkl is not in the data directory, download it from S3
     if not movies_df_file.is_file():
 
         bucket_name = 'rdso-challenge2'
+        s3 = None
         try:
             profile = os.environ['AWS_PROFILE']
             session = boto3.Session(profile_name=profile)
             s3 = session.client('s3')
         except KeyError:
+            pass
+        if s3 is None:
             try:
-                s3 = boto3.client(
-                    "s3",
-                    aws_access_key_id=os.environ["aws_access_key_id"],
-                    aws_secret_access_key=os.environ["aws_secret_access_key"],
-                )
+                access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
+                access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+                session = boto3.Session(aws_access_key_id=access_key_id,
+                                        aws_secret_access_key=access_key)
+                s3 = session.client('s3')
             except KeyError:
                 raise ValueError("No AWS credentials found")
 
-        s3 = boto3.client('s3')
-        s3.download_file(bucket_name, 'data/movies_df.pkl', str(movies_df_file))
-        print("Downloaded movies_df.pkl from S3")
+        with open(str(movies_df_file), 'wb') as infile:
+            s3.download_fileobj(bucket_name, 'data/movies_df.pkl', infile)
 
     movies_df = pd.read_pickle(str(movies_df_file))
 
@@ -61,29 +65,42 @@ def load_model(api):
     except KeyError:
         model_version = '0.0.0'
 
-    filename = 'movies_doc2vec.' + model_version + '.model'
+    model_filename = 'movies_doc2vec.' + model_version + '.model'
+    trainables_filename = model_filename + '.trainables.syn1neg.npy'
+    vectors_filename = model_filename + '.wv.vectors.npy'
     cwd = pathlib.Path('.').resolve()
     models_dir = cwd.parents[0] / 'models'
-    models_file = models_dir / filename
+    if not models_dir.is_dir():
+        models_dir.mkdir()
+    models_file = models_dir / model_filename
+    models_trainables_file = models_dir / trainables_filename
+    models_vectors_file = models_dir / vectors_filename
 
     if not models_file.is_file():
         bucket_name = 'rdso-challenge2'
+        s3 = None
         try:
             profile = os.environ['AWS_PROFILE']
             session = boto3.Session(profile_name=profile)
             s3 = session.client('s3')
         except KeyError:
+            pass
+        if s3 is None:
             try:
-                s3 = boto3.client(
-                    "s3",
-                    aws_access_key_id=os.environ["aws_access_key_id"],
-                    aws_secret_access_key=os.environ["aws_secret_access_key"],
-                )
+                access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
+                access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+                session = boto3.Session(aws_access_key_id=access_key_id,
+                                        aws_secret_access_key=access_key)
+                s3 = session.client('s3')
             except KeyError:
                 raise ValueError("No AWS credentials found")
 
-        s3 = boto3.client('s3')
-        s3.download_file(bucket_name, 'models/' + filename, str(models_file))
+        with open(str(models_file), 'wb') as inf:
+            s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
+        with open(str(models_vectors_file), 'wb') as inf:
+            s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
+        with open(str(models_trainables_file), 'wb') as inf:
+            s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
 
     doc2vec_model = Doc2Vec.load(str(models_file))
 
@@ -92,8 +109,9 @@ def load_model(api):
 def most_similar_movies(imdbID: hug.types.text):
     if not imdbID.startswith('tt'):
         imdbID = 'tt' + imdbID
-    movie_url = '/title/' + imdbID + '/'
-    selected_movie = movies_df[movies_df['url'] == movie_url]
+    selected_movie = movies_df[movies_df['film_id'] == imdbID]
+    if len(selected_movie) == 0:
+        return {'Error': 'Movie ID not found in dataset'}
 
     selected_text = selected_movie['description'].values[0] + ' ' \
                     + selected_movie['keywords'].values[0]

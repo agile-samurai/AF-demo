@@ -113,12 +113,14 @@ if __name__ == "__main__":
         try:
             s3 = boto3.client(
                 "s3",
-                aws_access_key_id=os.environ["aws_access_key_id"],
-                aws_secret_access_key=os.environ["aws_secret_access_key"],
+                aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
             )
         except KeyError:
             raise ValueError("No AWS credentials found")
 
-    s3.upload_file(str(movies_df_filename), bucket_name,
-                   'data/' + str(movies_df_filename.stem + '.pkl'))
+    with open(str(movies_df_filename), 'rb') as outfile:
+        s3.upload_fileobj(outfile, bucket_name,
+                          'data/' + str(movies_df_filename.stem + '.pkl'))
+
     print(f'Pushed movies_df.pkl to S3')

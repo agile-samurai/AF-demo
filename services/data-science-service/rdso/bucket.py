@@ -25,8 +25,8 @@ class Bucket(Mapping):
             try:
                 self._s3 = boto3.client(
                     "s3",
-                    aws_access_key_id=os.environ["aws_access_key_id"],
-                    aws_secret_access_key=os.environ["aws_secret_access_key"],
+                    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
                     config=cfg,
                 )  # type: boto3.client
             except KeyError:
