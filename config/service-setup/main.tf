@@ -24,14 +24,14 @@ module "log-forwarding" {
   source           = "./modules/log-forwarding"
   es_endpoint      = module.elasticsearch.ElasticSearchEndpoint
   container_family = "containers"
-  cwl_endpoint     = "logs.${var.region}.amazonaws.com"
+  cwl_endpoint     = "logs.${var.region[terraform.workspace]}.amazonaws.com"
 }
 
 resource "aws_lambda_permission" "cloudwatch_allow" {
   statement_id  = "cloudwatch_allow_challenge"
   action        = "lambda:InvokeFunction"
   function_name = module.log-forwarding.log_forward_lambda_arn
-  principal     = "logs.${var.region}.amazonaws.com"
+  principal     = "logs.${var.region[terraform.workspace]}.amazonaws.com"
   source_arn    = aws_cloudwatch_log_group.container.arn
 }
 
@@ -98,9 +98,9 @@ module "elasticsearch" {
   source         = "./modules/elasticsearch"
   public-subnets = module.network.public_subnets
   vpc_id         = module.network.vpc_id
-  region         = var.region
-  cidr_block     = var.cidr_block[terraform.workspace]
-  instance_type  = "m4.large.elasticsearch"
+  region         = var.region[terraform.workspace]
+  #cidr_block     = var.cidr_block[terraform.workspace]
+  instance_type = "m4.large.elasticsearch"
 
 }
 
@@ -135,7 +135,7 @@ module "www" {
   zone_id                    = aws_route53_zone.primary.zone_id
   server_url                 = module.server.dns_name
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region
+  region                     = var.region[terraform.workspace]
 }
 
 module "server" {
@@ -153,20 +153,20 @@ module "server" {
   # SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
   # SPRING_DATA_MONGODB_USERNAME = var.db_user
   # SPRING_DATA_MONGODB_PASSWORD = var.db_pass
+  #SPRING_DATA_MONGODB_PORT = 27017
 
-  KAFKA_INTERNAL_IP        = module.ecs-cluster.dns_name
-  PERSISTENCE_MONGO_URL    = module.ecs-cluster.dns_name
-  SPRING_DATA_MONGODB_PORT = 27017
-  instance_count           = 1
-  timeout                  = 80
-  container_port           = 8080
-  loadbalancer_port        = 80
-  zone_id                  = aws_route53_zone.primary.zone_id
+  KAFKA_INTERNAL_IP = module.ecs-cluster.dns_name
+
+  instance_count    = 1
+  timeout           = 80
+  container_port    = 8080
+  loadbalancer_port = 80
+  zone_id           = aws_route53_zone.primary.zone_id
 
   data_science_url           = module.datascience.dns_name
   es_endpoint                = module.elasticsearch.ElasticSearchEndpoint
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region
+  region                     = var.region[terraform.workspace]
   logs_bucket                = "rdso-challenge2-logs"
 
   access_key    = var.access_key
@@ -193,7 +193,7 @@ module "datascience" {
   zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region
+  region                     = var.region[terraform.workspace]
 }
 
 
@@ -218,5 +218,5 @@ module "ds-spaCy-model" {
   #zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region
+  region                     = var.region[terraform.workspace]
 }

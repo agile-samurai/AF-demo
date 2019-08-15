@@ -1,7 +1,5 @@
 variable "vpc_id" {}
 
-variable "vpc_cidr" {}
-
 variable "public-subnets" {
   type        = "list"
   description = "public subnets used in vpc"
