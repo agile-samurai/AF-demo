@@ -1,0 +1,43 @@
+.actor-search {
+    min-height: 100vh;
+    background: #121212
+}
+
+.text-field {
+    width: 72%;
+}
+
+.text-field > div {
+    color: white;
+}
+
+.MuiInput-underline:before {
+    border-bottom: 1px solid white !important;
+}
+
+.text-field input {
+    font-size: 90px;
+    margin-left: 30px;
+}
+
+.search-icon {
+    font-size: 40px !important;
+    margin-left: 20px;
+}
+
+.search-results {
+    background: white;
+    width: 72%;
+}
+
+.search-results-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.actor-card {
+    height: 100px;
+}

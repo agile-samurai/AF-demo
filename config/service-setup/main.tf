@@ -137,28 +137,6 @@ module "www" {
   region                     = var.region
 }
 
-module "nginx" {
-  source = "./modules/ui"
-
-  execution_role_arn = module.ecs.ecs_task_execution_role_arn
-  cluster_id         = module.ecs-cluster.ecs_cluster_id
-  vpc_id             = module.network.vpc_id
-  private_subnets    = module.network.private_subnets
-  public_subnets     = module.network.public_subnets
-  docker_image       = "nginxdemos/hello:latest"
-  container_family   = "nginx"
-
-  instance_count    = 1
-  timeout           = 80
-  container_port    = 80
-  loadbalancer_port = 80
-  zone_id           = aws_route53_zone.primary.zone_id
-
-  server_url                 = "foo"
-  cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
-  region                     = var.region
-}
-
 module "server" {
   source = "./modules/container"
 
@@ -202,7 +180,7 @@ module "datascience" {
   container_family   = "data"
   base_domain        = aws_route53_zone.primary.name
 
-  health_check_path = "/health/check"
+  health_check_path = "/metrics"
   instance_count    = 1
   timeout           = 20
   container_port    = 8080

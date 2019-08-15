@@ -1,5 +1,6 @@
-package group.u.records.config;
+package group.u.records.config.security;
 
+import group.u.records.config.security.filters.JWTSecurityEnhancementFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

@@ -29,7 +29,7 @@ class Login extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        axios.get(`/api/hello/stuff`, // TODO add a /login controller endpoint
+        axios.get(`/api/actors`, // TODO add a /login controller endpoint
             {
                 auth: {
                     username: this.state.username,
