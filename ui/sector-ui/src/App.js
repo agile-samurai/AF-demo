@@ -3,12 +3,10 @@ import './App.css';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
-import {NotFoundPage} from "./components/NotFoundPage";
-import Login from "./components/Login";
-import Home from "./components/Home";
-import Logout from "./components/Logout";
+import {NotFoundPage} from "./components/NotFoundPage/NotFoundPage";
+import Login from "./components/Login/Login";
 import {connect} from "react-redux";
-import Dossier from "./components/Dossier";
+import Dossier from "./components/Dossier/Dossier";
 import ActorSearch from "./components/ActorSearch/ActorSearch";
 import {ThemeProvider, withStyles} from '@material-ui/styles';
 
@@ -70,9 +68,9 @@ export class App extends React.Component {
     render() {
         const {location} = this.props;
 
-        if(!this.props.jwtLoaded) {
-            return <ThemeProvider theme={theme}><ActorSearch/></ThemeProvider>;
-        }
+        // if(!this.props.jwtLoaded) {
+        //     return <ThemeProvider theme={theme}><Login/></ThemeProvider>;
+        // }
 
         return (
             <ThemeProvider theme={theme}>
@@ -85,10 +83,6 @@ export class App extends React.Component {
                     <Route
                         path="/login"
                         component={Login}
-                    />
-                    <Route
-                        path="/logout"
-                        component={Logout}
                     />
                     <Route
                         path="/actor-search"
