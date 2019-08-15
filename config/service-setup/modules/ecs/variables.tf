@@ -12,9 +12,9 @@ variable "public_subnets" {
 
 variable "vpc_id" {}
 
-variable "base_domain" {
-  default = "ugrouptech.com"
-}
+# variable "base_domain" {
+#   default = "ugrouptech.com"
+# }
 
 variable "zone_id" {}
 variable "admin_cidrs" {}

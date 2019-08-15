@@ -152,7 +152,7 @@ module "server" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/server:${var.images_version}"
   container_family   = "server"
-  base_domain        = aws_route53_zone.primary.name
+  #base_domain        = aws_route53_zone.primary.name
 
   # SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
   # SPRING_DATA_MONGODB_USERNAME = var.db_user
@@ -187,7 +187,7 @@ module "datascience" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/data-science-service:${var.images_version}"
   container_family   = "data"
-  base_domain        = aws_route53_zone.primary.name
+  #base_domain        = aws_route53_zone.primary.name
 
   health_check_path = "/metrics"
   instance_count    = 1
