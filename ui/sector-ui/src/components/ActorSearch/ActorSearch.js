@@ -6,9 +6,10 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
 import './ActorSearch.css';
-import {Icon, InputAdornment} from '@material-ui/core';
+import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
+import ActorRow from "../ActorRow/ActorRow";
 
 const toolbarStyles = {
     justifyContent: 'space-between',
@@ -18,7 +19,6 @@ const toolbarStyles = {
 const starPowerStyles = {
     height: '28px',
     width: '71px',
-    color: '#FFF',
     fontFamily: 'Roboto',
     fontSize: '24px',
     letterSpacing: '-1.65px',
@@ -37,7 +37,6 @@ const mainSection = {
     alignItems: 'center'
 };
 
-
 class ActorSearch extends React.Component {
     constructor(props) {
         super(props);
@@ -51,14 +50,8 @@ class ActorSearch extends React.Component {
     render() {
         const {searchTerm, actorSearchResults} = this.state;
 
-        const formattedActorResults = actorSearchResults.map(actorSearchResult => {
-            return (
-                <div key={actorSearchResult.id} className="actor-card">
-                    Actor name:
-                    {actorSearchResult.fullName}
-                </div>
-            );
-        });
+        const actorRows = actorSearchResults
+            .map(actorSearchResult => <ActorRow actor={actorSearchResult} />);
 
         return (
             <div className='actor-search'>
@@ -88,9 +81,9 @@ class ActorSearch extends React.Component {
                         }}
                     />
                 </div>
-                <div className='search-results-wrapper'>
-                    <div className='search-results'>
-                        {formattedActorResults}
+                <div className="search-results-wrapper">
+                    <div className="search-results">
+                        {actorRows}
                     </div>
                 </div>
             </div>
