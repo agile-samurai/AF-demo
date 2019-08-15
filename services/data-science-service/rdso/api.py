@@ -1,16 +1,37 @@
 from fuzzywuzzy import fuzz
+from gensim.models.doc2vec import Doc2Vec
 import hug
+import os
+import pathlib
 from .plot import make_test_image, save_image, jsonify_image
 
 
+doc2vec_model = None
+
+
+@hug.startup
 def load_model():
-    pass
+    global doc2vec_model
+
+    try:
+        model_version = os.environ['MODEL_VERSION']
+    except KeyError:
+        model_version = '0.0.0'
+
+    filename = 'movies_doc2vec.' + model_version + '.model'
+    cwd = pathlib.Path('.').resolve()
+    models_dir = cwd.parents[0] / 'models'
+    models_file = models_dir / filename
+    doc2vec_model = Doc2Vec.load(str(models_file))
+
+
+@hug.post("/infer_vectors")
+def infer_vectors(doc: hug.types.text):
+    return doc2vec_model.infer_vector(doc)
 
 
 @hug.post("/most_similar")
 def most_similar_movies(imdbID: hug.types.text):
-    model = load_model()
-
     most_similar_movies = [
         {"imdbID": "tt039", "title": "The Social Network", "director": "David Fincher"},
         {"imdbID": "tt049983", "title": "Zodiac", "director": "David Fincher"},
