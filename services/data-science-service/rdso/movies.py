@@ -1,5 +1,8 @@
+import boto3
 import pandas as pd
 import json
+import os
+import pathlib
 from tqdm import tqdm
 # TODO: Resolve local import errors with/without '.' before bucket
 from bucket import Bucket
@@ -42,7 +45,7 @@ def get_json_files(n: int = None, s3_folder="data/movies_json", **kwargs) -> lis
     file_list = list(b)[:n]
     print("Done getting s3 file list.")
     for jfile in tqdm(file_list):
-        shortened_file = jfile[len(s3_folder) + 1 :]
+        shortened_file = jfile[len(s3_folder) + 1:]
         f = b[str(shortened_file)]
         json_string = f.read()
         movie_dict = json.loads(json_string)
@@ -93,4 +96,29 @@ def merged_movie_data(n):
 
 if __name__ == "__main__":
 
-    imdb = imdb_df(get_json_files(50))
+    movies_df = imdb_df(get_json_files())
+    cwd = pathlib.Path('.').resolve()
+    data_dir = cwd.parents[0] / 'data'
+    movies_df_filename = data_dir / 'movies_df.pkl'
+    movies_df.to_pickle(str(movies_df_filename))
+    print(f'Saved to {str(movies_df_filename)}')
+
+    # Push movies_df.pkl to S3
+    bucket_name = 'rdso-challenge2'
+    try:
+        profile = os.environ['AWS_PROFILE']
+        session = boto3.Session(profile_name=profile)
+        s3 = session.client('s3')
+    except KeyError:
+        try:
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=os.environ["aws_access_key_id"],
+                aws_secret_access_key=os.environ["aws_secret_access_key"],
+            )
+        except KeyError:
+            raise ValueError("No AWS credentials found")
+
+    s3.upload_file(str(movies_df_filename), bucket_name,
+                   'data/' + str(movies_df_filename.stem + '.pkl'))
+    print(f'Pushed movies_df.pkl to S3')
