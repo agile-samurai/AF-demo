@@ -2,13 +2,13 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
 import './ActorSearch.css';
 import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
 import ActorRow from "../ActorRow/ActorRow";
+import NavigationMenu from "../NavigationMenu/NavigationMenu";
 
 export default class ActorSearch extends React.Component {
     constructor(props) {
@@ -39,7 +39,7 @@ export default class ActorSearch extends React.Component {
                             <span className="star-text">star</span>pwr
                         </div>
                         <IconButton edge="end" color="inherit" aria-label="menu">
-                            <MenuIcon/>
+                            <NavigationMenu/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
