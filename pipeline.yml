@@ -643,8 +643,12 @@ jobs:
             terraform refresh
             terraform workspace select dev
             terraform apply --auto-approve
-            export SERVER_DNS_NAME=`terraform output server-dns-name`
-            source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/health 200
+            
+            echo "Waiting for server to come up"
+            export SERVER_DNS_NAME=`terraform output server_dns_name`
+            cd ../..
+            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            echo "Server is up!!"
         inputs:
         - name: source
         - name: version
