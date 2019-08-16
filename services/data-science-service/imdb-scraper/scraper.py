@@ -57,6 +57,9 @@ def split_genre(genre):
 if __name__ == '__main__':
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
+    if not data_dir.is_dir():
+        data_dir.mkdir()
+
     html_dir = data_dir / 'movies_html'
     if not html_dir.is_dir():
         html_dir.mkdir()

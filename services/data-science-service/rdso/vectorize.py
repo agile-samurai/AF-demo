@@ -5,7 +5,9 @@ import os
 
 import click
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import json
 import multiprocessing
+import numpy as np
 import pandas as pd
 import pathlib
 
@@ -34,16 +36,33 @@ def train_doc2vec(corpus: TaggedLineDocument):
     return model
 
 
-def find_centroids(d2v_model, movies_df):
+def get_genre_distance_metrics(d2v_model, movies_df):
     """
     Takes the doc vectors and clusters them by genre, then finds the centroid of each cluster.
+    Uses this to find the average distance and st. deviation of distance for each genre.
 
-    :return: dict of cluster_name: centroid_vector pairs.
+    :return: dict of shape {cluster_name: {mean: X, stdev: Y}}
     """
     genres = movies_df['top_genre'].unique()
+    centroids = {}
+    distance_metrics = {}
     for genre in genres:
-        genre_movies_df = movies_df[movies_df['top_genre'] == genre]
+        # Get all the vectors for the genre
+        genre_movies_list = movies_df[movies_df['top_genre'] == genre]['film_id'].tolist()
+        vectors_list = [d2v_model.docvecs[film_id] for film_id in genre_movies_list]
+        # Find the genre centroid
+        centroid = np.mean(vectors_list, axis=0)
+        centroids[genre] = centroid
 
+        # Find the distance mean and standard deviation within the genre
+        distances = []
+        for vector in vectors_list:
+            distances.append(np.linalg.norm(vector-centroid))
+        distance_average = np.mean(distances)
+        distance_stdev = np.std(distances)
+        distance_metrics[genre] = {'mean': distance_average.item(), 'stdev': distance_stdev.item()}
+
+    return distance_metrics
 
 
 @click.command()
@@ -75,6 +94,14 @@ def cli(version):
     print(f"Saving model version {version}")
     model_filename = f'movies_doc2vec.{version}.model'
     d2v_model.save(str(models_dir / model_filename))
+
+    # Find genre centroids and use them to compute distance metrics for model performance
+    genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
+    genre_metrics['model_version'] = version
+    metrics_file = models_dir / f'metrics.{version}.json'
+    with metrics_file.open('w') as outfile:
+        json.dump(genre_metrics, outfile, indent=2)
+
 
 # S3 file handling to be pushed off to the pipeline --------------------------
     # Push model to S3

@@ -62,10 +62,15 @@ def split_genre(genre):
 
 
 if __name__ == '__main__':
+    cwd = pathlib.Path('.').resolve()
+    data_dir = cwd.parents[0] / 'data'
+    if not data_dir.is_dir():
+        data_dir.mkdir()
 
-    json_dir = pathlib.Path('data', 'omdb_json')
+    json_dir = data_dir / 'omdb_json'
     if not json_dir.is_dir():
         json_dir.mkdir()
+
     # Read MovieTweetings data file
     movie_tweets_data = pd.read_csv("https://raw.githubusercontent.com/sidooms/"
                                     "MovieTweetings/master/latest/movies.dat", sep='::',

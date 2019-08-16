@@ -2,6 +2,7 @@ import boto3
 from fuzzywuzzy import fuzz
 from gensim.models.doc2vec import Doc2Vec
 import hug
+import json
 import os
 import pandas as pd
 import pathlib
@@ -10,6 +11,7 @@ import movies
 
 doc2vec_model = None
 movies_df = None
+metrics = None
 
 
 @hug.startup()
@@ -51,6 +53,24 @@ def load_movies_df(api):
     #     print('Downloaded movies_df.pkl from S3')
 
     movies_df = pd.read_pickle(str(movies_df_file))
+
+
+@hug.startup()
+def load_metrics(api):
+    global metrics
+    cwd = pathlib.Path('.').resolve()
+    models_dir = cwd.parents[0] / 'models'
+    latest_metrics = '0.0.0'
+    for file in models_dir.iterdir():
+        # Find the highest version of the metrics file
+        if file.stem.startswith('metrics'):
+            metrics_version = file.stem.strip('metrics.')
+            if metrics_version > latest_metrics:
+                latest_metrics = metrics_version
+    # open file
+    metrics_file = models_dir / f'metrics.{latest_metrics}.json'
+    with metrics_file.open('r') as infile:
+        metrics = json.load(infile)
 
 
 @hug.startup()
@@ -198,7 +218,7 @@ def metrics():
 
     Currently has dummy values.
     """
-    return {"Model 1": 10, "Model 2": 100, "Model 3": 1000}
+    return metrics
 
 
 if __name__ == "__main__":
