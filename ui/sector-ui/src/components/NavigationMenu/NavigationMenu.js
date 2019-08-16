@@ -4,6 +4,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import {Link} from "react-router-dom";
+import './NavigationMenu.css';
 
 export default class ActorSearch extends React.Component {
     constructor(props) {
@@ -52,12 +53,12 @@ export default class ActorSearch extends React.Component {
                         horizontal: 'center',
                     }}
                     onClose={this.handleClose}>
-                    <Link to="/training-data">
+                    <Link to="/training-data" className="menu-item-link">
                         <MenuItem>
                             <ListItemText primary="View Training Data" />
                         </MenuItem>
                     </Link>
-                    <Link to="/training-data">
+                    <Link to="/training-data" className="menu-item-link">
                         <MenuItem>
                             <ListItemText primary="Log Out" />
                         </MenuItem>
