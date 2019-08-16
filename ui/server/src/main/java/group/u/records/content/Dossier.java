@@ -1,10 +1,13 @@
 package group.u.records.content;
 
+import group.u.records.ds.EntityClassification;
+
 import java.util.List;
 import java.util.UUID;
 
 public class Dossier {
     private UUID id;
+    private List<EntityClassification> entityClassifications;
     private String name;
     private String summary;
     private List<Genre> genres;
@@ -32,5 +35,13 @@ public class Dossier {
 
     public UUID getId() {
         return id;
+    }
+
+    public List<EntityClassification> getEntityClassifications() {
+        return entityClassifications;
+    }
+
+    public void setRedactionSuggestions(List<EntityClassification> entityClassifications) {
+        this.entityClassifications = entityClassifications;
     }
 }

@@ -68,7 +68,7 @@ public class S3DataService implements DataService {
                 logger.debug("Processing movie:  " + movie.getId());
                 try {
                     movie.getActor().forEach(actorRepository::save);
-                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
+//                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
                     dossierBuilderService.generateDossier(new MovieDetail(movie));
                     logger.debug("Saved Movie description  " + json);
                 }catch( Exception e ){
