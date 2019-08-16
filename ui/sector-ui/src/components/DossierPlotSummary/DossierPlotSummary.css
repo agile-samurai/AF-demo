@@ -1,0 +1,25 @@
+.plot-summary {
+    width: 690px;
+}
+
+.plot-summary-header {
+    background: #262626;
+    padding-left: 24px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: white;
+    margin-top: 44px;
+    border-bottom: 3px solid #171717;
+}
+
+.plot-summary-body {
+    background: #262626;
+    color: white;
+    padding-top: 22px;
+    padding-left: 24px;
+    padding-bottom: 22px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
