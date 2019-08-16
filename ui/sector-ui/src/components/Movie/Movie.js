@@ -7,7 +7,7 @@ export default class Movie extends React.Component {
         const { movie } = this.props;
 
         return (
-            <Link to={`/dossier/${movie.id}`} key={movie.id} className="movie-link">
+            <Link to={`/dossier/${movie.id}`} key={movie.id} className="navigation-link">
                 <div className="movie-card">
                     <div className="image-wrapper">
                         <img src={movie.image} height={174}/>

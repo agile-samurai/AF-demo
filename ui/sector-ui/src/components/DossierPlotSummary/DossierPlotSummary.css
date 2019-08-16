@@ -25,9 +25,13 @@
 }
 
 .redaction-enabled .COMPANY {
-    background: red;
+    background: green;
+}
+
+.redaction-enabled .COUNTRY {
+    background: blue;
 }
 
 .redaction-enabled .PERSON {
-    background: blue;
+    background: red;
 }

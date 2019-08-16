@@ -7,7 +7,12 @@
 }
 
 .dossier-main-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 72%;
+    margin-top: 40px;
 }
 
 .dossier-name {
@@ -26,4 +31,24 @@
 
 .genre-chip:not(:first-child) {
     margin-left: 16px;
+}
+
+.auto-redaction-toggle {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: flex-end;
+}
+
+.auto-redaction-toggle-label {
+    margin-right: 24px;
+}
+
+.genres-and-auto-redaction {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
 }

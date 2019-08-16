@@ -9,6 +9,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
 import ActorRow from "../ActorRow/ActorRow";
 import NavigationMenu from "../NavigationMenu/NavigationMenu";
+import {Link} from "react-router-dom";
 
 export default class ActorSearch extends React.Component {
     constructor(props) {
@@ -36,7 +37,9 @@ export default class ActorSearch extends React.Component {
                 <AppBar position="static">
                     <Toolbar variant="dense" className="search-toolbar">
                         <div className="star-power-text">
-                            <span className="star-text">star</span>pwr
+                            <Link to="/" className="navigation-link">
+                                <span className="star-text">star</span>pwr
+                            </Link>
                         </div>
                         <IconButton edge="end" color="inherit" aria-label="menu">
                             <NavigationMenu/>
