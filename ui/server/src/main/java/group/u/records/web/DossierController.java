@@ -2,7 +2,6 @@ package group.u.records.web;
 
 import group.u.records.content.Dossier;
 import group.u.records.security.DossierRepository;
-import group.u.records.service.DataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -52,12 +52,22 @@ export default class ActorSearch extends React.Component {
                         horizontal: 'center',
                     }}
                     onClose={this.handleClose}>
+                    <Link to="/dossier-list-and-search" className="menu-item-link">
+                        <MenuItem>
+                            <ListItemText primary="View And Search Dossiers" />
+                        </MenuItem>
+                    </Link>
+                    <Link to="/actor-search" className="menu-item-link">
+                        <MenuItem>
+                            <ListItemText primary="Search Celebrity Profiles" />
+                        </MenuItem>
+                    </Link>
                     <Link to="/training-data" className="menu-item-link">
                         <MenuItem>
                             <ListItemText primary="View Training Data" />
                         </MenuItem>
                     </Link>
-                    <Link to="/training-data" className="menu-item-link">
+                    <Link to="/logout" className="menu-item-link">
                         <MenuItem>
                             <ListItemText primary="Log Out" />
                         </MenuItem>
