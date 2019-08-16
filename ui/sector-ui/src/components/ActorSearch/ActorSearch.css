@@ -46,10 +46,3 @@ body {
 .star-text {
     font-weight: bold;
 }
-
-.main-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
