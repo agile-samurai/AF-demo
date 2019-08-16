@@ -21,6 +21,14 @@ resource_types:
       repository: 18fgsa/s3-resource-simple
 
 resources:
+  - name: data
+    type: simple-s3-resource
+    source:
+      access_key_id: {{aws_access_key_id}}
+      secret_access_key: {{aws_secret_access_key}}
+      bucket: rdso-challenge2
+      path: data/ci
+      region: us-east-1
   - name: slack-notify
     type: slack-notification
     source:
@@ -45,7 +53,7 @@ resources:
     type: git
     source: &repo-source
       uri: ((git_source_url))
-      branch: master
+      branch: ur-6-austinbrian-pipeline-data ## CHANGE BACK TO MASTER
       private_key: ((git_private_key))
 #      ignore_paths: [services/scoring-service, notebooks]
   - name: version
@@ -96,6 +104,13 @@ resources:
       region: us-east-1
 
 groups:
+  - name: data science
+    jobs:
+    - Initialize
+    - Data Preparation
+    - Containerize Data Services
+    - Data Model Building
+    - Data Capture
   - name: all
     jobs:
     - Create Terraform Persistence
@@ -184,33 +199,33 @@ jobs:
         trigger: true
       - put: version
         params: {bump: minor}
-  # - name: terraform-destroy-all-envs  
+  # - name: terraform-destroy-all-envs
   #   public: false
   #   plan:
   #   - get: source
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
   #       action:
   #       env_name: dev
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
   #       action:
   #       env_name: test
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
   #       action:  destroy
   #       env_name: prod
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/ecr-setup
@@ -222,7 +237,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
-      get_params: 
+      get_params:
         action: destroy
       params:
         terraform_source: source/config/service-setup
@@ -312,7 +327,7 @@ jobs:
             - name: data
           outputs:
             - name: models
-      - put: models 
+      - put: models
   # - name: Push Data Service
   #   public: true
   #   plan:
@@ -467,7 +482,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -DskipTests -Djava.version=10
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -484,7 +499,7 @@ jobs:
             - |
               cd source/ui/server
               # now build with java 12
-              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests   
+              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
           inputs:
           - name: source
           outputs:
@@ -848,7 +863,7 @@ jobs:
             terraform refresh
             #export TF_LOG=debug
             terraform apply -parallelism=20 --auto-approve
-            
+
             echo "Waiting for server to come up"
             export SERVER_DNS_NAME=`terraform output server_dns_name`
             cd ../..
@@ -968,7 +983,7 @@ jobs:
     #         terraform init
     #         terraform workspace select test
     #         #export TF_LOG=debug
-    #         #`cat source/.git/HEAD`        
+    #         #`cat source/.git/HEAD`
     #         echo "Waiting for server to come up"
     #         export SERVER_DNS_NAME=`terraform output server_dns_name`
     #         cd ../..
@@ -1049,7 +1064,7 @@ jobs:
             - |
                 echo "name: $(cat terraform/name)"
                 echo "metadata: $(cat terraform/metadata)"
-    
+
   - name: Execute OWASP Security Scan Prod
     serial: false
     plan:
@@ -1093,5 +1108,4 @@ jobs:
             #kill `pidof zap`
             ps -ef
             echo "done"
-            exit 0      
-            
+            exit 0
