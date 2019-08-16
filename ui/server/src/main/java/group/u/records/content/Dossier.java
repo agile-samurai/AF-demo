@@ -1,7 +1,10 @@
 package group.u.records.content;
 
 import group.u.records.ds.EntityClassification;
+import group.u.records.models.Note;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +14,7 @@ public class Dossier {
     private String name;
     private String summary;
     private List<Genre> genres;
+    private List<Note> notes;
 
     public String getName() {
         return name;
@@ -29,6 +33,7 @@ public class Dossier {
         this.name = name;
         this.summary = summary;
         this.genres = genres;
+        this.notes = new ArrayList();
     }
 
     public Dossier(){}
@@ -43,5 +48,13 @@ public class Dossier {
 
     public void setRedactionSuggestions(List<EntityClassification> entityClassifications) {
         this.entityClassifications = entityClassifications;
+    }
+
+    public void addNote(LocalDateTime timeStamp, String user, String note) {
+        this.notes.add(new Note(timeStamp,user,note));
+    }
+
+    public List<Note> getNotes() {
+        return notes;
     }
 }
