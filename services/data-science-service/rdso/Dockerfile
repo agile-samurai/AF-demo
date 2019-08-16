@@ -1,14 +1,12 @@
 FROM python:3.7
 
+
 WORKDIR /app
 
-
 COPY ./requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --quiet --upgrade pip && pip install -r requirements.txt
 
 COPY . /app
-RUN mkdir data
-RUN mkdir models
 
 RUN python -m nltk.downloader stopwords
 EXPOSE 8000

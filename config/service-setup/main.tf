@@ -132,7 +132,7 @@ module "www" {
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/ui:${var.images_version}"
   container_family   = "www"
 
-  instance_count             = 1
+  instance_count             = 2
   timeout                    = 80
   container_port             = 80
   loadbalancer_port          = 80
@@ -161,7 +161,7 @@ module "server" {
 
   KAFKA_INTERNAL_IP = module.ecs-cluster.dns_name
 
-  instance_count    = 1
+  instance_count    = 2
   timeout           = 80
   container_port    = 8080
   loadbalancer_port = 80
@@ -190,7 +190,7 @@ module "datascience" {
   #base_domain        = aws_route53_zone.primary.name
 
   health_check_path = "/metrics"
-  instance_count    = 1
+  instance_count    = 2
   timeout           = 20
   container_port    = 8000 #from container dockerfile
   loadbalancer_port = 80
