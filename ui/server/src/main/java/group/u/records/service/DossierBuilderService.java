@@ -36,6 +36,7 @@ public class DossierBuilderService {
     public void generateDossier(MovieDetail movieDetail) {
         Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
                 imageProvider.getJson())));
+        dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
         logger.debug("About to save dossier:  " + dossier.getId());
         dossierRepository.save(dossier);

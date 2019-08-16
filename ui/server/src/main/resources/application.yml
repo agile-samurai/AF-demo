@@ -12,6 +12,9 @@ aws:
   bucketName: rdso-challenge2
   folder: data/movies_json
 app:
+  ds:
+    redact:
+      host: http://spacy
   jwt:
     secret: secret
   business:
