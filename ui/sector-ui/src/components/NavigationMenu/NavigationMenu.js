@@ -38,7 +38,6 @@ export default class ActorSearch extends React.Component {
                           variant="contained"
                           onClick={this.handleClick}/>
                 <Menu
-                    id="customized-menu"
                     anchorEl={this.state.anchorEl}
                     keepMounted
                     open={Boolean(this.state.anchorEl)}

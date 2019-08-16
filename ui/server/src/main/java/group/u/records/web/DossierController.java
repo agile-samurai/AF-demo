@@ -13,7 +13,6 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/dossier")
 public class DossierController {
-    private DataService dataService;
     private DossierRepository dossierRepository;
 
     public DossierController(DossierRepository dossierRepository) {
