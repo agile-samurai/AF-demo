@@ -642,8 +642,8 @@ jobs:
             terraform workspace new dev || true
             terraform refresh
             terraform workspace select dev
-            export TF_LOG=debug
-            `cat git/.git/HEAD`
+            #export TF_LOG=debug
+            #`cat source/.git/HEAD`
             terraform apply --auto-approve
             
             echo "Waiting for server to come up"

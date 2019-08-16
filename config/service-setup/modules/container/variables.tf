@@ -49,9 +49,9 @@ variable "timeout" {
   default = 60
 }
 
-variable "base_domain" {
-  default = "ugrouptech.com"
-}
+# variable "base_domain" {
+#   default = "ugrouptech.com"
+# }
 
 variable "zone_id" {}
 
