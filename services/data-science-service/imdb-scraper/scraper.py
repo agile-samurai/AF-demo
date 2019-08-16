@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import pathlib
 import requests
@@ -55,6 +56,10 @@ def split_genre(genre):
 
 
 if __name__ == '__main__':
+    max_files = None
+    if 'TESTING' in os.environ and os.environ['TESTING'] == 'true':
+        max_files = 10
+
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
     if not data_dir.is_dir():
@@ -76,6 +81,7 @@ if __name__ == '__main__':
     movie_tweets_data['genres'] = movie_tweets_data['genres'].map(split_genre)
 
     movies_to_scrape = movie_tweets_data[movie_tweets_data['year'] > 2008]
+    movies_to_scrape = movies_to_scrape[:max_files]
 
     for index, movie_row in tqdm(movies_to_scrape.iterrows(), total=len(movies_to_scrape)):
         if len(movie_row['imdb_id']) != 7:
