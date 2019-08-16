@@ -5,6 +5,7 @@ import os
 
 import click
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import json
 import multiprocessing
 import numpy as np
 import pandas as pd
@@ -35,15 +36,16 @@ def train_doc2vec(corpus: TaggedLineDocument):
     return model
 
 
-def find_centroids_and_average_distances(d2v_model, movies_df):
+def get_genre_distance_metrics(d2v_model, movies_df):
     """
     Takes the doc vectors and clusters them by genre, then finds the centroid of each cluster.
+    Uses this to find the average distance and st. deviation of distance for each genre.
 
-    :return: dict of {cluster_name:centroid_vector} pairs.
+    :return: dict of shape {cluster_name: {mean: X, stdev: Y}}
     """
     genres = movies_df['top_genre'].unique()
     centroids = {}
-    average_distances = {}
+    distance_metrics = {}
     for genre in genres:
         # Get all the vectors for the genre
         genre_movies_list = movies_df[movies_df['top_genre'] == genre]['film_id'].tolist()
@@ -52,13 +54,15 @@ def find_centroids_and_average_distances(d2v_model, movies_df):
         centroid = np.mean(vectors_list, axis=0)
         centroids[genre] = centroid
 
-        # Find the average distance within the genre
+        # Find the distance mean and standard deviation within the genre
         distances = []
         for vector in vectors_list:
             distances.append(np.linalg.norm(vector-centroid))
-        average_distance = np.mean(distances)
-        average_distances[genre] = average_distance
-    return centroids, average_distances
+        distance_average = np.mean(distances)
+        distance_stdev = np.std(distances)
+        distance_metrics[genre] = {'mean': distance_average.item(), 'stdev': distance_stdev.item()}
+
+    return distance_metrics
 
 
 @click.command()
@@ -91,14 +95,13 @@ def cli(version):
     model_filename = f'movies_doc2vec.{version}.model'
     d2v_model.save(str(models_dir / model_filename))
 
-    # Find genre centroids
-    genre_centroids, genre_avg_distances = \
-        find_centroids_and_average_distances(d2v_model, movies_df)
+    # Find genre centroids and use them to compute distance metrics for model performance
+    genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
+    genre_metrics['model_version'] = version
+    metrics_file = models_dir / 'metrics.json'
+    with metrics_file.open('w') as outfile:
+        json.dump(genre_metrics, outfile, indent=2)
 
-    print("Centroids:")
-    print(genre_centroids)
-    print("Average Distances: ")
-    print(genre_avg_distances)
 
 # S3 file handling to be pushed off to the pipeline --------------------------
     # Push model to S3

@@ -2,6 +2,7 @@ import boto3
 from fuzzywuzzy import fuzz
 from gensim.models.doc2vec import Doc2Vec
 import hug
+import json
 import os
 import pandas as pd
 import pathlib
@@ -10,6 +11,7 @@ import movies
 
 doc2vec_model = None
 movies_df = None
+metrics = None
 
 
 @hug.startup()
@@ -59,6 +61,7 @@ def load_model(api):
     Loads the Doc2Vec model file created by vectorize.py.
     """
     global doc2vec_model
+    global metrics
     try:
         model_version = os.environ['MODEL_VERSION']
     except KeyError:
@@ -104,6 +107,9 @@ def load_model(api):
 #         print('Downloaded Doc2Vec model from S3')
 
     doc2vec_model = Doc2Vec.load(str(models_file))
+    metrics_file = models_dir / 'metrics.json'
+    with metrics_file.open('r') as infile:
+        metrics = json.load(infile)
 
 
 @hug.post("/most_similar")
@@ -198,7 +204,7 @@ def metrics():
 
     Currently has dummy values.
     """
-    return {"Model 1": 10, "Model 2": 100, "Model 3": 1000}
+    return metrics
 
 
 if __name__ == "__main__":
