@@ -19,6 +19,7 @@ services:
     container_name: ui-backend
     depends_on:
       - elastic
+      - spacy
     restart: on-failure
     ports:
       - "8082:8080"

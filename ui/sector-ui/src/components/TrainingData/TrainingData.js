@@ -1,10 +1,10 @@
 import React from 'react';
 
-export default class NotFoundPage extends React.Component {
+export default class TrainingData extends React.Component {
     render() {
         return (
             <div>
-                Not found
+                Stub of training data page
             </div>
         );
     }

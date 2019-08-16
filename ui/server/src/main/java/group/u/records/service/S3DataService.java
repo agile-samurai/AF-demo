@@ -57,6 +57,8 @@ public class S3DataService implements DataService {
     }
 
     public List<MovieDetail> processMovies(ActorRepository actorRepository, MoviePublicSummaryRepository moviePublicSummaryRepository, DossierBuilderService dossierBuilderService) {
+        actorRepository.deleteAll();
+        moviePublicSummaryRepository.deleteAll();
         logger.debug("Loading services from data store" );
         ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(folder).build();
         List<Movie> extractedMovies = new ArrayList();

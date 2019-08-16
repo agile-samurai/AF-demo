@@ -3,15 +3,15 @@ import './App.css';
 import {Route, Switch} from 'react-router-dom';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
-import {NotFoundPage} from "./components/NotFoundPage/NotFoundPage";
-import Login from "./components/Login/Login";
 import {connect} from "react-redux";
-import Dossier from "./components/Dossier/Dossier";
-import ActorSearch from "./components/ActorSearch/ActorSearch";
 import {ThemeProvider, withStyles} from '@material-ui/styles';
-
 import {createMuiTheme} from "@material-ui/core";
 import {green, grey} from "@material-ui/core/colors";
+import Login from "./components/Login/Login";
+import Dossier from "./components/Dossier/Dossier";
+import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
+import ActorSearch from "./components/ActorSearch/ActorSearch";
+import TrainingData from "./components/TrainingData/TrainingData";
 
 const theme = createMuiTheme({
     palette: {
@@ -91,6 +91,10 @@ export class App extends React.Component {
                     <Route
                         path="/dossier/:dossierID"
                         component={Dossier}
+                    />
+                    <Route
+                        path="/training-data"
+                        component={TrainingData}
                     />
                     <Route
                         component={NotFoundPage}
