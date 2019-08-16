@@ -41,11 +41,10 @@ variable "cidr_block" {
   description = "Cidr block ranges per environment"
 
   default = {
-    default = "10.1.0.0/16",
-    dev     = "10.1.0.0/16",
-    test    = "10.2.0.0/16",
-    ft      = "10.3.0.0/16",
-    prod    = "10.4.0.0/16"
+    dev  = "10.1.0.0/16",
+    test = "10.2.0.0/16",
+    ft   = "10.3.0.0/16",
+    prod = "10.4.0.0/16"
   }
 }
 
