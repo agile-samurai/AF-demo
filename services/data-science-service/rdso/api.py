@@ -7,7 +7,6 @@ import pandas as pd
 import pathlib
 import plot
 import movies
-import vectorize
 
 doc2vec_model = None
 movies_df = None
@@ -16,8 +15,7 @@ movies_df = None
 @hug.startup()
 def load_movies_df(api):
     """
-    Loads the movies_df.pkl file created by movies.py. If it doesn't exist locally,
-    it will be downloaded from S3.
+    Loads the movies_df.pkl file created by movies.py.
     """
     global movies_df
     cwd = pathlib.Path('.').resolve()
@@ -26,29 +24,31 @@ def load_movies_df(api):
         data_dir.mkdir()
     movies_df_file = data_dir / 'movies_df.pkl'
 
+# S3 file handling to be pushed off to the pipeline --------------------------
     # If movies_df.pkl is not in the data directory, download it from S3
-    if not movies_df_file.is_file():
-
-        bucket_name = 'rdso-challenge2'
-        s3 = None
-        try:
-            profile = os.environ['AWS_PROFILE']
-            session = boto3.Session(profile_name=profile)
-            s3 = session.client('s3')
-        except KeyError:
-            pass
-        if s3 is None:
-            try:
-                access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
-                access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-                session = boto3.Session(aws_access_key_id=access_key_id,
-                                        aws_secret_access_key=access_key)
-                s3 = session.client('s3')
-            except KeyError:
-                raise ValueError("No AWS credentials found")
-
-        with open(str(movies_df_file), 'wb') as infile:
-            s3.download_fileobj(bucket_name, 'data/movies_df.pkl', infile)
+    # if not movies_df_file.is_file():
+    #
+    #     bucket_name = 'rdso-challenge2'
+    #     s3 = None
+    #     try:
+    #         profile = os.environ['AWS_PROFILE']
+    #         session = boto3.Session(profile_name=profile)
+    #         s3 = session.client('s3')
+    #     except KeyError:
+    #         pass
+    #     if s3 is None:
+    #         try:
+    #             access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
+    #             access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+    #             session = boto3.Session(aws_access_key_id=access_key_id,
+    #                                     aws_secret_access_key=access_key)
+    #             s3 = session.client('s3')
+    #         except KeyError:
+    #             raise ValueError("No AWS credentials found")
+    #
+    #     with open(str(movies_df_file), 'wb') as infile:
+    #         s3.download_fileobj(bucket_name, 'data/movies_df.pkl', infile)
+    #     print('Downloaded movies_df.pkl from S3')
 
     movies_df = pd.read_pickle(str(movies_df_file))
 
@@ -56,8 +56,7 @@ def load_movies_df(api):
 @hug.startup()
 def load_model(api):
     """
-    Loads the Doc2Vec model file created by vectorize.py. If it doesn't exist locally,
-    it will be downloaded from S3.
+    Loads the Doc2Vec model file created by vectorize.py.
     """
     global doc2vec_model
     try:
@@ -73,34 +72,36 @@ def load_model(api):
     if not models_dir.is_dir():
         models_dir.mkdir()
     models_file = models_dir / model_filename
-    models_trainables_file = models_dir / trainables_filename
-    models_vectors_file = models_dir / vectors_filename
 
-    if not models_file.is_file():
-        bucket_name = 'rdso-challenge2'
-        s3 = None
-        try:
-            profile = os.environ['AWS_PROFILE']
-            session = boto3.Session(profile_name=profile)
-            s3 = session.client('s3')
-        except KeyError:
-            pass
-        if s3 is None:
-            try:
-                access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
-                access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-                session = boto3.Session(aws_access_key_id=access_key_id,
-                                        aws_secret_access_key=access_key)
-                s3 = session.client('s3')
-            except KeyError:
-                raise ValueError("No AWS credentials found")
-
-        with open(str(models_file), 'wb') as inf:
-            s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
-        with open(str(models_vectors_file), 'wb') as inf:
-            s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
-        with open(str(models_trainables_file), 'wb') as inf:
-            s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
+# S3 file handling to be pushed off to the pipeline --------------------------
+#     models_trainables_file = models_dir / trainables_filename
+#     models_vectors_file = models_dir / vectors_filename
+#     if not models_file.is_file():
+#         bucket_name = 'rdso-challenge2'
+#         s3 = None
+#         try:
+#             profile = os.environ['AWS_PROFILE']
+#             session = boto3.Session(profile_name=profile)
+#             s3 = session.client('s3')
+#         except KeyError:
+#             pass
+#         if s3 is None:
+#             try:
+#                 access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
+#                 access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+#                 session = boto3.Session(aws_access_key_id=access_key_id,
+#                                         aws_secret_access_key=access_key)
+#                 s3 = session.client('s3')
+#             except KeyError:
+#                 raise ValueError("No AWS credentials found")
+#
+#         with open(str(models_file), 'wb') as inf:
+#             s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
+#         with open(str(models_vectors_file), 'wb') as inf:
+#             s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
+#         with open(str(models_trainables_file), 'wb') as inf:
+#             s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
+#         print('Downloaded Doc2Vec model from S3')
 
     doc2vec_model = Doc2Vec.load(str(models_file))
 
@@ -113,17 +114,12 @@ def most_similar_movies(imdbID: hug.types.text):
     if len(selected_movie) == 0:
         return {'Error': 'Movie ID not found in dataset'}
 
-    selected_text = selected_movie['description'].values[0] + ' ' \
-                    + selected_movie['keywords'].values[0]
-    cleaned_text = vectorize.nlp_clean([selected_text])[0]
-    new_vector = doc2vec_model.infer_vector(cleaned_text)
-    most_similar = doc2vec_model.docvecs.most_similar([new_vector])
-    print(most_similar)
+    most_similar = doc2vec_model.docvecs.most_similar(imdbID)
 
     most_similar_movies = []
     for sim_movie in most_similar:
         sim_id = sim_movie[0]
-        movie = movies_df[movies_df['url'] == '/title/' + sim_id + '/']
+        movie = movies_df[movies_df['film_id'] == sim_id]
         most_similar_movies.append(movie.to_dict())
 
     return most_similar_movies
