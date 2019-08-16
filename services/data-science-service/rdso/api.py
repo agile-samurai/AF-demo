@@ -56,12 +56,29 @@ def load_movies_df(api):
 
 
 @hug.startup()
+def load_metrics(api):
+    global metrics
+    cwd = pathlib.Path('.').resolve()
+    models_dir = cwd.parents[0] / 'models'
+    latest_metrics = '0.0.0'
+    for file in models_dir.iterdir():
+        # Find the highest version of the metrics file
+        if file.stem.startswith('metrics'):
+            metrics_version = file.stem.strip('metrics.')
+            if metrics_version > latest_metrics:
+                latest_metrics = metrics_version
+    # open file
+    metrics_file = models_dir / f'metrics.{latest_metrics}.json'
+    with metrics_file.open('r') as infile:
+        metrics = json.load(infile)
+
+
+@hug.startup()
 def load_model(api):
     """
     Loads the Doc2Vec model file created by vectorize.py.
     """
     global doc2vec_model
-    global metrics
     try:
         model_version = os.environ['MODEL_VERSION']
     except KeyError:
@@ -107,9 +124,6 @@ def load_model(api):
 #         print('Downloaded Doc2Vec model from S3')
 
     doc2vec_model = Doc2Vec.load(str(models_file))
-    metrics_file = models_dir / 'metrics.json'
-    with metrics_file.open('r') as infile:
-        metrics = json.load(infile)
 
 
 @hug.post("/most_similar")
