@@ -6,6 +6,7 @@ import os
 import click
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import multiprocessing
+import numpy as np
 import pandas as pd
 import pathlib
 
@@ -34,16 +35,30 @@ def train_doc2vec(corpus: TaggedLineDocument):
     return model
 
 
-def find_centroids(d2v_model, movies_df):
+def find_centroids_and_average_distances(d2v_model, movies_df):
     """
     Takes the doc vectors and clusters them by genre, then finds the centroid of each cluster.
 
-    :return: dict of cluster_name: centroid_vector pairs.
+    :return: dict of {cluster_name:centroid_vector} pairs.
     """
     genres = movies_df['top_genre'].unique()
+    centroids = {}
+    average_distances = {}
     for genre in genres:
-        genre_movies_df = movies_df[movies_df['top_genre'] == genre]
+        # Get all the vectors for the genre
+        genre_movies_list = movies_df[movies_df['top_genre'] == genre]['film_id'].tolist()
+        vectors_list = [d2v_model.docvecs[film_id] for film_id in genre_movies_list]
+        # Find the genre centroid
+        centroid = np.mean(vectors_list, axis=0)
+        centroids[genre] = centroid
 
+        # Find the average distance within the genre
+        distances = []
+        for vector in vectors_list:
+            distances.append(np.linalg.norm(vector-centroid))
+        average_distance = np.mean(distances)
+        average_distances[genre] = average_distance
+    return centroids, average_distances
 
 
 @click.command()
@@ -75,6 +90,15 @@ def cli(version):
     print(f"Saving model version {version}")
     model_filename = f'movies_doc2vec.{version}.model'
     d2v_model.save(str(models_dir / model_filename))
+
+    # Find genre centroids
+    genre_centroids, genre_avg_distances = \
+        find_centroids_and_average_distances(d2v_model, movies_df)
+
+    print("Centroids:")
+    print(genre_centroids)
+    print("Average Distances: ")
+    print(genre_avg_distances)
 
 # S3 file handling to be pushed off to the pipeline --------------------------
     # Push model to S3
