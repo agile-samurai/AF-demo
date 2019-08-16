@@ -6,14 +6,21 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import NavigationMenu from "../NavigationMenu/NavigationMenu";
+import Chip from '@material-ui/core/Chip';
+import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 
 class Dossier extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dossier: {}
+            dossier: {
+                name: '',
+                summary: '',
+                genres: [],
+                loaded: false
+            }
         };
-        this.ACTORS_ENDPOINT = '/api/dossier';
+        this.DOSSIER_ENDPOINT = '/api/dossier';
     }
 
     componentDidMount() {
@@ -25,10 +32,18 @@ class Dossier extends React.Component {
     /*</ShowElementByRole>*/
 
     render() {
-        const {name} = this.state.dossier;
+        const {name, summary, genres, entityClassifications} = this.state.dossier;
+
+        if(!this.state.loaded) {
+            return <div>Loading...</div>;
+        }
+
+        const processedGenres = genres.map(genreInformation => {
+            return <Chip label={genreInformation.genre} className="genre-chip" key={genreInformation.genre}/>
+        });
 
         return (
-            <div>
+            <div className="dossier-page">
                 <AppBar position="static">
                     <Toolbar variant="dense" className="search-toolbar">
                         <div className="star-power-text">
@@ -39,15 +54,19 @@ class Dossier extends React.Component {
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <div className="main-section">
-                    {name}
+                <div className="dossier-main-section-wrapper">
+                    <div className="dossier-main-section">
+                        <div className="dossier-name">{name}</div>
+                        <div className="genres">{processedGenres}</div>
+                        <DossierPlotSummary summary={summary} entityClassifications={entityClassifications}/>
+                    </div>
                 </div>
             </div>
         );
     }
 
     getDossierDetails(dossierID) {
-        axios.get(`${this.ACTORS_ENDPOINT}/${dossierID}`, {
+        axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`, {
             auth: {  // TODO remove
                 username: 'business-user',
                 password: 'password'
@@ -56,7 +75,8 @@ class Dossier extends React.Component {
         .then(response => {
             console.log(response);
             this.setState({
-                dossier: response.data
+                dossier: response.data,
+                loaded: true
             });
         });
     }
