@@ -4,7 +4,7 @@ WORKDIR /app
 
 
 COPY ./requirements.txt /app/requirements.txt
-RUN pipenv pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app
 RUN mkdir data
