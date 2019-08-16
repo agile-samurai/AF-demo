@@ -2,8 +2,10 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.content.Dossier;
+import group.u.records.models.Actor;
 import group.u.records.models.MovieDetail;
 import group.u.records.models.MoviePublicSummary;
+import group.u.records.models.MovieTitle;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
@@ -19,9 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,6 +34,7 @@ public class S3DataService implements DataService {
     private Logger logger = LoggerFactory.getLogger(S3DataService.class);
     private ObjectMapper objectMapper;
     private String dossierStorageBucket;
+    Map<UUID, Actor> actorList;
 
     public S3DataService(@Value("${aws.bucketName}") String bucketName,
                          @Value("${aws.folder}") String folder,
@@ -51,6 +52,8 @@ public class S3DataService implements DataService {
         this.region = Region.of(regionAsString);
         this.folder = folder;
         this.s3Client = s3Client;
+
+        actorList = new HashMap();
     }
 
     public List<MovieDetail> processMovies(ActorRepository actorRepository, MoviePublicSummaryRepository moviePublicSummaryRepository, DossierBuilderService dossierBuilderService) {
@@ -67,8 +70,9 @@ public class S3DataService implements DataService {
 
                 logger.debug("Processing movie:  " + movie.getId());
                 try {
+                    enrichActors(movie,actorRepository);
                     movie.getActor().forEach(actorRepository::save);
-//                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
+                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
                     dossierBuilderService.generateDossier(new MovieDetail(movie));
                     logger.debug("Saved Movie description  " + json);
                 }catch( Exception e ){
@@ -113,6 +117,19 @@ public class S3DataService implements DataService {
 
         //Todo: Discuss this flow.
         return "";
+    }
+
+    private void enrichActors(Movie movie, ActorRepository actorRepository) {
+
+        for(Actor actor : movie.getActor()){
+            UUID id = actor.enrichModel();
+            if( !actorList.containsKey(id) ) actorList.put(id, actor );
+
+            Actor workingActor = actorList.get(id);
+            workingActor.addTitle(MovieTitle.from(movie));
+
+            actorRepository.save(workingActor);
+        }
     }
 
     @Override
