@@ -301,8 +301,8 @@ jobs:
               cp -R ./data/data/* source/services/data-science-service/data/.
               cd source/services/data-science-service/rdso
               apt-get update && apt-get install gcc
-              pip install --upgrade pip
-              pip install -r requirements.txt
+              pip install --quiet --upgrade pip
+              pip install --quiet -r requirements.txt
               python -c "import nltk;nltk.download('stopwords')"
               python vectorize.py --local
               cd ../../../../
