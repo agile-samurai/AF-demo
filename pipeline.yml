@@ -409,17 +409,17 @@ jobs:
               - -exc
               - |
                 cd source/services/data-science-service
-                pip install --upgrade pip && pip install -r tests_require.txt
-                pip list
-                /usr/local/bin/pytest --junitxml results.xml
-                echo "Push results to sonarqube"
-                wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
-                unzip -qq sonar-*
-                rm sonar-*.zip
-                mv sonar* sonar-scanner
-                export PROJECT_VERSION=`cat version/number`
-                sonar-scanner/bin/sonar-scanner -h
-                sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso-dss -Dsonar.projectName=rdso-dss -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
+                # pip install --upgrade pip && pip install -r tests_require.txt
+                # pip list
+                # /usr/local/bin/pytest --junitxml results.xml
+                # echo "Push results to sonarqube"
+                # wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+                # unzip -qq sonar-*
+                # rm sonar-*.zip
+                # mv sonar* sonar-scanner
+                # export PROJECT_VERSION=`cat version/number`
+                # sonar-scanner/bin/sonar-scanner -h
+                # sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso-dss -Dsonar.projectName=rdso-dss -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
   - name: Execute server Contract Tests
     public: true
     plan:
@@ -646,8 +646,9 @@ jobs:
             terraform init
             # Always try to create the workspace, ignore non-zero exit code if it already exists
             terraform workspace new dev || true
-            terraform refresh
+            terraform workspace list
             terraform workspace select dev
+            terraform refresh
             #export TF_LOG=debug
             #`cat source/.git/HEAD`
             terraform apply --auto-approve
