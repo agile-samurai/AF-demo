@@ -29,6 +29,14 @@ resources:
       bucket: rdso-challenge2
       path: data/ci
       region: us-east-1
+  - name: models
+    type: simple-s3-resource
+    source:
+      access_key_id: {{aws_access_key_id}}
+      secret_access_key: {{aws_secret_access_key}}
+      bucket: rdso-challenge2
+      path: data/ci
+      region: us-east-1
   - name: slack-notify
     type: slack-notification
     source:
