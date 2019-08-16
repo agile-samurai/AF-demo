@@ -484,18 +484,14 @@ jobs:
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
-          env_name: terraform   #workspace
+          env_name: ecr   #workspace
           var_files: [./vars/terraform.tfvars]
-          vars:
-            environment: terraform
       - put: terraform
         params:
           terraform_source: source/config/ecr-setup
-          env_name: terraform
+          env_name: ecr
           plan_run: true
           var_files: [./vars/terraform.tfvars]
-          vars:
-            environment: terraform
 
   - name: Push UI
     public: true
