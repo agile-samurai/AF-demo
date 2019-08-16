@@ -61,12 +61,16 @@ class Dossier extends React.Component {
                 <div className="dossier-main-section-wrapper">
                     <div className="dossier-main-section">
                         <div className="dossier-name">{name}</div>
-                        <div className="genres">{processedGenres}</div>
-                        <Switch
-                            checked={redactionEnabled}
-                            onChange={this.handleToggleRedaction}
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
+                        <div className="genres-and-auto-redaction">
+                            <div className="genres">{processedGenres}</div>
+                            <div className="auto-redaction-toggle">
+                                <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO REDACTION</div>
+                                <Switch
+                                    checked={redactionEnabled}
+                                    onChange={this.handleToggleRedaction}
+                                    inputProps={{ 'aria-label': 'secondary checkbox' }}/>
+                            </div>
+                        </div>
                         <DossierPlotSummary summary={summary}
                                             entityClassifications={entityClassifications}
                                             redactionEnabled={redactionEnabled}/>
