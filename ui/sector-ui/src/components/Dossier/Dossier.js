@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import NavigationMenu from "../NavigationMenu/NavigationMenu";
 import Chip from '@material-ui/core/Chip';
 import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
+import Switch from '@material-ui/core/Switch';
 
 class Dossier extends React.Component {
     constructor(props) {
@@ -17,10 +18,12 @@ class Dossier extends React.Component {
                 name: '',
                 summary: '',
                 genres: [],
+                redactionEnabled: false,
                 loaded: false
             }
         };
         this.DOSSIER_ENDPOINT = '/api/dossier';
+        this.handleToggleRedaction = this.handleToggleRedaction.bind(this);
     }
 
     componentDidMount() {
@@ -33,8 +36,9 @@ class Dossier extends React.Component {
 
     render() {
         const {name, summary, genres, entityClassifications} = this.state.dossier;
+        const {loaded, redactionEnabled} = this.state;
 
-        if(!this.state.loaded) {
+        if(!loaded) {
             return <div>Loading...</div>;
         }
 
@@ -58,11 +62,24 @@ class Dossier extends React.Component {
                     <div className="dossier-main-section">
                         <div className="dossier-name">{name}</div>
                         <div className="genres">{processedGenres}</div>
-                        <DossierPlotSummary summary={summary} entityClassifications={entityClassifications}/>
+                        <Switch
+                            checked={redactionEnabled}
+                            onChange={this.handleToggleRedaction}
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        />
+                        <DossierPlotSummary summary={summary}
+                                            entityClassifications={entityClassifications}
+                                            redactionEnabled={redactionEnabled}/>
                     </div>
                 </div>
             </div>
         );
+    }
+
+    handleToggleRedaction() {
+        this.setState({
+            redactionEnabled: !this.state.redactionEnabled
+        })
     }
 
     getDossierDetails(dossierID) {

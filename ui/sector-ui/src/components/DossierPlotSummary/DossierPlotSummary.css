@@ -23,3 +23,11 @@
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
+
+.redaction-enabled .COMPANY {
+    background: red;
+}
+
+.redaction-enabled .PERSON {
+    background: blue;
+}
