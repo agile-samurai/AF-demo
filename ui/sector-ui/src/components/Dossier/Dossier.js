@@ -2,11 +2,16 @@ import React from 'react';
 import './Dossier.css';
 import axios from "axios/index";
 import {withRouter} from 'react-router'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import NavigationMenu from "../NavigationMenu/NavigationMenu";
 
 class Dossier extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            dossier: {}
         };
         this.ACTORS_ENDPOINT = '/api/dossier';
     }
@@ -15,32 +20,43 @@ class Dossier extends React.Component {
         this.getDossierDetails(this.props.match.params.dossierID);
     }
 
+    // TODO use to conditionally allow Dossier deletion
+    /*<ShowElementByRole role='ROLE_SUPERVISOR'>*/
+    /*</ShowElementByRole>*/
+
     render() {
+        const {name} = this.state.dossier;
+
         return (
             <div>
-                Dossier page<br/><br/>
-                Add<br/>
-                {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
-                    Remove
-                {/*</ShowElementByRole>*/}
+                <AppBar position="static">
+                    <Toolbar variant="dense" className="search-toolbar">
+                        <div className="star-power-text">
+                            <span className="star-text">star</span>pwr
+                        </div>
+                        <IconButton edge="end" color="inherit" aria-label="menu">
+                            <NavigationMenu/>
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <div className="main-section">
+                    {name}
+                </div>
             </div>
         );
     }
 
     getDossierDetails(dossierID) {
-        console.log('Dossier ID is: ', dossierID);
         axios.get(`${this.ACTORS_ENDPOINT}/${dossierID}`, {
-            params: {
-                cursor: 0
-            },
             auth: {  // TODO remove
                 username: 'business-user',
                 password: 'password'
             }
         })
         .then(response => {
+            console.log(response);
             this.setState({
-                actorSearchResults: response.data.content
+                dossier: response.data
             });
         });
     }
