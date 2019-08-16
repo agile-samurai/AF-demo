@@ -39,7 +39,7 @@ resource "aws_instance" "compute" {
   instance_type = "r3.xlarge"
 
   tags = {
-    Name = "Infra Compute"
+    Name = "ECS Compute"
     Environment = "${terraform.workspace}"
   }
 

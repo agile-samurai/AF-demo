@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   # instance_tenancy = "dedicated"
 
   tags = {
-    Name        = "main"
+    Name        = "${terraform.workspace}_service_setup_vpc"
     Environment = "${terraform.workspace}"
   }
 }
