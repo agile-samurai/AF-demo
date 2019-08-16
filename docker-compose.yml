@@ -64,6 +64,9 @@ services:
       - CONTRACT_TEST=false
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-
+  spacy:
+      image: jgontrum/spacyapi:en_v2
+      ports:
+        - "8084:80"
 volumes:
   es-data:
