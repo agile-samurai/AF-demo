@@ -1,14 +1,15 @@
-package group.u.records.ds;
+package group.u.records.ds.providers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.content.Dossier;
+import group.u.records.ds.EntityClassification;
+import group.u.records.ds.SpacyRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,9 @@ public class AutoRedactClient {
     private String hostUrl;
     private ObjectMapper objectMapper;
 
-    public AutoRedactClient(ObjectMapper objectMapper, RestTemplate template, @Value("${app.ds.redact.host}") String hostUrl ) {
+    public AutoRedactClient(ObjectMapper objectMapper,
+                            RestTemplate template,
+                            @Value("${app.ds.redact.host}") String hostUrl) {
         this.objectMapper = objectMapper;
         this.template = template;
         this.hostUrl = hostUrl;

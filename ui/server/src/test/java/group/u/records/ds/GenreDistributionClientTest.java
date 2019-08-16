@@ -1,5 +1,6 @@
 package group.u.records.ds;
 
+import group.u.records.ds.providers.GenreDistributionClient;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 

@@ -1,5 +1,7 @@
 package group.u.records.ds;
 
+import group.u.records.ds.providers.MovieSimilarityProvider;
+import group.u.records.ds.providers.SimilarityClient;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;

@@ -1,4 +1,4 @@
-package group.u.records.ds;
+package group.u.records.ds.providers;
 
 import org.springframework.stereotype.Component;
 

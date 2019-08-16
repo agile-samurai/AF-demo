@@ -1,4 +1,4 @@
-package group.u.records.ds;
+package group.u.records.ds.providers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +14,19 @@ public class GenreDistributionClient {
     private RestTemplate restTemplate;
     private Logger logger = LoggerFactory.getLogger(GenreDistributionClient.class);
     private String host;
+    private boolean enabledDistributionImages;
 
     public GenreDistributionClient(RestTemplate restTemplate,
-                                   @Value("$app.ds.images.host}") String host ){
+                                   @Value("$app.ds.images.host}") String host,
+                                   @Value("${app.feature.enableDistributionImages}") boolean enabledDistributionImages ){
         this.restTemplate = restTemplate;
         this.host = host;
+        this.enabledDistributionImages = enabledDistributionImages;
     }
 
     public String getImageStructure(UUID dossierId){
+        if( !enabledDistributionImages ) return "";
+
         try {
             return restTemplate.postForEntity(host + "/make_test_plot",
                     new HttpEntity(""), String.class).getBody();

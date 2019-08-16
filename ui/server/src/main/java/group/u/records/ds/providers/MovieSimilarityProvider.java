@@ -1,5 +1,6 @@
-package group.u.records.ds;
+package group.u.records.ds.providers;
 
+import group.u.records.ds.providers.SimilarityClient;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,5 +1,7 @@
 package group.u.records.ds;
 
+import group.u.records.ds.providers.GenreDistributionClient;
+import group.u.records.ds.providers.GenreDistributionImageProvider;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
