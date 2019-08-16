@@ -91,6 +91,7 @@ groups:
     - Push server Image
     - Push main-ds-service Image
     - Deploy Services To Dev
+    - Deploy Services To Test
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
     - Execute main-ds-service Tests
@@ -113,6 +114,7 @@ groups:
     - Push server Image
     - Push main-ds-service Image
     - Deploy Services To Dev
+    - Deploy Services To Test
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
   # - name: destroy
@@ -460,38 +462,46 @@ jobs:
           - Build UI
         trigger: true
       - get: version
-      - task: Write Variables
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: bytecubed/bytecubed-java-ci
-          run:
-            path: sh
-            args:
-              - -exc
-              - |
-                echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
-                echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
-                echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
-                echo "Verify/Create ECR Repos"
-          outputs:
-            - name: vars
-          inputs:
-            - name: version
+      # - task: Write Variables
+      #   config:
+      #     platform: linux
+      #     image_resource:
+      #       type: docker-image
+      #       source:
+      #         repository: bytecubed/bytecubed-java-ci
+      #     run:
+      #       path: sh
+      #       args:
+      #         - -exc
+      #         - |
+      #           echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
+      #           echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+      #           echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
+      #           echo "Verify/Create ECR Repos"
+      #     outputs:
+      #       - name: vars
+      #     inputs:
+      #       - name: version
       - put: terraform
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
           env_name: ecr   #workspace
-          var_files: [./vars/terraform.tfvars]
+          env:
+            TF_VAR_aws_region: ((bucket_aws_region))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_bucket_name: ((tf_backend))
+          #var_files: [./vars/terraform.tfvars]
       - put: terraform
         params:
           terraform_source: source/config/ecr-setup
           env_name: ecr
           plan_run: true
-          var_files: [./vars/terraform.tfvars]
+          env:
+            TF_VAR_aws_region: ((bucket_aws_region))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_bucket_name: ((tf_backend))
+          #var_files: [./vars/terraform.tfvars]
 
   - name: Push UI
     public: true
@@ -671,12 +681,111 @@ jobs:
 #        vars:
 #          environment: dev
 
-  - name: Deploy Services To Production
+  - name: Deploy Services To Test
     serial: true
     plan:
     - get: source
       passed:
       - Deploy Services To Dev
+    - get: version
+      # passed:
+      # - Execute OWASP Security Scan Test
+    - task:  Write Variables and Run TF Deploy
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            #echo region = \"us-east-1\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the test environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        # env:
+        #   AWS_REGION: ((test_aws_region))
+        env_name: test #terraform workspace
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+    - put: terraform
+      params:
+        # env:
+        #   AWS_REGION: ((test_aws_region))
+        env_name: test #terraform workspace
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+    - task: show-outputs
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: alpine
+        inputs:
+        - name: terraform
+        - name: source
+        run:
+          path: /bin/sh
+          args:
+            - -c
+            - |
+                echo "name: $(cat terraform/name)"
+                echo "metadata: $(cat terraform/metadata)"
+                # source/wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+                # echo "Server is up!!"
+    # - task: Check-Server
+    #   config:
+    #     platform: linux
+    #     image_resource:
+    #       type: docker-image
+    #       source:
+    #         repository: ugroup/centos-terraform-aws
+    #     run:
+    #       path: sh
+    #       args:
+    #       - -ec
+    #       - |
+    #         cd source/config/service-setup
+    #         terraform init
+    #         terraform workspace select test
+    #         #export TF_LOG=debug
+    #         #`cat source/.git/HEAD`        
+    #         echo "Waiting for server to come up"
+    #         export SERVER_DNS_NAME=`terraform output server_dns_name`
+    #         cd ../..
+    #         ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+    #         echo "Server is up!!"
+        # inputs:
+        # - name: source
+
+  - name: Deploy Services To Production
+    serial: true
+    plan:
+    - get: source
+      passed:
+      - Deploy Services To Test
     - get: version
       # passed:
       # - Execute OWASP Security Scan Test
@@ -726,6 +835,23 @@ jobs:
         terraform_source: source/config/service-setup
         var_files:
         - ./vars/terraform.tfvars
+    - task: show-outputs
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: alpine
+        inputs:
+        - name: terraform
+        - name: source
+        run:
+          path: /bin/sh
+          args:
+            - -c
+            - |
+                echo "name: $(cat terraform/name)"
+                echo "metadata: $(cat terraform/metadata)"
     
   - name: Execute OWASP Security Scan Prod
     serial: false
@@ -750,7 +876,7 @@ jobs:
         run:
           path: /bin/bash
           args:
-          - -ce
+          - -c
           - |
             echo "starting scan"
             cd  #NEED THIS
@@ -766,6 +892,7 @@ jobs:
             ps -ef
             # need to kill this process: Xvfb :1 -screen 0 1024x768x16 -ac
             kill -15 19
+            kill -15 20
             #kill `pidof zap`
             ps -ef
             echo "done"
