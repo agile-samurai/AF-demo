@@ -1,29 +1,17 @@
 import React from 'react';
 import Chip from '@material-ui/core/Chip';
 import './ActorRow.css';
+import Movie from "../Movie/Movie";
 
 export default class ActorSearch extends React.Component {
     render() {
-        const { actor } = this.props;
+        const {actor} = this.props;
 
         const processedAliases = actor.aliases.map(alias => {
             return <Chip label={alias} className="alias-chip" key={alias}/>
         });
 
-        const processedMovies = actor.titles.map(movie => { // TODO move into a separate component
-            return (
-                <div className="movie-card" key={movie.id}>
-                    <div className="image-wrapper">
-                        <img src={movie.image} height={174} />
-                    </div>
-                    <div className="movie-title-wrapper">
-                        <div className="movie-title">
-                            {movie.name}
-                        </div>
-                    </div>
-                </div>
-            )
-        });
+        const processedMovies = actor.titles.map(movie => <Movie movie={movie}/>);
 
         return (
             <div className="actor-card" key={actor.id}>

@@ -1,20 +1,49 @@
 import React from 'react';
-import {withRouter} from "react-router";
-import ShowElementByRole from "../ShowElementByRole/ShowElementByRole";
+import './Dossier.css';
+import axios from "axios/index";
+import {withRouter} from 'react-router'
 
-class Home extends React.Component {
+class Dossier extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        };
+        this.ACTORS_ENDPOINT = '/api/dossier';
+    }
+
+    componentDidMount() {
+        this.getDossierDetails(this.props.match.params.dossierID);
+    }
+
     render() {
-        console.log(this.props);
         return (
             <div>
                 Dossier page<br/><br/>
                 Add<br/>
-                <ShowElementByRole role='ROLE_SUPERVISOR'>
+                {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
                     Remove
-                </ShowElementByRole>
+                {/*</ShowElementByRole>*/}
             </div>
         );
     }
+
+    getDossierDetails(dossierID) {
+        console.log('Dossier ID is: ', dossierID);
+        axios.get(`${this.ACTORS_ENDPOINT}/${dossierID}`, {
+            params: {
+                cursor: 0
+            },
+            auth: {  // TODO remove
+                username: 'business-user',
+                password: 'password'
+            }
+        })
+        .then(response => {
+            this.setState({
+                actorSearchResults: response.data.content
+            });
+        });
+    }
 }
 
-export default withRouter(Home);
+export default withRouter(Dossier);
