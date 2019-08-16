@@ -53,11 +53,10 @@ variable "aws_region" {
   description = "region"
 
   default = {
-    default = "us-east-1",
-    dev     = "us-east-1",
-    test    = "us-east-2",
-    prod    = "us-west-1",
-    ft      = "us-west-2"
+    dev  = "us-east-1",
+    test = "us-east-2",
+    prod = "us-west-1",
+    ft   = "us-west-2"
   }
 }
 
