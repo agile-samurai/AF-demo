@@ -9,6 +9,7 @@ import NavigationMenu from "../NavigationMenu/NavigationMenu";
 import Chip from '@material-ui/core/Chip';
 import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 import Switch from '@material-ui/core/Switch';
+import {Link} from "react-router-dom";
 
 class Dossier extends React.Component {
     constructor(props) {
@@ -51,7 +52,9 @@ class Dossier extends React.Component {
                 <AppBar position="static">
                     <Toolbar variant="dense" className="search-toolbar">
                         <div className="star-power-text">
-                            <span className="star-text">star</span>pwr
+                            <Link to="/" className="navigation-link">
+                                <span className="star-text">star</span>pwr
+                            </Link>
                         </div>
                         <IconButton edge="end" color="inherit" aria-label="menu">
                             <NavigationMenu/>
