@@ -60,14 +60,14 @@ data "template_file" "userdata" {
   }
 }
 
-resource "aws_efs_file_system" "mongo-efs" {
-  creation_token = "mongo-efs"
+# resource "aws_efs_file_system" "mongo-efs" {
+#   creation_token = "mongo-efs"
 
-  tags = {
-    Name = "${aws_ecs_cluster.infrastructure.name}.efs"
-    Environment = "${terraform.workspace}"
-  }
-}
+#   tags = {
+#     Name = "${aws_ecs_cluster.infrastructure.name}.efs"
+#     Environment = "${terraform.workspace}"
+#   }
+# }
 
 //MongoDB Security Group
 resource "aws_security_group" "compute" {
