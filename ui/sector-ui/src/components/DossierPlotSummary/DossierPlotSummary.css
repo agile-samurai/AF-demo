@@ -24,14 +24,40 @@
     border-bottom-right-radius: 8px;
 }
 
-.redaction-enabled .COMPANY {
+.redaction-enabled .COMPANY, .company-entity-type .color-block  {
     background: green;
 }
 
-.redaction-enabled .COUNTRY {
+.redaction-enabled .COUNTRY, .country-entity-type .color-block {
     background: blue;
 }
 
-.redaction-enabled .PERSON {
+.redaction-enabled .PERSON, .person-entity-type .color-block {
     background: red;
 }
+
+.redaction-item-types-legend {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.entity-type-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.entity-type-label:not(:first-child) {
+    margin-left: 20px;
+}
+
+.color-block {
+    width: 30px;
+    height: 20px;
+}
+
+

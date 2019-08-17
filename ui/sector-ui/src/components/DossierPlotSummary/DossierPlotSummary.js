@@ -22,6 +22,24 @@ export default class DossierPlotSummary extends React.Component {
             <div className={`plot-summary ${redactionEnabled ? 'redaction-enabled': ''}`}>
                 <div className="plot-summary-header">PLOT SUMMARY</div>
                 <div className="plot-summary-body">{redactionProcessedSummary}</div>
+                {
+                    redactionEnabled ?
+                    <div className="redaction-item-types-legend">
+                        <div className="company-entity-type entity-type-label">
+                            <div className="color-block"/>
+                            <div>&nbsp;- Company</div>
+                        </div>
+                        <div className="country-entity-type entity-type-label">
+                            <div className="color-block"/>
+                            <div>&nbsp;- Country</div>
+                        </div>
+                        <div className="person-entity-type entity-type-label">
+                            <div className="color-block"/>
+                            <div>&nbsp;- Person</div>
+                        </div>
+                    </div>
+                    : null
+                }
             </div>
         );
     }
