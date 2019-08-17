@@ -10,7 +10,7 @@ def parse_movie(html: str):
     Parses HTML string and extracts movie JSON
 
     :param html: String of IMDB movie page HTML
-    :return: dict of movie JSON
+    :return: list of dicts with character details
     """
     bs = BeautifulSoup(html, "html.parser")
     characters = []
@@ -37,12 +37,6 @@ def parse_movie(html: str):
 
 
 if __name__ == "__main__":
-    # html = []
-    # testfile = "/Users/brianaustin/Downloads/tt0069049.html"
-    # with open(testfile) as f:
-    #     html = f.read()
-    # parsed_movie = parse_movie(html)
-
     scraped_htmls = []
     cwd = pathlib.Path(".").resolve()
     data_dir = cwd.parents[0] / "data"
@@ -72,29 +66,3 @@ if __name__ == "__main__":
                 json.dump(parsed_movie, outfile, indent=2)
         else:
             continue
-            # counter +=1
-
-            ####
-
-    #     for html_file in html_dir.iterdir():
-    #         if html_file.is_file():
-    #             json_file = json_dir / html_file.stem
-    #             json_file = json_file.with_suffix(".json")
-    #         if not json_file.is_file():
-    #             # file_list.append(html_file)
-    #             with readfile.open("r") as infile:
-    #                 scraped_htmls.append(infile.read())
-    #             parsed_movie = parse_movie(html_file)
-    #             writefile = json_dir / f"{json_file}.json"
-    #             with writefile.open("w") as outfile:
-    #                 json.dump(parsed_movie, outfile, indent=2)
-    #             counter += 1
-    #
-    # # for readfile in file_list:
-    # #     with readfile.open("r") as infile:
-    # #         scraped_htmls.append(infile.read())
-    # #
-    # # for movie_html in tqdm(scraped_htmls):
-    # #     writefile = json_dir / f'{json_file}.json'
-    # #     with writefile.open('w') as outfile:
-    # #         json.dump(parsed_movie, outfile, indent=2)
