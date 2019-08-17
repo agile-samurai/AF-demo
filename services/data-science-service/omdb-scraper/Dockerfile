@@ -6,5 +6,5 @@ WORKDIR /app
 
 # OMDB_API_KEY must be exported at runtime for scraper.py to work
 RUN pip install --upgrade pip && pip install -r requirements.txt
-RUN python scraper.py
+ENTRYPOINT python scraper.py
 
