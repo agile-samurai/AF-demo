@@ -30,7 +30,7 @@ export default class ActorSearch extends React.Component {
         const {searchTerm, actorSearchResults} = this.state;
 
         const actorRows = actorSearchResults
-            .map(actorSearchResult => <ActorRow actor={actorSearchResult} />);
+            .map(actorSearchResult => <ActorRow actor={actorSearchResult} key={actorSearchResult.id} />);
 
         return (
             <div>
