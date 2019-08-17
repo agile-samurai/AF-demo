@@ -81,14 +81,13 @@ services/data-science-service/models/*
 config/**/plan
 
 # HSM cert files
-/**/*.crt
-/**/*.csr
-/**/*.key
-/**/*.zip
-/**/*.pub
-/**/*.pem
-/**/*.srl
-/**/cluster_*.txt
-/**/liquid_*.txt
+config/hsm-setup/**/*.crt
+config/hsm-setup/**/*.csr
+config/hsm-setup/**/*.key
+config/hsm-setup/**/*.zip
+config/hsm-setup/**/*.pub
+config/hsm-setup/**/*.pem
+config/hsm-setup/**/*.srl
+config/hsm-setup/**/*.txt
 #devops
 .scannerwork
