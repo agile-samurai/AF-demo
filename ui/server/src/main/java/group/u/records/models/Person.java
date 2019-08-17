@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.data.elasticsearch.annotations.FieldType.Keyword;
+import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
 import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "actor", type = "actor", shards = 1, replicas = 0, refreshInterval = "-1")
@@ -28,6 +29,8 @@ public class Person {
             }
     )
     private String name;
+
+    @Field(type = Nested)
     private List<MovieTitle> titles;
 
     public List<String> getAliases() {
@@ -70,7 +73,7 @@ public class Person {
     public UUID enrichModel() {
         id = UUID.nameUUIDFromBytes(url.getBytes());
         aliases.add(this.name);
-        
+
         return id;
     }
 
