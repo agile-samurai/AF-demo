@@ -1,6 +1,6 @@
 package group.u.records.models.data;
 
-import group.u.records.models.Actor;
+import group.u.records.models.entity.Actor;
 
 import java.util.List;
 import java.util.UUID;

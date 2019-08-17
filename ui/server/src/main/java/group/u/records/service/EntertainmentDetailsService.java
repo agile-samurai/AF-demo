@@ -1,13 +1,10 @@
 package group.u.records.service;
 
-import group.u.records.models.MovieDetail;
 import group.u.records.repository.ActorRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class EntertainmentDetailsService {

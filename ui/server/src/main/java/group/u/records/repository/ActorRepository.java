@@ -1,6 +1,6 @@
 package group.u.records.repository;
 
-import group.u.records.models.Actor;
+import group.u.records.models.entity.Actor;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

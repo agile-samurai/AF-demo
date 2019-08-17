@@ -1,6 +1,6 @@
 package group.u.records.service;
 
-import group.u.records.models.MoviePublicSummary;
+import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

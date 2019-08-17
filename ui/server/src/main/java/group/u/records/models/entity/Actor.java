@@ -1,4 +1,4 @@
-package group.u.records.models;
+package group.u.records.models.entity;
 
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -69,7 +69,7 @@ public class Actor {
     public UUID enrichModel() {
         id = UUID.nameUUIDFromBytes(url.getBytes());
         aliases.add(this.name);
-        
+
         return id;
     }
 
