@@ -21,22 +21,6 @@ resource_types:
       repository: 18fgsa/s3-resource-simple
 
 resources:
-  - name: data
-    type: simple-s3-resource
-    source:
-      access_key_id: {{aws_access_key_id}}
-      secret_access_key: {{aws_secret_access_key}}
-      bucket: rdso-challenge2
-      path: data/ci
-      region: us-east-1
-  - name: models
-    type: simple-s3-resource
-    source:
-      access_key_id: {{aws_access_key_id}}
-      secret_access_key: {{aws_secret_access_key}}
-      bucket: rdso-challenge2
-      path: data/ci
-      region: us-east-1
   - name: slack-notify
     type: slack-notification
     source:
@@ -112,13 +96,6 @@ resources:
       region: us-east-1
 
 groups:
-  - name: data science
-    jobs:
-    - Initialize
-    - Data Preparation
-    - Containerize Data Services
-    - Data Model Building
-    - Data Capture
   - name: all
     jobs:
     - Create Terraform Persistence
@@ -168,7 +145,9 @@ groups:
     - Execute OWASP Security Scan Prod
   - name: destroy
     jobs:
-   # - terraform-destroy-all-envs
+      - terraform-destroy-all-envs
+      - terraform-destroy-dev-service
+      - terraform-destroy-test-service
       - terraform-destroy-prod-service
 
 jobs:
@@ -207,9 +186,20 @@ jobs:
         trigger: true
       - put: version
         params: {bump: minor}
-  # - name: terraform-destroy-all-envs
-  #   public: false
-  #   plan:
+  - name: terraform-destroy-all-envs
+    public: false
+    plan:
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        env_name: ecr
+        terraform_source: source/config/ecr-setup
+        action: destroy
+        env:
+          TF_VAR_aws_region: ((bucket_aws_region))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
   #   - get: source
   #   - put: terraform
   #     get_params:
@@ -232,13 +222,44 @@ jobs:
   #       terraform_source: source/config/service-setup
   #       action:  destroy
   #       env_name: prod
-  #   - put: terraform
-  #     get_params:
-  #       action: destroy
-  #     params:
-  #       terraform_source: source/config/ecr-setup
-  #       action: destroy
-  #       env_name: ecr
+  - name: terraform-destroy-dev-service
+    public: false
+    serial: true
+    plan:
+    - get: source
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        terraform_source: source/config/service-setup
+        action: destroy
+        env_name: dev  #workspace
+        env:
+          TF_VAR_access_key: ((aws_access_key_id))
+          TF_VAR_access_secret: ((aws_secret_access_key))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_images_version: "noop"
+          TF_VAR_infra_version: "noop"
+  - name: terraform-destroy-test-service
+    public: false
+    serial: true
+    plan:
+    - get: source
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        terraform_source: source/config/service-setup
+        action: destroy
+        env_name: test  #workspace
+        env:
+          TF_VAR_access_key: ((aws_access_key_id))
+          TF_VAR_access_secret: ((aws_secret_access_key))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_images_version: "noop"
+          TF_VAR_infra_version: "noop"
   - name: terraform-destroy-prod-service
     public: false
     serial: true
