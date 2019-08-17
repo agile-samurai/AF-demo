@@ -91,7 +91,8 @@ variable "cpu" {}
 variable "memory" {}
 
 variable "sonarqube_image" {
-  default = "madhujoshi/my-sonar-7"
+  #default = "madhujoshi/my-sonar-7"
+  default = "owasp/sonarqube"
 }
 
 variable "sg-allow-inbound" {}

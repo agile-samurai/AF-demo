@@ -26,7 +26,7 @@ variable "ec2_ami" {
 }
 
 variable "cidr_block" {
-  default = "10.1.0.0/16"
+  default = "10.5.0.0/16"
 }
 
 variable "az_count" {
@@ -43,7 +43,6 @@ variable "rds_backup_retention_days" {
 }
 
 # variable "remote_state_bucket" {}
-variable "environment" {}
 
-variable "project_domain" {}
+#variable "project_domain" {}
 variable "project" {}
