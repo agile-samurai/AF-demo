@@ -56,42 +56,42 @@ public class S3DataService implements DataService {
         actorList = new HashMap();
     }
 
-    public List<MovieDetail> processMovies(PersonRepository personRepository, MoviePublicSummaryRepository moviePublicSummaryRepository, DossierBuilderService dossierBuilderService) {
-        personRepository.deleteAll();
-        moviePublicSummaryRepository.deleteAll();
-        logger.debug("Loading services from data store");
-        ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(folder).build();
-        List<Movie> extractedMovies = new ArrayList();
-        s3Client.listObjectsV2Paginator(request).contents().forEach(obj -> {
-            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(obj.key()).build());
-            logger.debug("Response String:  " + response.response().toString());
-            try {
-                String json = IOUtils.toString(response.readAllBytes());
-                Movie movie = objectMapper.readValue(json, Movie.class);
-                movie.enrichModel();
-
-                logger.debug("Processing movie:  " + movie.getId());
-                try {
-                    enrichActors(movie, personRepository);
-                    movie.getActor().forEach(personRepository::save);
-                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
-                    dossierBuilderService.generateDossier(new MovieDetail(movie));
-                    logger.debug("Saved Movie description  " + json);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error("Issue while saving movie:  " + e.getMessage());
-                }
-
-                extractedMovies.add(movie);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            logger.debug(obj.key());
-        });
-
-        return extractedMovies.stream().map(MovieDetail::new).collect(toList());
-    }
+//    public List<MovieDetail> processMovies(PersonRepository personRepository, MoviePublicSummaryRepository moviePublicSummaryRepository, DossierBuilderService dossierBuilderService) {
+//        personRepository.deleteAll();
+//        moviePublicSummaryRepository.deleteAll();
+//        logger.debug("Loading services from data store");
+//        ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).prefix(folder).build();
+//        List<Movie> extractedMovies = new ArrayList();
+//        s3Client.listObjectsV2Paginator(request).contents().forEach(obj -> {
+//            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(obj.key()).build());
+//            logger.debug("Response String:  " + response.response().toString());
+//            try {
+//                String json = IOUtils.toString(response.readAllBytes());
+//                Movie movie = objectMapper.readValue(json, Movie.class);
+//                movie.enrichModel();
+//
+//                logger.debug("Processing movie:  " + movie.getId());
+//                try {
+//                    enrichActors(movie, personRepository);
+//                    movie.getActor().forEach(personRepository::save);
+//                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
+//                    dossierBuilderService.generateDossier(new MovieDetail(movie));
+//                    logger.debug("Saved Movie description  " + json);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    logger.error("Issue while saving movie:  " + e.getMessage());
+//                }
+//
+//                extractedMovies.add(movie);
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            logger.debug(obj.key());
+//        });
+//
+//        return extractedMovies.stream().map(MovieDetail::new).collect(toList());
+//    }
 
     @Override
     public void save(UUID dossierId, String dossierEncryptedContent) {
@@ -136,7 +136,12 @@ public class S3DataService implements DataService {
 
     @Override
     public void delete(UUID dossierId) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(dossierStorageBucket)
+                .key(dossierId.toString())
+                .build();
 
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     private void createBucket(S3Client s3Client) {
@@ -172,12 +177,11 @@ public class S3DataService implements DataService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            logger.debug( "This is the key:  " + obj.key());
-
         return null;
 }
 
     public String getFileAsString(String key, String bucketName) throws IOException {
+        logger.debug("Fetching file:  " + bucketName + ":  " + key );
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(key).build());
         logger.debug("Response String:  " + response.response().toString());
         return IOUtils.toString(response.readAllBytes());

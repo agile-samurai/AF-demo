@@ -11,6 +11,8 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import static org.junit.Assert.*;
+
 public class ImdbMovieDetailsDataSourceTest {
 
     @Test
@@ -33,7 +35,8 @@ public class ImdbMovieDetailsDataSourceTest {
 
         S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",client, objectMapper);
         ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource("rdso-challenge2", "data/movies_json",objectMapper,dataService);
-        MovieDetail detail = ds.getMovieDetails("8898648");
+        MovieDetail detail = ds.getMovieDetails("0020980");
+//        MovieDetail detail = ds.getMovieDetails("8898648");
 //        MovieDetail detail = dataService.processMovie("8898648");
 
         System.out.println(detail.toString());

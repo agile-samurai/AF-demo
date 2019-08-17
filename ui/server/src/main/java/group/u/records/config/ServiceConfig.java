@@ -50,7 +50,7 @@ public class ServiceConfig {
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
                                                            OmdbMovieDetailsDataSource omdb,
                                                            AmazonReviewsDataSource amazon ){
-        return new MovieDetailsDataSourceManager(asList(imdb, omdb, amazon));
+        return new MovieDetailsDataSourceManager(asList(imdb));
     }
 
 }

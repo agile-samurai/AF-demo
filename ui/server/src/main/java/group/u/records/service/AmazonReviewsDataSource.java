@@ -1,5 +1,6 @@
 package group.u.records.service;
 
+import group.u.records.models.data.Movie;
 import group.u.records.models.entity.MovieDetail;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ public class AmazonReviewsDataSource implements MovieDetailsDataSource {
 
     @Override
     public MovieDetail getMovieDetails(String id) {
-        return dataService.processMovie(id);
+        return new MovieDetail(new Movie());
+//        return dataService.processMovie(id);
     }
 }

@@ -48,18 +48,23 @@ public class EntertainmentDetailsService {
         personRepository.deleteAll();
         moviePublicSummaryRepository.deleteAll();
 
-        List<String> movieIds = new ArrayList();
-
-        for(String id : movieIds ){
+        for(String id : identifierProvider.movieIdentifiers() ){
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
-                movieDetails.add(dataSource.getMovieDetails(id));
+
+                try {
+                    MovieDetail movieDetail = dataSource.getMovieDetails(id);
+                    if (movieDetail != null)
+                        movieDetails.add(movieDetail);
+                }catch( Exception e ){
+                    logger.debug("Movie data was not present with provider:  " + dataSource + " - " + id );
+                }
             }
             buildSearchableProfiles(movieDetails);
             dossierBuilderService.generateDossiers(movieDetails);
         }
 
-        dataService.processMovies(personRepository, moviePublicSummaryRepository, dossierBuilderService );
+//        dataService.processMovies(personRepository, moviePublicSummaryRepository, dossierBuilderService );
     }
 
     private void buildSearchableProfiles(List<MovieDetail> movieDetails) {
