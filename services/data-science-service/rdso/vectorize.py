@@ -29,8 +29,15 @@ def train_doc2vec(corpus: TaggedLineDocument):
     :return: trained Doc2Vec model
     """
     cores = multiprocessing.cpu_count()
-    model = Doc2Vec(vector_size=300, window=10, min_count=0, alpha=0.025, min_alpha=0.025,
-                    workers=cores, epochs=20)
+    model = Doc2Vec(
+        vector_size=300,
+        window=10,
+        min_count=0,
+        alpha=0.025,
+        min_alpha=0.025,
+        workers=cores,
+        epochs=20,
+    )
     model.build_vocab(corpus)
     model.train(corpus, epochs=model.epochs, total_examples=model.corpus_count)
     return model
@@ -43,12 +50,14 @@ def get_genre_distance_metrics(d2v_model, movies_df):
 
     :return: dict of shape {cluster_name: {mean: X, stdev: Y}}
     """
-    genres = movies_df['top_genre'].unique()
+    genres = movies_df["top_genre"].unique()
     centroids = {}
     distance_metrics = {}
     for genre in genres:
         # Get all the vectors for the genre
-        genre_movies_list = movies_df[movies_df['top_genre'] == genre]['film_id'].tolist()
+        genre_movies_list = movies_df[movies_df["top_genre"] == genre][
+            "film_id"
+        ].tolist()
         vectors_list = [d2v_model.docvecs[film_id] for film_id in genre_movies_list]
         # Find the genre centroid
         centroid = np.mean(vectors_list, axis=0)
@@ -57,16 +66,21 @@ def get_genre_distance_metrics(d2v_model, movies_df):
         # Find the distance mean and standard deviation within the genre
         distances = []
         for vector in vectors_list:
-            distances.append(np.linalg.norm(vector-centroid))
+            distances.append(np.linalg.norm(vector - centroid))
         distance_average = np.mean(distances)
         distance_stdev = np.std(distances)
-        distance_metrics[genre] = {'mean': distance_average.item(), 'stdev': distance_stdev.item()}
+        distance_metrics[genre] = {
+            "mean": distance_average.item(),
+            "stdev": distance_stdev.item(),
+        }
 
     return distance_metrics
 
 
 @click.command()
-@click.option('--version', '-v', default='0.0.0', help='Version number to use in model filename')
+@click.option(
+    "--version", "-v", default="0.0.0", help="Version number to use in model filename"
+)
 # @click.option('--local', '-l', is_flag=True, help="Load local data files instead of from S3")
 # @click.option('--push', '-p', is_flag=True, help="Push model to S3 when finished training")
 def cli(version):
@@ -75,58 +89,58 @@ def cli(version):
     """
 
     # Load movies_df from .pkl file
-    cwd = pathlib.Path('.').resolve()
-    data_dir = cwd.parents[0] / 'data'
-    models_dir = cwd.parents[0] / 'models'
-    movies_df_file = data_dir / 'movies_df.pkl'
+    cwd = pathlib.Path(".").resolve()
+    data_dir = cwd.parents[0] / "data"
+    models_dir = cwd.parents[0] / "models"
+    movies_df_file = data_dir / "movies_df.pkl"
     movies_df = pd.read_pickle(str(movies_df_file))
     print(f"Loaded {len(movies_df)} movies")
 
     # Convert movies_df to tagged_corpus
-    movies_labels = list(movies_df['film_id'])
-    movie_tokens = movies_df['movie_tokens'].tolist()
+    movies_labels = list(movies_df["film_id"])
+    movie_tokens = movies_df["movie_tokens"].tolist()
     tagged_corpus = TaggedLineDocument(movie_tokens, movies_labels)
 
-    print('Training model')
+    print("Training model")
     d2v_model = train_doc2vec(tagged_corpus)
 
     # Saving the model
     print(f"Saving model version {version}")
-    model_filename = f'movies_doc2vec.{version}.model'
+    model_filename = f"movies_doc2vec.{version}.model"
     d2v_model.save(str(models_dir / model_filename))
 
     # Find genre centroids and use them to compute distance metrics for model performance
     genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
-    genre_metrics['model_version'] = version
-    metrics_file = models_dir / f'metrics.{version}.json'
-    with metrics_file.open('w') as outfile:
+    genre_metrics["model_version"] = version
+    metrics_file = models_dir / f"metrics.{version}.json"
+    with metrics_file.open("w") as outfile:
         json.dump(genre_metrics, outfile, indent=2)
 
 
 # S3 file handling to be pushed off to the pipeline --------------------------
-    # Push model to S3
-    # if push:
-    #     bucket_name = 'rdso-challenge2'
-    #     try:
-    #         profile = os.environ['AWS_PROFILE']
-    #         session = boto3.Session(profile_name=profile)
-    #         s3 = session.client('s3')
-    #     except KeyError:
-    #         try:
-    #             s3 = boto3.client(
-    #                 "s3",
-    #                 aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    #                 aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    #             )
-    #         except KeyError:
-    #             raise ValueError("No AWS credentials found")
-    #
-    #     for model_f in models_dir.iterdir():
-    #         if model_filename in str(model_f):
-    #             with open(str(model_f), 'rb') as outfile:
-    #                 s3.upload_fileobj(outfile, bucket_name,
-    #                                   'models/' + str(model_f.stem) + str(model_f.suffix))
-    #     print(f'Pushed model version {version} to S3')
+# Push model to S3
+# if push:
+#     bucket_name = 'rdso-challenge2'
+#     try:
+#         profile = os.environ['AWS_PROFILE']
+#         session = boto3.Session(profile_name=profile)
+#         s3 = session.client('s3')
+#     except KeyError:
+#         try:
+#             s3 = boto3.client(
+#                 "s3",
+#                 aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+#                 aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+#             )
+#         except KeyError:
+#             raise ValueError("No AWS credentials found")
+#
+#     for model_f in models_dir.iterdir():
+#         if model_filename in str(model_f):
+#             with open(str(model_f), 'rb') as outfile:
+#                 s3.upload_fileobj(outfile, bucket_name,
+#                                   'models/' + str(model_f.stem) + str(model_f.suffix))
+#     print(f'Pushed model version {version} to S3')
 
 
 if __name__ == "__main__":

@@ -76,6 +76,7 @@ rdso-accounts.txt
 # Data Science data and models
 services/data-science-service/imdb-scraper/data/*
 services/data-science-service/models/*
+services/data-science-service/data/*
 
 # Terraform plan ouput files
 config/**/plan

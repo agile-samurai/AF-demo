@@ -20,13 +20,15 @@ def load_movies_df(api):
     Loads the movies_df.pkl file created by movies.py.
     """
     global movies_df
-    cwd = pathlib.Path('.').resolve()
-    data_dir = cwd.parents[0] / 'data'
+    cwd = pathlib.Path(".").resolve()
+    data_dir = cwd.parents[0] / "data"
     if not data_dir.is_dir():
-        data_dir.mkdir()
-    movies_df_file = data_dir / 'movies_df.pkl'
+        data_dir = cwd / "data"
+        if not data_dir.is_dir():
+            data_dir.mkdir()
+    movies_df_file = data_dir / "movies_df.pkl"
 
-# S3 file handling to be pushed off to the pipeline --------------------------
+    # S3 file handling to be pushed off to the pipeline --------------------------
     # If movies_df.pkl is not in the data directory, download it from S3
     # if not movies_df_file.is_file():
     #
@@ -58,18 +60,18 @@ def load_movies_df(api):
 @hug.startup()
 def load_metrics(api):
     global metrics
-    cwd = pathlib.Path('.').resolve()
-    models_dir = cwd.parents[0] / 'models'
-    latest_metrics = '0.0.0'
+    cwd = pathlib.Path(".").resolve()
+    models_dir = cwd.parents[0] / "models"
+    latest_metrics = "0.0.0"
     for file in models_dir.iterdir():
         # Find the highest version of the metrics file
-        if file.stem.startswith('metrics'):
-            metrics_version = file.stem.strip('metrics.')
+        if file.stem.startswith("metrics"):
+            metrics_version = file.stem.strip("metrics.")
             if metrics_version > latest_metrics:
                 latest_metrics = metrics_version
     # open file
-    metrics_file = models_dir / f'metrics.{latest_metrics}.json'
-    with metrics_file.open('r') as infile:
+    metrics_file = models_dir / f"metrics.{latest_metrics}.json"
+    with metrics_file.open("r") as infile:
         metrics = json.load(infile)
 
 
@@ -80,66 +82,68 @@ def load_model(api):
     """
     global doc2vec_model
     try:
-        model_version = os.environ['MODEL_VERSION']
+        model_version = os.environ["MODEL_VERSION"]
     except KeyError:
-        model_version = '0.0.0'
+        model_version = "0.0.0"
 
-    model_filename = 'movies_doc2vec.' + model_version + '.model'
-    trainables_filename = model_filename + '.trainables.syn1neg.npy'
-    vectors_filename = model_filename + '.wv.vectors.npy'
-    cwd = pathlib.Path('.').resolve()
-    models_dir = cwd.parents[0] / 'models'
+    model_filename = "movies_doc2vec." + model_version + ".model"
+    trainables_filename = model_filename + ".trainables.syn1neg.npy"
+    vectors_filename = model_filename + ".wv.vectors.npy"
+    cwd = pathlib.Path(".").resolve()
+    models_dir = cwd.parents[0] / "models"
     if not models_dir.is_dir():
-        models_dir.mkdir()
+        models_dir = cwd / "models"
+        if not models_dir.is_dir():
+            models_dir.mkdir()
     models_file = models_dir / model_filename
 
-# S3 file handling to be pushed off to the pipeline --------------------------
-#     models_trainables_file = models_dir / trainables_filename
-#     models_vectors_file = models_dir / vectors_filename
-#     if not models_file.is_file():
-#         bucket_name = 'rdso-challenge2'
-#         s3 = None
-#         try:
-#             profile = os.environ['AWS_PROFILE']
-#             session = boto3.Session(profile_name=profile)
-#             s3 = session.client('s3')
-#         except KeyError:
-#             pass
-#         if s3 is None:
-#             try:
-#                 access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
-#                 access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-#                 session = boto3.Session(aws_access_key_id=access_key_id,
-#                                         aws_secret_access_key=access_key)
-#                 s3 = session.client('s3')
-#             except KeyError:
-#                 raise ValueError("No AWS credentials found")
-#
-#         with open(str(models_file), 'wb') as inf:
-#             s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
-#         with open(str(models_vectors_file), 'wb') as inf:
-#             s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
-#         with open(str(models_trainables_file), 'wb') as inf:
-#             s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
-#         print('Downloaded Doc2Vec model from S3')
+    # S3 file handling to be pushed off to the pipeline --------------------------
+    #     models_trainables_file = models_dir / trainables_filename
+    #     models_vectors_file = models_dir / vectors_filename
+    #     if not models_file.is_file():
+    #         bucket_name = 'rdso-challenge2'
+    #         s3 = None
+    #         try:
+    #             profile = os.environ['AWS_PROFILE']
+    #             session = boto3.Session(profile_name=profile)
+    #             s3 = session.client('s3')
+    #         except KeyError:
+    #             pass
+    #         if s3 is None:
+    #             try:
+    #                 access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
+    #                 access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+    #                 session = boto3.Session(aws_access_key_id=access_key_id,
+    #                                         aws_secret_access_key=access_key)
+    #                 s3 = session.client('s3')
+    #             except KeyError:
+    #                 raise ValueError("No AWS credentials found")
+    #
+    #         with open(str(models_file), 'wb') as inf:
+    #             s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
+    #         with open(str(models_vectors_file), 'wb') as inf:
+    #             s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
+    #         with open(str(models_trainables_file), 'wb') as inf:
+    #             s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
+    #         print('Downloaded Doc2Vec model from S3')
 
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
 @hug.post("/most_similar")
 def most_similar_movies(imdbID: hug.types.text):
-    if not imdbID.startswith('tt'):
-        imdbID = 'tt' + imdbID
-    selected_movie = movies_df[movies_df['film_id'] == imdbID]
+    if not imdbID.startswith("tt"):
+        imdbID = "tt" + imdbID
+    selected_movie = movies_df[movies_df["film_id"] == imdbID]
     if len(selected_movie) == 0:
-        return {'Error': 'Movie ID not found in dataset'}
+        return {"Error": "Movie ID not found in dataset"}
 
     most_similar = doc2vec_model.docvecs.most_similar(imdbID)
 
     most_similar_movies = []
     for sim_movie in most_similar:
         sim_id = sim_movie[0]
-        movie = movies_df[movies_df['film_id'] == sim_id]
+        movie = movies_df[movies_df["film_id"] == sim_id]
         most_similar_movies.append(movie.to_dict())
 
     return most_similar_movies
@@ -162,13 +166,14 @@ def show_test_plot(n=None):
     """
     if not n:
         n = 500
-    p = plot.make_test_image(n=n)
+    p = plot.make_test_image(n=int(n))
     return plot.jsonify_image(p)
 
 
 @hug.get("/all_movie_scatter_plot")
 def get_all_movie_plot():
-    mdf = movies.merged_movie_data(1000)
+    mdf = movies_df  # global, set at startup
+    # mdf = movies.merged_movie_data(1000)
     p = plot.sc_plot_genre_colors(mdf)
     return plot.jsonify_image(p)
 
