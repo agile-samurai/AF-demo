@@ -1,0 +1,28 @@
+.actor-card:not(:first-child) {
+    margin-top: 130px;
+}
+
+.actor-name {
+    font-size: 60px;
+}
+
+.aliases {
+    margin-top: 12px;
+}
+
+.aliases .alias-chip {
+    background: #2f2f2f;
+    color: rgba(255, 255, 255, 0.87);
+    font-size: 14px;
+}
+
+.alias-chip:not(:first-child) {
+    margin-left: 16px;
+}
+
+.movies {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 100px 20px;
+    margin-top: 38px;
+}

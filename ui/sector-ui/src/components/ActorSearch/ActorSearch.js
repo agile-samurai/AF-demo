@@ -1,84 +1,58 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
 import './ActorSearch.css';
-import {Icon, InputAdornment} from '@material-ui/core';
+import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
+import ActorRow from "../ActorRow/ActorRow";
+import NavigationMenu from "../NavigationMenu/NavigationMenu";
+import {Link} from "react-router-dom";
 
-const toolbarStyles = {
-    justifyContent: 'space-between',
-    height: '120px',
-};
-
-const starPowerStyles = {
-    height: '28px',
-    width: '71px',
-    color: '#FFF',
-    fontFamily: 'Roboto',
-    fontSize: '24px',
-    letterSpacing: '-1.65px',
-    lineHeight: '28px',
-    fontWeight: 'normal'
-};
-
-const starStyles = {
-    fontWeight: 'bold'
-};
-
-const mainSection = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-};
-
-
-class ActorSearch extends React.Component {
+export default class ActorSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             searchTerm: '',
-            actorSearchResults: []
+            actorSearchResults: [],
+            cursor: 0
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.ACTORS_ENDPOINT = '/api/actors';
+
+        this.setUpInfiniteScroll();
+
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     render() {
         const {searchTerm, actorSearchResults} = this.state;
 
-        const formattedActorResults = actorSearchResults.map(actorSearchResult => {
-            return (
-                <div key={actorSearchResult.id} className="actor-card">
-                    Actor name:
-                    {actorSearchResult.fullName}
-                </div>
-            );
-        });
+        const actorRows = actorSearchResults
+            .map(actorSearchResult => <ActorRow actor={actorSearchResult} />);
 
         return (
-            <div className='actor-search'>
+            <div>
                 <AppBar position="static">
-                    <Toolbar variant="dense" style={toolbarStyles}>
-                        <Typography variant="h6" color="inherit" style={starPowerStyles}>
-                            <span style={starStyles}>star</span>pwr
-                        </Typography>
+                    <Toolbar variant="dense" className="search-toolbar">
+                        <div className="star-power-text">
+                            <Link to="/" className="navigation-link">
+                                <span className="star-text">star</span>pwr
+                            </Link>
+                        </div>
                         <IconButton edge="end" color="inherit" aria-label="menu">
-                            <MenuIcon/>
+                            <NavigationMenu/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <div style={mainSection}>
+                <div className="main-section">
                     <TextField
                         id="standard-name"
                         placeholder="Search for actor"
                         value={searchTerm}
                         className="text-field"
-                        onChange={this.handleChange}
+                        onChange={this.handleInputChange}
                         margin="normal"
                         InputProps={{
                             spellCheck: false,
@@ -88,21 +62,30 @@ class ActorSearch extends React.Component {
                         }}
                     />
                 </div>
-                <div className='search-results-wrapper'>
-                    <div className='search-results'>
-                        {formattedActorResults}
+                <div className="search-results-wrapper">
+                    <div className="search-results">
+                        {actorRows}
                     </div>
                 </div>
             </div>
         );
     }
 
-    handleChange(event) {
-        const searchTerm = event.target.value;
+    setUpInfiniteScroll() {
+        window.onscroll = () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                this.loadMore();
+            }
+        };
+    }
 
-        axios.get(`/api/actors`, {
+    loadMore() {
+        const {searchTerm, cursor} = this.state;
+
+        axios.get(this.ACTORS_ENDPOINT, {
             params: {
-                search: searchTerm
+                search: searchTerm,
+                cursor: cursor + 1
             },
             auth: {  // TODO remove
                 username: 'business-user',
@@ -111,11 +94,37 @@ class ActorSearch extends React.Component {
         })
         .then(response => {
             this.setState({
-                searchTerm,
+                actorSearchResults: this.state.actorSearchResults.concat(response.data.content),
+                cursor: cursor + 1
+            });
+        });
+    }
+
+    handleInputChange(event) {
+        const searchTerm = event.target.value;
+
+        this.setState({
+            searchTerm
+        }, () => {
+            this.doSearch(searchTerm, this.state.cursor);
+        });
+    }
+
+    doSearch(searchTerm) {
+        axios.get(this.ACTORS_ENDPOINT, {
+            params: {
+                search: searchTerm,
+                cursor: 0
+            },
+            auth: {  // TODO remove
+                username: 'business-user',
+                password: 'password'
+            }
+        })
+        .then(response => {
+            this.setState({
                 actorSearchResults: response.data.content
             });
         });
     }
 }
-
-export default ActorSearch;

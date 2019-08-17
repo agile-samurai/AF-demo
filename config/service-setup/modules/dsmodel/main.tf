@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "container" {
     "healthCheck": {
 
         "startPeriod": 300,
-        "command": [ "CMD-SHELL", "curl -f http://localhost:8080/metrics  || exit 1" ],
+        "command": [ "CMD-SHELL", "curl -f http://localhost:${var.container_port}/${var.health_check_path}  || exit 1" ],
         "interval": 40,
         "timeout": 10,
         "retries": 10
@@ -50,35 +50,35 @@ DEFINITION
 
 resource "aws_security_group" "service" {
   name_prefix = "${terraform.workspace}-${var.container_family}"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id = "${var.vpc_id}"
 
   tags = {
     Environment = "${terraform.workspace}"
-    Role        = "${var.container_family}"
+    Role = "${var.container_family}"
   }
 }
 
 resource "aws_security_group_rule" "from_lb_to_service" {
-  security_group_id        = "${aws_security_group.service.id}"
-  type                     = "ingress"
-  protocol                 = "TCP"
-  from_port                = "${var.container_port}"
-  to_port                  = "${var.container_port}"
+  security_group_id = "${aws_security_group.service.id}"
+  type = "ingress"
+  protocol = "TCP"
+  from_port = "${var.container_port}"
+  to_port = "${var.container_port}"
   source_security_group_id = "${aws_security_group.lb.id}"
 }
 
 resource "aws_security_group_rule" "allow_all_outbound_to_anywhere" {
   security_group_id = "${aws_security_group.service.id}"
-  type              = "egress"
-  protocol          = "-1"
-  from_port         = 0
-  to_port           = 0
-  cidr_blocks       = ["0.0.0.0/0"]
+  type = "egress"
+  protocol = "-1"
+  from_port = 0
+  to_port = 0
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_ecs_service" "service" {
-  name          = "${var.container_family}"
-  cluster       = "${var.cluster_id}"
+  name = "${var.container_family}"
+  cluster = "${var.cluster_id}"
   desired_count = "${var.instance_count}"
 
   launch_type = "FARGATE"
@@ -88,24 +88,24 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     security_groups = ["${aws_security_group.service.id}"]
-    subnets         = "${var.private_subnets}"
+    subnets = "${var.private_subnets}"
   }
 
   load_balancer {
     target_group_arn = "${aws_alb_target_group.container.id}"
-    container_name   = "${var.container_family}"
-    container_port   = "${var.container_port}"
+    container_name = "${var.container_family}"
+    container_port = "${var.container_port}"
   }
 
   depends_on = ["aws_ecs_task_definition.container", "aws_alb_target_group.container", "aws_alb.lb"]
 }
 
 resource "aws_alb" "lb" {
-  name                       = "${terraform.workspace}-${var.container_family}"
-  security_groups            = ["${aws_security_group.lb.id}"]
-  subnets                    = "${var.public_subnets}"
+  name = "${terraform.workspace}-${var.container_family}"
+  security_groups = ["${aws_security_group.lb.id}"]
+  subnets = "${var.public_subnets}"
   enable_deletion_protection = false
-  idle_timeout               = "${var.timeout}"
+  idle_timeout = "${var.timeout}"
 
   tags = {
     Environment = "${terraform.workspace}"
@@ -113,18 +113,18 @@ resource "aws_alb" "lb" {
 }
 
 resource "aws_alb_target_group" "container" {
-  name        = "${terraform.workspace}-${var.container_family}"
-  port        = "${var.container_port}"
-  protocol    = "HTTP"
-  vpc_id      = "${var.vpc_id}"
+  name = "${terraform.workspace}-${var.container_family}"
+  port = "${var.container_port}"
+  protocol = "HTTP"
+  vpc_id = "${var.vpc_id}"
   target_type = "ip"
 
   health_check {
-    path                = "${var.health_check_path}"
-    matcher             = "${var.matcher_ports}"
-    interval            = "${var.interval}"
-    timeout             = "${var.timeout}"
-    healthy_threshold   = "${var.healthy_threshold}"
+    path = "${var.health_check_path}"
+    matcher = "${var.matcher_ports}"
+    interval = "${var.interval}"
+    timeout = "${var.timeout}"
+    healthy_threshold = "${var.healthy_threshold}"
     unhealthy_threshold = "${var.unhealthy_threshold}"
   }
 }
@@ -148,15 +148,15 @@ resource "aws_alb_target_group" "container" {
 
 resource "aws_alb_listener" "front_end" {
   load_balancer_arn = "${aws_alb.lb.id}"
-  port              = "${var.loadbalancer_port}"
-  protocol          = "HTTP"
+  port = "${var.loadbalancer_port}"
+  protocol = "HTTP"
 
   # ssl_policy        = "ELBSecurityPolicy-2016-08"
   # certificate_arn   = "${var.certificate_arn}"
 
   default_action {
     target_group_arn = "${aws_alb_target_group.container.id}"
-    type             = "forward"
+    type = "forward"
   }
 }
 
@@ -177,27 +177,27 @@ resource "aws_alb_listener" "front_end" {
 # This is the group you need to edit if you want to restrict access to your application
 resource "aws_security_group" "lb" {
   description = "controls access to the ALB"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id = "${var.vpc_id}"
 
   ingress {
-    protocol    = "tcp"
-    from_port   = "${var.loadbalancer_port}"
-    to_port     = "${var.loadbalancer_port}"
+    protocol = "tcp"
+    from_port = "${var.loadbalancer_port}"
+    to_port = "${var.loadbalancer_port}"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_route53_record" "container" {
-  zone_id = "${var.zone_id}"
-  name    = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = ["${aws_alb.lb.dns_name}"]
-}
+# resource "aws_route53_record" "container" {
+#   zone_id = "${var.zone_id}"
+#   name = "${var.container_family}-${terraform.workspace}.${var.base_domain}"
+#   type = "CNAME"
+#   ttl = "300"
+#   records = ["${aws_alb.lb.dns_name}"]
+# }

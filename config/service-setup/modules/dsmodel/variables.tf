@@ -5,7 +5,7 @@ variable "vpc_id" {}
 variable "region" {}
 
 variable "account_id" {
-  default="account"
+  default = "account"
 }
 
 variable "private_subnets" {
@@ -37,9 +37,7 @@ variable "memory" {
   default = 2048
 }
 
-variable "health_check_path" {
-  default = "/actuator/health"
-}
+variable "health_check_path" {}
 
 variable "matcher_ports" {
   default = "200,302"
@@ -85,7 +83,7 @@ variable "spring_jpa_database_platform" {
   default = "org.hibernate.dialect.PostgreSQLDialect"
 }
 
-variable "base_domain" {}
+# variable "base_domain" {}
 
 variable "data_science_host" {
   default = ""
@@ -109,8 +107,8 @@ variable "postgres_host" {
   default = "mdas-rds"
 }
 
-variable "elastic_search_host" {default=""}
-variable "elastic_search_port" {default="80"}
+variable "elastic_search_host" { default = "" }
+variable "elastic_search_port" { default = "80" }
 variable "cloud_watch_log_group_name" {}
 
 variable "postgres_port" {

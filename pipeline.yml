@@ -10,6 +10,7 @@ resource_types:
     source:
       repository: concourse/docker-image-resource
       tag: latest
+      registry_mirror: "https://mirror.gcr.io"
   - name: slack-notification
     type: docker-image
     source:
@@ -44,7 +45,7 @@ resources:
     type: git
     source: &repo-source
       uri: ((git_source_url))
-      branch: master
+      branch: ur-6-austinbrian-pipeline-data ## CHANGE BACK TO MASTER
       private_key: ((git_private_key))
 #      ignore_paths: [services/scoring-service, notebooks]
   - name: version
@@ -56,7 +57,7 @@ resources:
       branch: version
       file: version
       private_key: ((git_private_key))
-  ################### ECR REPOS ######################
+  ################### Resources ECR REPOS ######################
   - name: server-docker-image
     type: latest-docker-image
     source:
@@ -75,6 +76,24 @@ resources:
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/ui
       aws_access_key_id: ((aws_access_key_id))
       aws_secret_access_key: ((aws_secret_access_key))
+  - name: models
+    type: simple-s3-resource
+    source:
+      access_key_id: ((aws_access_key_id))
+      secret_access_key: ((aws_secret_access_key))
+      bucket: rdso-challenge2
+      path: data/ci
+      options: ["--quiet"]
+      region: us-east-1
+  - name: data
+    type: simple-s3-resource
+    source:
+      access_key_id: {{aws_access_key_id}}
+      secret_access_key: {{aws_secret_access_key}}
+      bucket: rdso-challenge2
+      path: data/ci
+      options: ["--quiet"]
+      region: us-east-1
 
 groups:
   - name: all
@@ -89,15 +108,23 @@ groups:
     - Provision ECR Repositories
     - Push UI
     - Push server Image
-    - Push main-ds-service Image
+    - Push DS Image
     - Deploy Services To Dev
+    - Deploy Services To Test
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
     - Execute main-ds-service Tests
+    - Build Data Model
+    - Capture data and push to s3
   - name: prepare
     jobs:
     - Create Terraform Persistence
     - Initialize
+  - name: model building
+    jobs:
+    - Capture data and push to s3
+    - Build Data Model
+    #- Push Data Service
   - name: build-and-test
     jobs:
     - Build UI
@@ -111,13 +138,17 @@ groups:
     - Provision ECR Repositories
     - Push UI
     - Push server Image
-    - Push main-ds-service Image
+    - Push DS Image
     - Deploy Services To Dev
+    - Deploy Services To Test
     - Deploy Services To Production
     - Execute OWASP Security Scan Prod
-  # - name: destroy
-  #   jobs:
-  #   - terraform-destroy-all-envs
+  - name: destroy
+    jobs:
+      - terraform-destroy-all-envs
+      - terraform-destroy-dev-service
+      - terraform-destroy-test-service
+      - terraform-destroy-prod-service
 
 jobs:
   - name: Create Terraform Persistence
@@ -148,7 +179,6 @@ jobs:
                 aws s3api create-bucket --bucket ((tf_backend)) --region us-east-1
           outputs:
             - name: vars
-
   - name: Initialize
     public: true
     plan:
@@ -156,38 +186,238 @@ jobs:
         trigger: true
       - put: version
         params: {bump: minor}
-  # - name: terraform-destroy-all-envs  
-  #   public: false
-  #   plan:
+  - name: terraform-destroy-all-envs
+    public: false
+    plan:
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        env_name: ecr
+        terraform_source: source/config/ecr-setup
+        action: destroy
+        env:
+          TF_VAR_aws_region: ((bucket_aws_region))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+  #   - get: source
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
   #       action:
   #       env_name: dev
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
   #       action:
   #       env_name: test
   #   - put: terraform
-  #     get_params: 
+  #     get_params:
   #       action: destroy
   #     params:
   #       terraform_source: source/config/service-setup
-  #       action:
+  #       action:  destroy
   #       env_name: prod
-  #   - put: terraform
-  #     get_params: 
-  #       action: destroy
-  #     params:
-  #       terraform_source: source/config/
-  #       action:
-  #       env_name: prod
-   
+  - name: terraform-destroy-dev-service
+    public: false
+    serial: true
+    plan:
+    - get: source
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        terraform_source: source/config/service-setup
+        action: destroy
+        env_name: dev  #workspace
+        env:
+          TF_VAR_access_key: ((aws_access_key_id))
+          TF_VAR_access_secret: ((aws_secret_access_key))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_images_version: "noop"
+          TF_VAR_infra_version: "noop"
+  - name: terraform-destroy-test-service
+    public: false
+    serial: true
+    plan:
+    - get: source
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        terraform_source: source/config/service-setup
+        action: destroy
+        env_name: test  #workspace
+        env:
+          TF_VAR_access_key: ((aws_access_key_id))
+          TF_VAR_access_secret: ((aws_secret_access_key))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_images_version: "noop"
+          TF_VAR_infra_version: "noop"
+  - name: terraform-destroy-prod-service
+    public: false
+    serial: true
+    plan:
+    - get: source
+    - put: terraform
+      get_params:
+        action: destroy
+      params:
+        terraform_source: source/config/service-setup
+        action: destroy
+        env_name: prod  #workspace
+        env:
+          TF_VAR_access_key: ((aws_access_key_id))
+          TF_VAR_access_secret: ((aws_secret_access_key))
+          TF_VAR_aws_account_id: ((aws_account_id))
+          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_images_version: "noop"
+          TF_VAR_infra_version: "noop"
+  - name: Capture data and push to s3
+    public: true
+    plan:
+      - get: source
+        passed: [Initialize]
+      - task: Gather Data
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd source/services/data-science-service/imdb-scraper
+              pip install --quiet -r requirements.txt
+              export TESTING=true
+              python scraper.py && python parser.py
+              cd ../rdso
+              apt-get -qq update && apt-get -qq install gcc
+              # yum -y install epel-release
+              # yum -y install python-pip
+              pip install --quiet --upgrade pip
+              pip install --quiet -r requirements.txt
+              python -m nltk.downloader stopwords
+              python movies.py
+              cd ../../../../
+              cp -R source/services/data-science-service/data/ .
+              pwd
+              ls -all
+          inputs:
+            - name: source
+          outputs:
+            - name: data
+      - put: data
+  - name: Build Data Model
+    public: true
+    plan:
+      - get: source
+      # - get: version
+      #   passed: [Initialize]
+      - get: data
+        trigger: true
+        passed: [Capture data and push to s3]
+      - task: Train model
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              mkdir -p source/services/data-science-service/data/
+              mkdir -p source/services/data-science-service/models/
+              ls ./data/data
+              # cp -R ./data/data/movies_df.pkl source/services/data-science-service/data/.
+              cp -R ./data/data/* source/services/data-science-service/data/.
+              cd source/services/data-science-service/rdso
+              apt-get -qq update && apt-get -qq install gcc
+              pip install --quiet --upgrade pip
+              pip install --quiet -r requirements.txt
+              python -c "import nltk;nltk.download('stopwords')"
+              pwd
+              ls -all ../../../../
+              ls -all ../../../../models
+              ls -all ../../../../data
+              ls -all ../../../../data/data
+              ls -all ../../../../data/data/data
+              ls -all 
+              touch testfile.txt
+              python vectorize.py
+              ls -all ../models/
+              cd ../../../../
+              cp -R source/services/data-science-service/models/ .
+          inputs:
+            - name: source
+            - name: data
+          outputs:
+            - name: models
+      - put: models
+  # - name: Push Data Service
+  #   public: true
+  #   plan:
+  #     - get: source
+  #       trigger: true
+  #       passed: [Provision ECR Repositories]
+  #     - get: version
+  #       trigger: false
+  #     - get: data
+  #       trigger: true
+  #       passed: [Build Data Model]
+  #     - get: models
+  #       trigger: true
+  #       passed: [Build Data Model]
+  #     - task: Package API
+  #       params:
+  #         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+  #         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+  #         AWS_DEFAULT_REGION: us-east-1
+  #       config:
+  #         platform: linux
+  #         image_resource:
+  #           type: docker-image
+  #           source:
+  #             repository: carlomazzaferro/concourse-python-minimal
+  #         run:
+  #           path: sh
+  #           args:
+  #           - -ec
+  #           - |
+  #             cd build
+  #             cp -r ../source/services/data-science-service/rdso/* .
+  #             cp -r ../data .
+  #             cp -r ../models .
+  #         inputs:
+  #           - name: source
+  #           - name: data
+  #           - name: models
+  #         outputs:
+  #           - name: build
+  #     - put: main-ds-service-docker-image
+  #       params:
+  #         build: build
+  #         tag_file: version/number
 
 ###################### BUILD SERVICES ############################
   - name: Build UI
@@ -212,22 +442,23 @@ jobs:
             args:
             - -ec
             - |
-              echo "begin build front end script"
-              cd source/ui/sector-ui
-
-              echo "building front end"
-              npm install
-              yarn build
-              echo "front end build complete"
-
-              echo "pushing results to sonarqube"
-              echo "pushing results to sonarqube complete"
-
-              echo "preparing files for container build"
-              cp ./container/Dockerfile ../../../docker/.
-              cp ./container/start-nginx.sh ../../../docker/.
-              cp -Rf ./container/config ../../../docker/.
-              cp -Rf ./build ../../../docker/.
+                echo "begin build front end script"
+                cd source/ui/sector-ui
+                echo "building front end"
+                npm install 
+                yarn build
+                echo "front end build complete"
+                echo "installing sonarqube"
+                npm install -g sonarqube-scanner
+                sonar-scanner -h
+                echo "installing sonarqube"
+                sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
+                echo "pushing results to sonarqube complete"
+                echo "preparing files for container build"
+                cp ./container/Dockerfile ../../../docker/.
+                cp ./container/start-nginx.sh ../../../docker/.
+                cp -Rf ./container/config ../../../docker/.
+                cp -Rf ./build ../../../docker/.
           inputs:
           - name: source
           outputs:
@@ -235,6 +466,7 @@ jobs:
         on_failure:
           put: slack-notify
           params:
+            channel: '#build_notifications'
             text: |
               "Build failed on job 'Build-Project'. Check it out at: 'https://3.226.130.180/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME'"
             silent: true
@@ -297,7 +529,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -DskipTests -Djava.version=10
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -314,11 +546,18 @@ jobs:
             - |
               cd source/ui/server
               # now build with java 12
-              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests   
+              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
           inputs:
           - name: source
           outputs:
           - name: vars
+      # on_failure:
+      #   put: slack-notify
+      #   params:
+      #     channel: '#build_notifications'
+      #     text: |
+      #       "Build failed on job 'Build-Project'. Check it out at: 'https://3.226.130.180/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME'"
+      #     silent: true
 
 ###################### FUNCTIONAL TESTS############################
   # - name: Execute main-ds-service Unit and Integration Tests
@@ -387,6 +626,9 @@ jobs:
       - get: source
         trigger: true
         passed: [Initialize]
+      - get: models
+        trigger: true
+        ##add me back passed: [Build Data Model]
       - get: version
         passed: [Initialize]
       - task: Execute Test
@@ -407,17 +649,17 @@ jobs:
               - -exc
               - |
                 cd source/services/data-science-service
-                pip install --upgrade pip && pip install -r tests_require.txt
-                pip list
-                /usr/local/bin/pytest --junitxml results.xml
-                echo "Push results to sonarqube"
-                wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
-                unzip -qq sonar-*
-                rm sonar-*.zip
-                mv sonar* sonar-scanner
-                export PROJECT_VERSION=`cat version/number`
-                sonar-scanner/bin/sonar-scanner -h
-                sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
+                # pip install --upgrade pip && pip install -r tests_require.txt
+                # pip list
+                # /usr/local/bin/pytest --junitxml results.xml
+                # echo "Push results to sonarqube"
+                # wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+                # unzip -qq sonar-*
+                # rm sonar-*.zip
+                # mv sonar* sonar-scanner
+                # export PROJECT_VERSION=`cat version/number`
+                # sonar-scanner/bin/sonar-scanner -h
+                # sonar-scanner/bin/sonar-scanner -Dsonar.sources=./rdso -Dsonar.tests=./tests -Dsonar.projectVersion="${PROJECT_VERSION}" -Dsonar.projectKey=rdso-dss -Dsonar.projectName=rdso-dss -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.python.xunit.reportPath=./results.xml
   - name: Execute server Contract Tests
     public: true
     plan:
@@ -453,49 +695,32 @@ jobs:
     public: true
     serial: true
     plan:
+      - get: version
       - get: source
         passed:
           #- Execute main-ds-service Contract Tests
           - Execute server Contract Tests
           - Build UI
+          #- Push DS Image
         trigger: true
-      - get: version
-      - task: Write Variables
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: bytecubed/bytecubed-java-ci
-          run:
-            path: sh
-            args:
-              - -exc
-              - |
-                echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
-                echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
-                echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
-                echo "Verify/Create ECR Repos"
-          outputs:
-            - name: vars
-          inputs:
-            - name: version
       - put: terraform
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
-          env_name: terraform   #workspace
-          var_files: [./vars/terraform.tfvars]
-          vars:
-            environment: terraform
+          env_name: ecr   #workspace
+          env:
+            TF_VAR_aws_region: ((bucket_aws_region))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_bucket_name: ((tf_backend))
       - put: terraform
         params:
           terraform_source: source/config/ecr-setup
-          env_name: terraform
+          env_name: ecr
           plan_run: true
-          var_files: [./vars/terraform.tfvars]
-          vars:
-            environment: terraform
+          env:
+            TF_VAR_aws_region: ((bucket_aws_region))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_bucket_name: ((tf_backend))
 
   - name: Push UI
     public: true
@@ -577,34 +802,78 @@ jobs:
           build: docker
           tag_file: version/number
 
-  - name: Push main-ds-service Image
+  # - name: Push main-ds-service Image
+  #   public: true
+  #   plan:
+  #     - get: source
+  #       passed:
+  #         - Provision ECR Repositories
+  #       trigger: true
+  #     - get: version
+  #       passed:
+  #         - Provision ECR Repositories
+  #     - put: main-ds-service-docker-image
+  #       params:
+  #         build: source/services/data-science-service/rdso
+  #         tag_file: version/number
+  #         #additional_tags:
+  #          # -
+  - name: Push DS Image
     public: true
     plan:
       - get: source
-        passed:
-          - Provision ECR Repositories
         trigger: true
+        passed: [ Provision ECR Repositories]
       - get: version
-        passed:
-          - Provision ECR Repositories
+        trigger: false
+        passed: [ Provision ECR Repositories]
+      - get: models
+        trigger: true
+        passed: [Execute main-ds-service Tests]
+      - get: data
+      - task: Package API
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              cd build
+              cp -r ../source/services/data-science-service/rdso/* .
+              cp -r ../data .
+              cp -r ../models .
+          inputs:
+            - name: source
+            - name: data
+            - name: models
+          outputs:
+            - name: build
       - put: main-ds-service-docker-image
         params:
-          build: source/services/data-science-service/rdso
+          build: build
           tag_file: version/number
-
 ###################### DEPLOY SERVICE ############################
   - name: Deploy Services To Dev
     serial: true
     plan:
     - get: source
       passed:
-      - Push main-ds-service Image
+      - Push DS Image
       - Push server Image
       - Push UI
       trigger: true
     - get: version
       passed:
-      - Push main-ds-service Image
+      - Push DS Image
       - Push server Image
       - Push UI
       trigger: true
@@ -614,7 +883,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
         TF_VAR_access_key: ((aws_secret_access_key))
         TF_VAR_ecr_image_region: us-east-1
-        TF_VAR_region: us-east-1
+        #TF_VAR_aws_region: us-east-1
         TF_VAR_base_domain: ((base_domain))
         TF_VAR_access_key: ((aws_access_key_id))
         TF_VAR_access_secret: ((aws_secret_access_key))
@@ -637,14 +906,21 @@ jobs:
             export TF_VAR_images_version=`cat version/number`
 
             cd source/config/service-setup
+            terraform version
             terraform init
             # Always try to create the workspace, ignore non-zero exit code if it already exists
             terraform workspace new dev || true
-            terraform refresh
+            terraform workspace list
             terraform workspace select dev
-            terraform apply --auto-approve
-            #export SERVER_DNS_NAME=`terraform output server-dns-name`
-            #source/wait-for-status-code-at-url.sh SERVER_DNS_NAME/actuator/health 200
+            terraform refresh
+            #export TF_LOG=debug
+            terraform apply -parallelism=20 --auto-approve
+
+            echo "Waiting for server to come up"
+            export SERVER_DNS_NAME=`terraform output server_dns_name`
+            cd ../..
+            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            echo "Server is up!!"
         inputs:
         - name: source
         - name: version
@@ -669,7 +945,7 @@ jobs:
 #        vars:
 #          environment: dev
 
-  - name: Deploy Services To Production
+  - name: Deploy Services To Test
     serial: true
     plan:
     - get: source
@@ -690,9 +966,108 @@ jobs:
           args:
           - -ec
           - |
-            echo image-version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
             echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
-            echo region = \"us-east-1\" >> vars/terraform.tfvars
+            #echo region = \"us-east-1\" >> vars/terraform.tfvars
+            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+            echo infra_version = \"useless\" >> vars/terraform.tfvars
+            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo "Planning deployment to the test environment"
+        inputs:
+        - name: version
+        outputs:
+        - name: vars
+    - put: terraform
+      params:
+        # env:
+        #   AWS_REGION: ((test_aws_region))
+        env_name: test #terraform workspace
+        plan_only: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+    - put: terraform
+      params:
+        # env:
+        #   AWS_REGION: ((test_aws_region))
+        env_name: test #terraform workspace
+        plan_run: true
+        terraform_source: source/config/service-setup
+        var_files:
+        - ./vars/terraform.tfvars
+    - task: show-outputs
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: alpine
+        inputs:
+        - name: terraform
+        - name: source
+        run:
+          path: /bin/sh
+          args:
+            - -c
+            - |
+                echo "name: $(cat terraform/name)"
+                echo "metadata: $(cat terraform/metadata)"
+                # source/wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+                # echo "Server is up!!"
+    # - task: Check-Server
+    #   config:
+    #     platform: linux
+    #     image_resource:
+    #       type: docker-image
+    #       source:
+    #         repository: ugroup/centos-terraform-aws
+    #     run:
+    #       path: sh
+    #       args:
+    #       - -ec
+    #       - |
+    #         cd source/config/service-setup
+    #         terraform init
+    #         terraform workspace select test
+    #         #export TF_LOG=debug
+    #         #`cat source/.git/HEAD`
+    #         echo "Waiting for server to come up"
+    #         export SERVER_DNS_NAME=`terraform output server_dns_name`
+    #         cd ../..
+    #         ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+    #         echo "Server is up!!"
+        # inputs:
+        # - name: source
+
+  - name: Deploy Services To Production
+    serial: true
+    plan:
+    - get: source
+      passed:
+      - Deploy Services To Test
+    - get: version
+      # passed:
+      # - Execute OWASP Security Scan Test
+    - task:  Write Variables and Run TF Deploy
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ugroup/centos-terraform-aws
+        run:
+          path: sh
+          args:
+          - -ec
+          - |
+            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
+            #echo region = \"us-east-1\" >> vars/terraform.tfvars
             echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
             echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
             echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
@@ -709,26 +1084,39 @@ jobs:
     - put: terraform
       params:
         env:
-          AWS_REGION: us-east-1
-        env_name: prod
+          AWS_REGION: ((prod_aws_region))
+        env_name: prod #terraform workspace
         plan_only: true
         terraform_source: source/config/service-setup
         var_files:
         - ./vars/terraform.tfvars
-        vars:
-          environment: prod
     - put: terraform
       params:
         env:
-          AWS_REGION: us-east-1
-        env_name: prod
+          AWS_REGION: ((prod_aws_region))
+        env_name: prod #terraform workspace
         plan_run: true
         terraform_source: source/config/service-setup
         var_files:
         - ./vars/terraform.tfvars
-        vars:
-          environment: prod
-    
+    - task: show-outputs
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: alpine
+        inputs:
+        - name: terraform
+        - name: source
+        run:
+          path: /bin/sh
+          args:
+            - -c
+            - |
+                echo "name: $(cat terraform/name)"
+                echo "metadata: $(cat terraform/metadata)"
+
   - name: Execute OWASP Security Scan Prod
     serial: false
     plan:
@@ -752,7 +1140,7 @@ jobs:
         run:
           path: /bin/bash
           args:
-          - -ce
+          - -c
           - |
             echo "starting scan"
             cd  #NEED THIS
@@ -768,8 +1156,8 @@ jobs:
             ps -ef
             # need to kill this process: Xvfb :1 -screen 0 1024x768x16 -ac
             kill -15 19
+            kill -15 20
             #kill `pidof zap`
             ps -ef
             echo "done"
-            exit 0      
-            
+            exit 0

@@ -1,26 +1,57 @@
 package group.u.records.service;
 
-import group.u.records.ds.DataScienceScoringProvider;
-import group.u.records.ds.GenreDistributionImageProvider;
-import group.u.records.ds.PredictiveAutoRedactProvider;
-import group.u.records.models.MovieDetail;
+import group.u.records.content.Dossier;
+import group.u.records.content.Genre;
+import group.u.records.ds.providers.GenreDistributionImageProvider;
+import group.u.records.ds.providers.MovieSimilarityProvider;
+import group.u.records.ds.providers.PredictiveAutoRedactProvider;
+import group.u.records.models.entity.MovieDetail;
+import group.u.records.security.DossierRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class DossierBuilderService {
 
-    Logger logger = LoggerFactory.getLogger(DossierBuilderService.class);
+    private Logger logger = LoggerFactory.getLogger(DossierBuilderService.class);
     private PredictiveAutoRedactProvider autoRedactProvider;
+    private final MovieSimilarityProvider scoringProvider;
+    private final GenreDistributionImageProvider imageProvider;
+    private DossierRepository dossierRepository;
 
     public DossierBuilderService(PredictiveAutoRedactProvider autoRedactProvider,
-                                 DataScienceScoringProvider scoringProvider,
-                                 GenreDistributionImageProvider imageProvider ) {
+                                 MovieSimilarityProvider scoringProvider,
+                                 GenreDistributionImageProvider imageProvider,
+                                 DossierRepository dossierRepository ) {
         this.autoRedactProvider = autoRedactProvider;
+        this.scoringProvider = scoringProvider;
+        this.imageProvider = imageProvider;
+        this.dossierRepository = dossierRepository;
     }
 
-    public void generateDossier(MovieDetail movieDetail) {
+
+    public void generateDossiers(List<MovieDetail> movieDetails ){
+        movieDetails
+                .stream()
+                .map(f->generateDossier(f))
+                .collect(toList());
+
+    }
+
+    public Dossier generateDossier(MovieDetail movieDetail) {
+        Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
+                imageProvider.getJson(movieDetail.getId()))));
+        dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
+        logger.debug("About to save dossier:  " + dossier.getId());
+        dossierRepository.save(dossier);
+
+        return dossier;
     }
 }

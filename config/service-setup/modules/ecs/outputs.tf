@@ -10,9 +10,9 @@ output "dns_name" {
   value = "${aws_instance.compute.public_ip}"
 }
 
-output "sg-allow-ssh" {
-  value = "${aws_security_group.allow_ssh.id}"
-}
+# output "sg-allow-ssh" {
+#   value = "${aws_security_group.allow_ssh.id}"
+# }
 
 output "sg-allow-cluster" {
   value = "${aws_security_group.allow_cluster.id}"

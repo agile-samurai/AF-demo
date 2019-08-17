@@ -1,19 +1,18 @@
 import React from 'react';
 import './App.css';
-import {Redirect, Route, Switch} from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
-import {NotFoundPage} from "./components/NotFoundPage";
-import Login from "./components/Login";
-import Home from "./components/Home";
-import Logout from "./components/Logout";
 import {connect} from "react-redux";
-import Dossier from "./components/Dossier";
-import ActorSearch from "./components/ActorSearch/ActorSearch";
 import {ThemeProvider, withStyles} from '@material-ui/styles';
-
 import {createMuiTheme} from "@material-ui/core";
 import {green, grey} from "@material-ui/core/colors";
+import Login from "./components/Login/Login";
+import Dossier from "./components/Dossier/Dossier";
+import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
+import ActorSearch from "./components/ActorSearch/ActorSearch";
+import TrainingData from "./components/TrainingData/TrainingData";
+import DossierList from "./components/DossierList/DossierList";
 
 const theme = createMuiTheme({
     palette: {
@@ -70,9 +69,9 @@ export class App extends React.Component {
     render() {
         const {location} = this.props;
 
-        if(!this.props.jwtLoaded) {
-            return <ThemeProvider theme={theme}><ActorSearch/></ThemeProvider>;
-        }
+        // if(!this.props.jwtLoaded) {
+        //     return <ThemeProvider theme={theme}><Login/></ThemeProvider>;
+        // }
 
         return (
             <ThemeProvider theme={theme}>
@@ -80,23 +79,27 @@ export class App extends React.Component {
                     <Route
                         exact={true}
                         path="/"
-                        component={ActorSearch}
+                        component={DossierList}
                     />
                     <Route
                         path="/login"
                         component={Login}
                     />
                     <Route
-                        path="/logout"
-                        component={Logout}
-                    />
-                    <Route
                         path="/actor-search"
                         component={ActorSearch}
                     />
                     <Route
+                        path="/dossier-list-and-search"
+                        component={DossierList}
+                    />
+                    <Route
                         path="/dossier/:dossierID"
                         component={Dossier}
+                    />
+                    <Route
+                        path="/training-data"
+                        component={TrainingData}
                     />
                     <Route
                         component={NotFoundPage}

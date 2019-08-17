@@ -49,28 +49,28 @@ variable "timeout" {
   default = 60
 }
 
-variable "PERSISTENCE_MONGO_URL" {}
-
-variable "base_domain" {
-  default = "ugrouptech.com"
-}
+# variable "base_domain" {
+#   default = "ugrouptech.com"
+# }
 
 variable "zone_id" {}
 
-variable "SPRING_DATA_MONGODB_HOST" {}
+# variable "SPRING_DATA_MONGODB_HOST" {}
 
-variable "SPRING_DATA_MONGODB_USERNAME" {
-  default = "username"
-}
+# variable "SPRING_DATA_MONGODB_USERNAME" {
+#   default = "username"
+# }
+# variable "SPRING_DATA_MONGODB_PASSWORD" {
+#   default = "password"
+# }
+
+# variable "SPRING_DATA_MONGODB_PORT" {
+#   default = 27017
+# }
+
 variable "data_science_url" {}
 
-variable "SPRING_DATA_MONGODB_PASSWORD" {
-  default = "password"
-}
 
-variable "SPRING_DATA_MONGODB_PORT" {
-  default = 27017
-}
 
 variable "KAFKA_INTERNAL_IP" {
   default = "127.0.0.1"
@@ -90,3 +90,7 @@ variable "cloud_watch_log_group_name" {}
 variable "es_endpoint" {}
 
 variable "logs_bucket" {}
+
+variable "access_key" {}
+
+variable "access_secret" {}

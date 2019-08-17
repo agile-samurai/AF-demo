@@ -1,0 +1,33 @@
+.movie-title {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.movie-title-wrapper {
+    height: 28px;
+    width: 142px;
+    padding: 20px;
+    background: #1e1e1e;
+    color: hsla(0,0%,100%,.87);
+    margin-top: 29px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-wrapper {
+    margin-top: 32px;
+}
+
+.movie-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 182px;
+    height: 242px;
+    justify-self: center;
+    background: #e6e6e6;
+}

@@ -1,7 +1,5 @@
 variable "vpc_id" {}
 
-variable "vpc_cidr" {}
-
 variable "public-subnets" {
   type        = "list"
   description = "public subnets used in vpc"
@@ -12,7 +10,7 @@ variable "region" {}
 
 variable "domain" {
   description = "Domain name for Elasticsearch cluster"
-  default     = "sbirone-es"
+  default     = "-es"
 }
 
 variable "es_version" {

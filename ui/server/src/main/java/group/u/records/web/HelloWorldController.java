@@ -15,11 +15,6 @@ public class HelloWorldController {
         this.dataScienceAPIService = dataScienceAPIService;
     }
 
-    @GetMapping
-    public String getHelloWorld() {
-        return dataScienceAPIService.getHelloWorldScore();
-    }
-
     @GetMapping("/metrics")
     public String getMetrics() { return dataScienceAPIService.getMetrics(); }
 }

@@ -18,15 +18,15 @@ class Bucket(Mapping):
         for k in kwargs:
             os.environ[k] = kwargs[k]
         try:
-            profile = os.environ['AWS_PROFILE']
+            profile = os.environ["AWS_PROFILE"]
             session = boto3.Session(profile_name=profile)
-            self._s3 = session.client('s3', config=cfg)
+            self._s3 = session.client("s3", config=cfg)
         except KeyError:
             try:
                 self._s3 = boto3.client(
                     "s3",
-                    aws_access_key_id=os.environ["aws_access_key_id"],
-                    aws_secret_access_key=os.environ["aws_secret_access_key"],
+                    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
                     config=cfg,
                 )  # type: boto3.client
             except KeyError:
@@ -53,20 +53,20 @@ class Bucket(Mapping):
             while True:
                 list_kwargs = dict(MaxKeys=1000, **base_kwargs)
                 if continuation_token:
-                    list_kwargs['ContinuationToken'] = continuation_token
+                    list_kwargs["ContinuationToken"] = continuation_token
                 response = s3.list_objects_v2(**list_kwargs)
-                yield from response.get('Contents', [])
-                if not response.get('IsTruncated'):  # At the end of the list?
+                yield from response.get("Contents", [])
+                if not response.get("IsTruncated"):  # At the end of the list?
                     break
-                continuation_token = response.get('NextContinuationToken')
+                continuation_token = response.get("NextContinuationToken")
 
         # Get the list of files under the specified directory
         self._keys = set(
             [
                 k["Key"]
-                for k in get_all_s3_objects(self._s3,
-                                            Bucket=self._bucket, Prefix=self._root
-                                            )
+                for k in get_all_s3_objects(
+                    self._s3, Bucket=self._bucket, Prefix=self._root
+                )
             ]
         )
 

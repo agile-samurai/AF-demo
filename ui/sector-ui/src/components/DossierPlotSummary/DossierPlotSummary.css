@@ -1,0 +1,63 @@
+.plot-summary {
+    width: 690px;
+}
+
+.plot-summary-header {
+    background: #262626;
+    padding-left: 24px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    color: white;
+    margin-top: 44px;
+    border-bottom: 3px solid #171717;
+}
+
+.plot-summary-body {
+    background: #262626;
+    color: white;
+    padding-top: 22px;
+    padding-left: 24px;
+    padding-bottom: 22px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.redaction-enabled .COMPANY, .company-entity-type .color-block  {
+    background: green;
+}
+
+.redaction-enabled .COUNTRY, .country-entity-type .color-block {
+    background: blue;
+}
+
+.redaction-enabled .PERSON, .person-entity-type .color-block {
+    background: red;
+}
+
+.redaction-item-types-legend {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.entity-type-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.entity-type-label:not(:first-child) {
+    margin-left: 20px;
+}
+
+.color-block {
+    width: 30px;
+    height: 20px;
+}
+
+
