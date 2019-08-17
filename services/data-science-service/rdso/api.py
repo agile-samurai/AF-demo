@@ -21,9 +21,11 @@ def load_movies_df(api):
     """
     global movies_df
     cwd = pathlib.Path(".").resolve()
-    data_dir = "data"
+    data_dir = cwd.parents[0] / "data"
     if not data_dir.is_dir():
-        data_dir.mkdir()
+        data_dir = cwd / "data"
+        if not data_dir.is_dir():
+            data_dir.mkdir()
     movies_df_file = data_dir / "movies_df.pkl"
 
     # S3 file handling to be pushed off to the pipeline --------------------------
@@ -88,9 +90,11 @@ def load_model(api):
     trainables_filename = model_filename + ".trainables.syn1neg.npy"
     vectors_filename = model_filename + ".wv.vectors.npy"
     cwd = pathlib.Path(".").resolve()
-    models_dir = "models"
+    models_dir = cwd.parents[0] / "models"
     if not models_dir.is_dir():
-        models_dir.mkdir()
+        models_dir = cwd / "models"
+        if not models_dir.is_dir():
+            models_dir.mkdir()
     models_file = models_dir / model_filename
 
     # S3 file handling to be pushed off to the pipeline --------------------------
@@ -162,13 +166,14 @@ def show_test_plot(n=None):
     """
     if not n:
         n = 500
-    p = plot.make_test_image(n=n)
+    p = plot.make_test_image(n=int(n))
     return plot.jsonify_image(p)
 
 
 @hug.get("/all_movie_scatter_plot")
 def get_all_movie_plot():
-    mdf = movies.merged_movie_data(1000)
+    mdf = movies_df  # global, set at startup
+    # mdf = movies.merged_movie_data(1000)
     p = plot.sc_plot_genre_colors(mdf)
     return plot.jsonify_image(p)
 
