@@ -6,12 +6,12 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 
-public class DossierRepositoryTest {
+public class MasterDossierRepositoryTest {
 
     @Test
     @Ignore
     public void shouldEncryptDossier(){
-        DossierRepository repository = new DossierRepository(mock(DossierEncryptionService.class), mock(S3DataService.class));
+        MasterDossierRepository repository = new MasterDossierRepository(mock(DossierEncryptionService.class), mock(S3DataService.class));
     }
 
 }

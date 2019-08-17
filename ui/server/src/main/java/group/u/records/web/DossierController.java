@@ -1,10 +1,9 @@
 package group.u.records.web;
 
-import group.u.records.content.Dossier;
-import group.u.records.security.DossierRepository;
+import group.u.records.security.MasterDossierRepository;
+import group.u.records.service.MasterDossier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -15,27 +14,27 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 @RestController
 @RequestMapping("/dossier")
 public class DossierController {
-    private DossierRepository dossierRepository;
+    private MasterDossierRepository masterDossierRepository;
 
-    public DossierController(DossierRepository dossierRepository) {
-        this.dossierRepository = dossierRepository;
+    public DossierController(MasterDossierRepository masterDossierRepository) {
+        this.masterDossierRepository = masterDossierRepository;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dossier> get(@PathVariable UUID id ){
-        return ok(dossierRepository.get(id));
+    public ResponseEntity<MasterDossier> get(@PathVariable UUID id ){
+        return ok(masterDossierRepository.get(id));
     }
 
     @PostMapping("/{id}/note")
-    public ResponseEntity<Dossier> post(@PathVariable UUID id, @RequestBody String note ){
-        dossierRepository.addNote(id, getContext().getAuthentication().getName(), note);
-        return ok(dossierRepository.get(id));
+    public ResponseEntity<MasterDossier> post(@PathVariable UUID id, @RequestBody String note ){
+        masterDossierRepository.addNote(id, getContext().getAuthentication().getName(), note);
+        return ok(masterDossierRepository.get(id));
     }
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_SUPERVISOR")
     public ResponseEntity delete(@PathVariable UUID id){
-        dossierRepository.delete(id);
+        masterDossierRepository.delete(id);
         return ok().build();
     }
 
