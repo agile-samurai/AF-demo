@@ -1,4 +1,4 @@
-package group.u.records.models;
+package group.u.records.models.entity;
 
 import group.u.records.models.data.Movie;
 

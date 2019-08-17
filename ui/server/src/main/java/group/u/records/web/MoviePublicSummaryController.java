@@ -1,6 +1,6 @@
 package group.u.records.web;
 
-import group.u.records.models.MoviePublicSummary;
+import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.service.MoviePublicSummaryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

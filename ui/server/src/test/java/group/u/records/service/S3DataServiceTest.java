@@ -2,14 +2,10 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.ds.GenreDistributionImageProvider;
-import group.u.records.ds.MovieSimilarityProvider;
-import group.u.records.ds.PredictiveAutoRedactProvider;
-import group.u.records.models.MovieDetail;
+import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
-import group.u.records.security.DossierRepository;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

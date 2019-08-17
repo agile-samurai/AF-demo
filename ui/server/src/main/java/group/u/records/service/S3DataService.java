@@ -2,10 +2,10 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.content.Dossier;
-import group.u.records.models.Actor;
-import group.u.records.models.MovieDetail;
-import group.u.records.models.MoviePublicSummary;
-import group.u.records.models.MovieTitle;
+import group.u.records.models.entity.Actor;
+import group.u.records.models.entity.MovieDetail;
+import group.u.records.models.entity.MoviePublicSummary;
+import group.u.records.models.entity.MovieTitle;
 import group.u.records.models.data.Movie;
 import group.u.records.repository.ActorRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;

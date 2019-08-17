@@ -1,6 +1,6 @@
 package group.u.records.web;
 
-import group.u.records.models.Actor;
+import group.u.records.models.entity.Actor;
 import group.u.records.service.ActorService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
