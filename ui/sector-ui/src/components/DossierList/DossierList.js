@@ -96,9 +96,9 @@ export default class DossierList extends React.Component {
                 password: 'password'
             }
         })
-        .then(response => { // TODO make the call to exchange the Movie for a Dossier, then concat that Dossier with the others on this.state
+        .then(response => {
             this.setState({
-                moviePublicSummarySearchResults: this.state.moviePublicSummarySearchResults.concat(response.data.content),
+                moviePublicSummarySearchResults: this.state.moviePublicSummarySearchResults.concat(response.data),
                 cursor: cursor + 1
             });
         });
