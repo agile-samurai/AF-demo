@@ -9,10 +9,6 @@ import {Link} from "react-router-dom";
 import DossierContent from "../DossierContent/DossierContent";
 
 class Dossier extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className="dossier-page">

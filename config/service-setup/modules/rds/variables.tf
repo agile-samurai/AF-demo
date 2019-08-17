@@ -1,5 +1,5 @@
 variable "identifier" {
-  default     = "sbir-one-rds"
+  default     = "rds-instance"
 }
 
 variable "storage" {

@@ -10,7 +10,7 @@ variable "region" {}
 
 variable "domain" {
   description = "Domain name for Elasticsearch cluster"
-  default     = "sbirone-es"
+  default     = "-es"
 }
 
 variable "es_version" {

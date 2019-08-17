@@ -31,7 +31,7 @@ resource "aws_db_subnet_group" "default" {
 
 resource "aws_db_snapshot" "test" {
   db_instance_identifier = "${aws_db_instance.default.id}"
-  db_snapshot_identifier = "sbir-one-reporting-db-snapshot"
+  db_snapshot_identifier = "rds-db-snapshot"
 }
 
 // security groups
