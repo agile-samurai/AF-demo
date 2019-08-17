@@ -28,6 +28,10 @@ public class MovieTitle {
         return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
     }
 
+    public static MovieTitle from(MovieDetail movie) {
+        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
+    }
+
     public String getName() {
         return name;
     }

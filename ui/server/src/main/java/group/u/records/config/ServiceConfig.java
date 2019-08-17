@@ -2,6 +2,10 @@ package group.u.records.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.u.records.datasource.ImdbMovieDetailsDataSource;
+import group.u.records.datasource.OmdbMovieDetailsDataSource;
+import group.u.records.service.AmazonReviewsDataSource;
+import group.u.records.service.MovieDetailsDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +14,8 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+
+import static java.util.Arrays.asList;
 
 @Configuration
 public class ServiceConfig {
@@ -39,4 +45,12 @@ public class ServiceConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
+    @Bean
+    public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
+                                                           OmdbMovieDetailsDataSource omdb,
+                                                           AmazonReviewsDataSource amazon ){
+        return new MovieDetailsDataSourceManager(asList(imdb));
+    }
+
 }

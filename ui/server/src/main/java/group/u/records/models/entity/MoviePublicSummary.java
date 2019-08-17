@@ -1,5 +1,6 @@
 package group.u.records.models.entity;
 
+import group.u.records.models.Person;
 import group.u.records.models.data.Movie;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -15,17 +16,15 @@ public class MoviePublicSummary {
     @Id
     private UUID id;
 
-    private List<Actor> actors;
-
-    @Field(type = Text, fielddata = true)
+    private List<Person> people;
     private String name;
 
     public UUID getId() {
         return id;
     }
 
-    public List<Actor> getActors() {
-        return actors;
+    public List<Person> getPeople() {
+        return people;
     }
 
     public String getName() {
@@ -36,7 +35,13 @@ public class MoviePublicSummary {
 
     public MoviePublicSummary(Movie movie) {
         this.id = movie.getId();
-        this.actors = movie.getActor();
+        this.people = movie.getActor();
+        this.name = movie.getName();
+    }
+
+    public MoviePublicSummary(MovieDetail movie) {
+        this.id = movie.getId();
+        this.people = movie.getPeople();
         this.name = movie.getName();
     }
 }
