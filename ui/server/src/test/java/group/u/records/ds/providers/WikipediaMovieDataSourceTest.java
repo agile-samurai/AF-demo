@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class WikipediaMoveDataSourceTest {
+public class WikipediaMovieDataSourceTest {
 
     @Test
     @Ignore
@@ -16,6 +16,7 @@ public class WikipediaMoveDataSourceTest {
     }
 
     @Test
+    @Ignore
     public void shouldExtractCharacters() {
         WikipediaMoveDataSource dataSource = new WikipediaMoveDataSource();
         dataSource.getCharacters("foo", loadTestFile());

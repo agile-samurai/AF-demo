@@ -36,17 +36,17 @@ public class DossierBuilderService {
     }
 
 
-    public void generateDossiers(List<MovieDetail> movieDetails ){
-        movieDetails
+    public MasterDossier generateDossiers(List<MovieDetail> movieDetails ){
+        return new MasterDossier(movieDetails
                 .stream()
                 .map(f->generateDossier(f))
-                .collect(toList());
+                .collect(toList()));
 
     }
 
     public Dossier generateDossier(MovieDetail movieDetail) {
         Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
-                imageProvider.getJson(movieDetail.getId()))));
+                imageProvider.getJson(movieDetail.getId()))), movieDetail.getLineage());
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
         logger.debug("About to save dossier:  " + dossier.getId());

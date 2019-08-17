@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MovieDetailsDataSourceManagerTest {
+public class MovieDetailsLineageManagerTest {
 
     @Test
     public void shouldProvideReferencesToAllRegisteredDataSourceProviders(){
