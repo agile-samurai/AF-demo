@@ -322,7 +322,7 @@ resource "aws_security_group" "allow_cluster" {
   }
 
   tags = {
-    Name = "SBIR-ONE allow cluster - ${terraform.workspace}"
+    Name = "Allow cluster - ${terraform.workspace}"
   }
 
   # depends_on = ["aws_security_group.allow_lb_traffic"]
@@ -356,36 +356,8 @@ resource "aws_security_group" "allow_inbound" {
   }
 
   tags = {
-    Name = "SBIR ONE allow inbound traffic - ${terraform.workspace}"
+    Name = "Allow inbound traffic - ${terraform.workspace}"
     Terraform = "true"
-    Project = "SBIR One"
-    Environment = "${terraform.workspace}"
-  }
-}
-
-resource "aws_security_group" "allow_ssh" {
-  name_prefix = "${var.vpc_id}-"
-  description = "Allow inbound SSH traffic for Bytecubed personel"
-  vpc_id = "${var.vpc_id}"
-
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["${var.admin_cidrs}"]
-  }
-
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "SBIR ONE allow ssh - ${terraform.workspace}"
-    Terraform = "true"
-    Project = "SBIR One"
     Environment = "${terraform.workspace}"
   }
 }

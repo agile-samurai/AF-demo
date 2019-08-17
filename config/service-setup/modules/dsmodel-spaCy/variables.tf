@@ -37,12 +37,10 @@ variable "memory" {
   default = 2048
 }
 
-variable "health_check_path" {
-  default = "/actuator/health"
-}
+variable "health_check_path" {}
 
 variable "matcher_ports" {
-  default = "200,302"
+  default = "302"
 }
 
 variable "interval" {

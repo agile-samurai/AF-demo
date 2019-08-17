@@ -105,7 +105,6 @@ module "elasticsearch" {
   region         = "${local.region}"
   #cidr_block     = var.cidr_block[terraform.workspace]
   instance_type = "m4.large.elasticsearch"
-
 }
 
 # module "mongodb" {
@@ -214,7 +213,7 @@ module "ds-spaCy-model" {
   container_family = "spaCy"
   #base_domain      = aws_route53_zone.primary.name
 
-  health_check_path = "/ui"
+  health_check_path = "/ui/"
   instance_count    = 1
   timeout           = 20
   container_port    = 80 #from container dockerfile
