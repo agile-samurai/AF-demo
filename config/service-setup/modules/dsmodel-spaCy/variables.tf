@@ -39,9 +39,6 @@ variable "memory" {
 
 variable "health_check_path" {}
 
-variable "matcher_ports" {
-  default = "302"
-}
 
 variable "interval" {
   default = 30
@@ -113,4 +110,8 @@ variable "cloud_watch_log_group_name" {}
 
 variable "postgres_port" {
   default = 5432
+}
+
+variable "matcher_ports" {
+  default = "200,302"
 }

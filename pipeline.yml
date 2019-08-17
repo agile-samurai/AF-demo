@@ -99,6 +99,7 @@ groups:
   - name: all
     jobs:
     - Create Terraform Persistence
+    - Create Infra
     - Initialize
     - Build UI
     - Build server and SonarQube
@@ -119,6 +120,7 @@ groups:
   - name: prepare
     jobs:
     - Create Terraform Persistence
+    - Create Infra
     - Initialize
   - name: model building
     jobs:
@@ -179,6 +181,40 @@ jobs:
                 aws s3api create-bucket --bucket ((tf_backend)) --region us-east-1
           outputs:
             - name: vars
+  - name: Create Infra
+    public: true
+    serial: true
+    plan:
+      - get: version
+      - get: source
+        passed:
+          - Create Terraform Persistence
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          plan_only: true
+          env_name: infra  #workspace
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_aws_infra_region: ((bucket_aws_region))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          env_name: infra
+          plan_run: true
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_aws_infra_region: ((bucket_aws_region))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
+
   - name: Initialize
     public: true
     plan:
@@ -303,6 +339,7 @@ jobs:
               cd source/services/data-science-service/imdb-scraper
               pip install --quiet -r requirements.txt
               export TESTING=true
+              export MAX_TRAINING_FILES=250
               python scraper.py && python parser.py
               cd ../rdso
               apt-get -qq update && apt-get -qq install gcc
@@ -351,6 +388,7 @@ jobs:
               ls ./data/data
               # cp -R ./data/data/movies_df.pkl source/services/data-science-service/data/.
               cp -R ./data/data/* source/services/data-science-service/data/.
+              ls -all source/services/data-science-service/data/.
               cd source/services/data-science-service/rdso
               apt-get -qq update && apt-get -qq install gcc
               pip install --quiet --upgrade pip
@@ -368,6 +406,9 @@ jobs:
               ls -all ../models/
               cd ../../../../
               cp -R source/services/data-science-service/models/ .
+              cp -R source/services/data-science-service/data/data/* source/services/data-science-service/data/.
+              ls source/services/data-science-service/data/
+              rm -rf source/services/data-science-service/data/data
           inputs:
             - name: source
             - name: data
@@ -849,8 +890,10 @@ jobs:
             - |
               cd build
               cp -r ../source/services/data-science-service/rdso/* .
-              cp -r ../data .
+              cp -r ../data/data .
               cp -r ../models .
+              ls -all ../
+
           inputs:
             - name: source
             - name: data

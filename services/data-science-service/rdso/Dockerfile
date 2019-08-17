@@ -11,4 +11,4 @@ COPY . /app
 RUN python -m nltk.downloader stopwords
 EXPOSE 8000
 
-ENTRYPOINT hug -f api.py
+CMD hug -f api.py
