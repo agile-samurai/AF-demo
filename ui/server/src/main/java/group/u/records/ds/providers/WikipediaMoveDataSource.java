@@ -2,9 +2,9 @@ package group.u.records.ds.providers;
 
 import de.fau.cs.osr.ptk.common.jxpath.AstNodePointerFactory;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.service.Lineage;
 import group.u.records.service.MovieDetailsDataSource;
 import group.u.records.service.S3DataService;
-import io.netty.util.internal.logging.InternalLogger;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.ri.JXPathContextReferenceImpl;
 import org.slf4j.Logger;
@@ -26,16 +26,18 @@ import org.sweble.wikitext.parser.utils.WtRtDataPrinter;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class WikipediaMoveDataSource implements MovieDetailsDataSource {
+public class WikipediaMoveDataSource extends MovieDetailsDataSource {
     private String folder;
     private S3DataService dataService;
     private Logger logger = LoggerFactory.getLogger(WikipediaMoveDataSource.class);
 
     public WikipediaMoveDataSource() {
+        super(Lineage.WIKIPEDIA);
     }
 
     public WikipediaMoveDataSource(@Value("${aws.folder.wikipedia}") String folder,
                                    S3DataService dataService) {
+        super(Lineage.WIKIPEDIA);
         this.folder = folder;
         this.dataService = dataService;
     }
@@ -90,9 +92,9 @@ public class WikipediaMoveDataSource implements MovieDetailsDataSource {
             while(results.hasNext()){
                 WtParagraph next = (WtParagraph) results.next();
                 WtNode infoBox = ((WtNode) next).get(2);
-                for( Object field : infoBox.getRtd().getFields() ){
-                    logger.debug("field:  " + field. );
-                }
+//                for( Object field : infoBox.getRtd().getFields() ){
+//                    logger.debug("field:  " + field. );
+//                }
                 logger.debug( "Special node: " + WtRtDataPrinter.print(infoBox));
                 logger.debug("Result:  " + WtRtDataPrinter.print(next));
             }

@@ -1,27 +1,44 @@
 package group.u.records.service;
 
-import group.u.records.models.data.Movie;
+import com.github.javafaker.Faker;
+import group.u.records.models.Person;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.models.entity.Review;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static group.u.records.service.Lineage.AMAZON;
+
 @Component
-public class AmazonReviewsDataSource implements MovieDetailsDataSource {
+public class AmazonReviewsDataSource extends MovieDetailsDataSource {
 
     private S3DataService dataService;
-    public enum DataSource {
-        IMDB,
-        AMAZON,
-        OMDB,
-        CSV
-    }
 
     public AmazonReviewsDataSource(S3DataService dataService) {
+        super(AMAZON);
         this.dataService = dataService;
     }
 
     @Override
     public MovieDetail getMovieDetails(String id) {
-        return new MovieDetail(new Movie());
-//        return dataService.processMovie(id);
+        List<Review> reviews = new ArrayList();
+        reviews.add(new Review( "fake reviewer", LocalDate.now(), Faker.instance().lorem().paragraph()));
+
+        List<Person> people = new ArrayList();
+        return new MovieDetail(UUID.nameUUIDFromBytes(id.getBytes()),
+                "Fake Name",
+                people,
+                Faker.instance().lorem().paragraph(),
+                Faker.instance().lorem().words(3),
+                "R",
+                LocalDate.now(),
+                "Fake",
+                "url",
+                reviews,
+                this.getLineage());
     }
 }

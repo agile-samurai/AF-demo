@@ -2,6 +2,7 @@ package group.u.records.content;
 
 import group.u.records.ds.EntityClassification;
 import group.u.records.models.Note;
+import group.u.records.service.Lineage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class Dossier {
     private String summary;
     private List<Genre> genres;
     private List<Note> notes;
+    private Lineage lineage;
 
     public String getName() {
         return name;
@@ -28,11 +30,16 @@ public class Dossier {
         return genres;
     }
 
-    public Dossier(UUID id, String name, String summary, List<Genre> genres) {
+    public Lineage getLineage() {
+        return lineage;
+    }
+
+    public Dossier(UUID id, String name, String summary, List<Genre> genres, Lineage lineage) {
         this.id = id;
         this.name = name;
         this.summary = summary;
         this.genres = genres;
+        this.lineage = lineage;
         this.notes = new ArrayList();
     }
 
