@@ -58,8 +58,10 @@ def split_genre(genre):
 if __name__ == '__main__':
     max_files = None
     if 'TESTING' in os.environ and os.environ['TESTING'] == 'true':
-        max_files = 10
-
+        if 'MAX_TRAINING_FILES' in os.environ:
+            max_files = int(os.environ['MAX_TRAINING_FILES'])
+        else:
+            max_files = 10
     cwd = pathlib.Path('.').resolve()
     data_dir = cwd.parents[0] / 'data'
     if not data_dir.is_dir():

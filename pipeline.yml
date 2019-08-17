@@ -279,15 +279,22 @@ jobs:
             args:
             - -ec
             - |
-              cd source/services/data-science-service/rdso
-              apt-get update && apt-get install gcc
+              cd source/services/data-science-service/imdb-scraper
+              pip install --quiet -r requirements.txt
+              export TESTING=true
+              python scraper.py && python parser.py
+              cd ../rdso
+              apt-get -qq update && apt-get -qq install gcc
               # yum -y install epel-release
               # yum -y install python-pip
-              pip install --upgrade pip
-              pip install -r requirements.txt
+              pip install --quiet --upgrade pip
+              pip install --quiet -r requirements.txt
+              python -m nltk.downloader stopwords
               python movies.py
               cd ../../../../
               cp -R source/services/data-science-service/data/ .
+              pwd
+              ls -all
           inputs:
             - name: source
           outputs:
@@ -319,15 +326,25 @@ jobs:
             - -ec
             - |
               mkdir -p source/services/data-science-service/data/
+              mkdir -p source/services/data-science-service/models/
               ls ./data/data
               # cp -R ./data/data/movies_df.pkl source/services/data-science-service/data/.
               cp -R ./data/data/* source/services/data-science-service/data/.
               cd source/services/data-science-service/rdso
-              apt-get update && apt-get install gcc
+              apt-get -qq update && apt-get -qq install gcc
               pip install --quiet --upgrade pip
               pip install --quiet -r requirements.txt
               python -c "import nltk;nltk.download('stopwords')"
-              python vectorize.py --local
+              pwd
+              ls -all ../../../../
+              ls -all ../../../../models
+              ls -all ../../../../data
+              ls -all ../../../../data/data
+              ls -all ../../../../data/data/data
+              ls -all 
+              touch testfile.txt
+              python vectorize.py
+              ls -all ../models/
               cd ../../../../
               cp -R source/services/data-science-service/models/ .
           inputs:
@@ -404,22 +421,23 @@ jobs:
             args:
             - -ec
             - |
-              echo "begin build front end script"
-              cd source/ui/sector-ui
-
-              echo "building front end"
-              npm install
-              yarn build
-              echo "front end build complete"
-
-              echo "pushing results to sonarqube"
-              echo "pushing results to sonarqube complete"
-
-              echo "preparing files for container build"
-              cp ./container/Dockerfile ../../../docker/.
-              cp ./container/start-nginx.sh ../../../docker/.
-              cp -Rf ./container/config ../../../docker/.
-              cp -Rf ./build ../../../docker/.
+                echo "begin build front end script"
+                cd source/ui/sector-ui
+                echo "building front end"
+                npm install 
+                yarn build
+                echo "front end build complete"
+                echo "installing sonarqube"
+                npm install -g sonarqube-scanner
+                sonar-scanner -h
+                echo "installing sonarqube"
+                sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
+                echo "pushing results to sonarqube complete"
+                echo "preparing files for container build"
+                cp ./container/Dockerfile ../../../docker/.
+                cp ./container/start-nginx.sh ../../../docker/.
+                cp -Rf ./container/config ../../../docker/.
+                cp -Rf ./build ../../../docker/.
           inputs:
           - name: source
           outputs:
@@ -490,7 +508,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -DskipTests -Djava.version=10
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso -Dsonar.projectName=rdso-challenge -Dsonar.host.url=http://sonarqube-infra-lb-907710278.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -587,6 +605,9 @@ jobs:
       - get: source
         trigger: true
         passed: [Initialize]
+      - get: models
+        trigger: true
+        ##add me back passed: [Build Data Model]
       - get: version
         passed: [Initialize]
       - task: Execute Test
@@ -786,6 +807,8 @@ jobs:
         trigger: false
         passed: [ Provision ECR Repositories]
       - get: models
+        trigger: true
+        passed: [Execute main-ds-service Tests]
       - get: data
       - task: Package API
         params:
