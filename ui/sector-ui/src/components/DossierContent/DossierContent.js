@@ -3,6 +3,8 @@ import Chip from '@material-ui/core/Chip';
 import Switch from '@material-ui/core/Switch';
 import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 import axios from "axios/index";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import './DossierContent.css';
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -27,11 +29,16 @@ export default class DossierContent extends React.Component {
 
     render() {
         let dossierData;
-        if(this.props.dossierId) {
+        if (this.props.dossierId) {
             dossierData = this.state.dossierData;
 
             if (!this.state.loaded) {
-                return null;
+                return (
+                    <div className="dossier-loading-container">
+                        <CircularProgress className="dossier-loading-image"/>
+                        <div className="dossier-loading-text">Decrypting and loading dossier</div>
+                    </div>
+                );
             }
         }
 
@@ -49,11 +56,13 @@ export default class DossierContent extends React.Component {
                     <div className="genres-and-auto-redaction">
                         <div className="genres">{processedGenres}</div>
                         <div className="auto-redaction-toggle">
-                            <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO REDACTION</div>
+                            <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO
+                                REDACTION
+                            </div>
                             <Switch
                                 checked={redactionEnabled}
                                 onChange={this.handleToggleRedaction}
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}/>
+                                inputProps={{'aria-label': 'secondary checkbox'}}/>
                         </div>
                     </div>
                     <DossierPlotSummary summary={summary}
@@ -78,7 +87,6 @@ export default class DossierContent extends React.Component {
             }
         })
         .then(response => {
-            console.log(response);
             this.setState({
                 dossierData: response.data,
                 loaded: true
