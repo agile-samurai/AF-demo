@@ -4,5 +4,4 @@ COPY . /app
 RUN mkdir data
 WORKDIR /app
 RUN pip install --upgrade pip && pip install -r requirements.txt
-RUN python scraper.py
-RUN python parser.py
+ENTRYPOINT python scraper.py && python parser.py
