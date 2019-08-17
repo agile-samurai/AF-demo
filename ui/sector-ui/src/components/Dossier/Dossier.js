@@ -12,31 +12,9 @@ import DossierContent from "../DossierContent/DossierContent";
 class Dossier extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            dossier: {
-                name: '',
-                summary: '',
-                genres: [],
-                redactionEnabled: false,
-                loaded: false
-            }
-        };
-        this.DOSSIER_ENDPOINT = '/api/dossier';
-    }
-
-    componentDidMount() {
-        if(!this.props.dossierData) {
-            this.getDossierDetails(this.props.match.params.dossierID);
-        }
     }
 
     render() {
-        const {dossier} = this.state;
-        const {loaded, redactionEnabled} = this.state;
-
-        if(!loaded && !this.props.dossierData) {
-            return <div>Loading...</div>;
-        }
         return (
             <div className="dossier-page">
                 <AppBar position="static">
@@ -51,26 +29,9 @@ class Dossier extends React.Component {
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <DossierContent dossierData={dossier}
-                                redactionEnabled={redactionEnabled}/>
+                <DossierContent dossierId={this.props.match.params.dossierID}/>
             </div>
         );
-    }
-
-    getDossierDetails(dossierID) {
-        axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`, {
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
-            }
-        })
-        .then(response => {
-            console.log(response);
-            this.setState({
-                dossier: response.data,
-                loaded: true
-            });
-        });
     }
 }
 

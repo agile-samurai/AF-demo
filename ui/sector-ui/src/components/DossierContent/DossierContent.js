@@ -18,11 +18,7 @@ export default class DossierContent extends React.Component {
     }
 
     componentDidMount() {
-        const {dossierId} = this.props;
-
-        if (dossierId) {
-            this.loadEncryptedData(dossierId);
-        }
+        this.loadEncryptedData(this.props.dossierId);
     }
 
     // TODO use to conditionally allow Dossier deletion
@@ -37,8 +33,6 @@ export default class DossierContent extends React.Component {
             if (!this.state.loaded) {
                 return null;
             }
-        } else {
-            dossierData = this.props.dossierData;
         }
 
         const {name, genres, summary, entityClassifications} = dossierData;

@@ -9,7 +9,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
 import NavigationMenu from "../NavigationMenu/NavigationMenu";
 import {Link} from "react-router-dom";
-import Dossier from "../Dossier/Dossier";
 import DossierContent from "../DossierContent/DossierContent";
 
 export default class DossierList extends React.Component {
@@ -35,7 +34,7 @@ export default class DossierList extends React.Component {
         const {searchTerm, moviePublicSummarySearchResults} = this.state;
 
         const dossierRows = moviePublicSummarySearchResults
-            .map(dossierSearchResult => <DossierContent dossierId={dossierSearchResult.id}/>);
+            .map(dossierSearchResult => <DossierContent dossierId={dossierSearchResult.id} key={dossierSearchResult.id}/>);
 
         return (
             <div className='dossier-search'>
