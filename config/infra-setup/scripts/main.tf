@@ -26,13 +26,13 @@ data "aws_ami" "ecs_ami" {
 
 module "network" {
   source      = "./modules/network"
-  environment = "${var.environment}"
+  environment = "${terraform.workspace}"
   cidr_block  = "${var.cidr_block}"
 }
 
 module "iam" {
   source      = "./modules/iam"
-  environment = "${var.environment}"
+  environment = "${terraform.workspace}"
 }
 
 module "ecs" {
@@ -52,7 +52,7 @@ module "sonarqube" {
   sg-allow-cluster            = "${module.network.sg-allow-cluster}"
   sg-allow-inbound            = "${module.network.sg-allow-inbound}"
   service_desired_count       = 1
-  environment                 = "${var.environment}"
+  environment                 = "${terraform.workspace}"
   sonarqube_rds_username      = "${var.sonarqube_rds_username}"
   sonarqube_rds_password      = "${var.sonarqube_rds_password}"
   rds_backup_retention_days   = 7
@@ -60,7 +60,7 @@ module "sonarqube" {
   ami                         = "${data.aws_ami.ecs_ami.id}"
   private-subnets             = "${module.network.private_subnets}"
   public-subnets              = "${module.network.public_subnets}"
-  ecs-cluster-name            = "${var.environment}-sonarqube"
+  ecs-cluster-name            = "${terraform.workspace}-sonarqube"
   sg_description              = "allow Sonarqube service"
   sg_from_port                = 9000
   sg_to_port                  = 9000
