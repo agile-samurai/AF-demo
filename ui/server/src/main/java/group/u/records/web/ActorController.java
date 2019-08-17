@@ -22,8 +22,7 @@ public class ActorController {
 
     @GetMapping
     public ResponseEntity<Page<Actor>> search(@RequestParam("search") String searchString,
-                                              @RequestParam(value = "quantity", required = false, defaultValue = "10") int quantity,
                                               @RequestParam(value = "cursor", required = false, defaultValue="0") int cursor){
-        return ok(actorService.getActors(searchString, quantity, cursor));
+        return ok(actorService.getActors(searchString, 10, cursor));
     }
 }

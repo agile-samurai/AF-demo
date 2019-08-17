@@ -29,7 +29,7 @@ class Login extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        axios.get(`/api/actors`,
+        axios.get(`/api/login`,
             {
                 auth: {
                     username: this.state.username,
@@ -38,6 +38,7 @@ class Login extends React.Component {
             })
             .then(data => {
                 const jwt = data.headers['x-authentication'];
+                axios.defaults.headers['x-authentication'] = jwt;
                 this.props.setJWT(jwt);
                 this.props.history.push('/');
             });

@@ -12,6 +12,7 @@ import Dossier from "./components/Dossier/Dossier";
 import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
 import ActorSearch from "./components/ActorSearch/ActorSearch";
 import TrainingData from "./components/TrainingData/TrainingData";
+import DossierList from "./components/DossierList/DossierList";
 
 const theme = createMuiTheme({
     palette: {
@@ -78,7 +79,7 @@ export class App extends React.Component {
                     <Route
                         exact={true}
                         path="/"
-                        component={ActorSearch}
+                        component={DossierList}
                     />
                     <Route
                         path="/login"
@@ -87,6 +88,10 @@ export class App extends React.Component {
                     <Route
                         path="/actor-search"
                         component={ActorSearch}
+                    />
+                    <Route
+                        path="/dossier-list-and-search"
+                        component={DossierList}
                     />
                     <Route
                         path="/dossier/:dossierID"
