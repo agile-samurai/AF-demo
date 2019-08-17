@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.data.Movie;
-import group.u.records.repository.ActorRepository;
+import group.u.records.repository.PersonRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,13 +35,13 @@ public class S3DataServiceTest {
     private static final String FOLDER = "folder";
     private static final String REGION_AS_STRING = "regionAsString";
     public static final String DOSSIER_STORAGE = "dossier-storage";
-    private ActorRepository actorRepository;
+    private PersonRepository personRepository;
     private MoviePublicSummaryRepository movieRepository;
     private DossierBuilderService dossierBuilderService;
 
     @Before
     public void setUp() {
-        actorRepository = mock(ActorRepository.class);
+        personRepository = mock(PersonRepository.class);
         movieRepository = mock(MoviePublicSummaryRepository.class);
         dossierBuilderService = new DossierBuilderService(null,
                 null,
@@ -60,7 +60,7 @@ public class S3DataServiceTest {
         when(iterables.contents()).thenReturn(iterable);
         when(client.listObjectsV2Paginator(any(ListObjectsV2Request.class))).thenReturn(iterables);
 
-        List<MovieDetail> movies = service.processMovies(actorRepository, movieRepository, dossierBuilderService);
+        List<MovieDetail> movies = service.processMovies(personRepository, movieRepository, dossierBuilderService);
         assertThat(movies).hasSize(0);
     }
 
@@ -87,7 +87,7 @@ public class S3DataServiceTest {
         when(iterables.contents()).thenReturn(iterable);
         when(client.listObjectsV2Paginator(any(ListObjectsV2Request.class))).thenReturn(iterables);
 
-        List<MovieDetail> movies = service.processMovies(actorRepository, movieRepository, dossierBuilderService);
+        List<MovieDetail> movies = service.processMovies(personRepository, movieRepository, dossierBuilderService);
         assertThat(movies).hasSize(1);
     }
 
@@ -109,4 +109,6 @@ public class S3DataServiceTest {
 
         return "";
     }
+
+
 }

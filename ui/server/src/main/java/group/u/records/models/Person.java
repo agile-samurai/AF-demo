@@ -1,5 +1,6 @@
-package group.u.records.models.entity;
+package group.u.records.models;
 
+import group.u.records.models.entity.MovieTitle;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.InnerField;
@@ -14,7 +15,7 @@ import static org.springframework.data.elasticsearch.annotations.FieldType.Keywo
 import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "actor", type = "actor", shards = 1, replicas = 0, refreshInterval = "-1")
-public class Actor {
+public class Person {
 
     private List<String> aliases;
     @Id
@@ -37,12 +38,12 @@ public class Actor {
         return titles;
     }
 
-    public Actor(){
+    public Person(){
         titles = new ArrayList();
         aliases = new ArrayList();
     }
 
-    public Actor(String name) {
+    public Person(String name) {
         this.name = name;
         this.id = UUID.nameUUIDFromBytes(name.getBytes());
         titles = new ArrayList();
@@ -69,7 +70,7 @@ public class Actor {
     public UUID enrichModel() {
         id = UUID.nameUUIDFromBytes(url.getBytes());
         aliases.add(this.name);
-
+        
         return id;
     }
 

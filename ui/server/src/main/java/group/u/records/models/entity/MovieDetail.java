@@ -1,5 +1,6 @@
 package group.u.records.models.entity;
 
+import group.u.records.models.Person;
 import group.u.records.models.data.Movie;
 
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class MovieDetail {
     public String toString() {
         return "MovieDetails{" +
                 "name='" + name + '\'' +
-                ", actors=" + actors +
+                ", actors=" + people +
                 ", summary='" + summary + '\'' +
                 ", keywords=" + keywords +
                 ", contentRating='" + contentRating + '\'' +
@@ -42,7 +43,7 @@ public class MovieDetail {
         return genre;
     }
 
-    private List<Actor> actors;
+    private List<Person> people;
     private String summary;
     private List<String> keywords;
     private String contentRating;
@@ -55,11 +56,11 @@ public class MovieDetail {
         return id;
     }
 
-    public MovieDetail(UUID id, String name, List<Actor> actors, String summary,
+    public MovieDetail(UUID id, String name, List<Person> people, String summary,
                        List<String> keywords, String contentRating, LocalDate releaseDate, String genre) {
         this.id = id;
         this.name = name;
-        this.actors = actors;
+        this.people = people;
         this.summary = summary;
         this.keywords = keywords;
         this.contentRating = contentRating;
@@ -75,7 +76,7 @@ public class MovieDetail {
         return name;
     }
 
-    public List<Actor> getActors() {
-        return actors;
+    public List<Person> getPeople() {
+        return people;
     }
 }

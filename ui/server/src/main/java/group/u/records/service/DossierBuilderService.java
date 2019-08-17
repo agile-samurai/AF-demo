@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class DossierBuilderService {
@@ -33,12 +36,22 @@ public class DossierBuilderService {
     }
 
 
-    public void generateDossier(MovieDetail movieDetail) {
+    public void generateDossiers(List<MovieDetail> movieDetails ){
+        movieDetails
+                .stream()
+                .map(f->generateDossier(f))
+                .collect(toList());
+
+    }
+
+    public Dossier generateDossier(MovieDetail movieDetail) {
         Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
                 imageProvider.getJson(movieDetail.getId()))));
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
         logger.debug("About to save dossier:  " + dossier.getId());
         dossierRepository.save(dossier);
+
+        return dossier;
     }
 }
