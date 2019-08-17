@@ -61,8 +61,8 @@ def load_json_files(n: int = None, folder="../data/movies_json") -> list:
     json_path = pathlib.Path(folder).resolve()
     print(f"Loading JSON files from {folder}")
     for json_file in tqdm(json_path.iterdir()):
-        if json_file.is_file() and json_file.suffix == '.json':
-            with json_file.open('r') as infile:
+        if json_file.is_file() and json_file.suffix == ".json":
+            with json_file.open("r") as infile:
                 json_string = infile.read()
             movie_dict = json.loads(json_string)
             list_of_dicts.append(movie_dict)
@@ -99,7 +99,7 @@ def get_top_genre(genre):
     elif isinstance(genre, str):
         return genre
     else:
-        return ''
+        return ""
 
 
 def nlp_clean(doc: str):
@@ -108,8 +108,8 @@ def nlp_clean(doc: str):
     :param doc: A string of text
     :return: list of cleaned tokens
     """
-    tokenizer = RegexpTokenizer(r'\w+')
-    stopword_set = set(stopwords.words('english'))
+    tokenizer = RegexpTokenizer(r"\w+")
+    stopword_set = set(stopwords.words("english"))
 
     token_list = tokenizer.tokenize(doc.lower())
     token_list = list(set(token_list).difference(stopword_set))
@@ -131,21 +131,25 @@ def process_movie_list_to_df(data):
         lambda x: translate_duration(x) if type(x) == str else x
     )
     # Convert list of genres to one top genre
-    movies_df['top_genre'] = movies_df['genre'].apply(get_top_genre)
+    movies_df["top_genre"] = movies_df["genre"].apply(get_top_genre)
     # Convert ID number to IMDB ID
     movies_df["imdb_id"] = movies_df.film_id.apply(lambda x: x[2:])
     # Drop movies that don't have a description or a genre
-    movies_df.dropna(subset=['description', 'genre'], inplace=True)
+    movies_df.dropna(subset=["description", "genre"], inplace=True)
     # Replace NaN with empty string for keywords
-    movies_df['keywords'].fillna(value='', inplace=True)
+    movies_df["keywords"].fillna(value="", inplace=True)
     # Concat descriptions & keywords into movie_text field
-    movies_df['movie_text'] = list(movies_df['description'] + ' ' + movies_df['keywords'])
-    movies_df['movie_tokens'] = movies_df['movie_text'].apply(nlp_clean)
+    movies_df["movie_text"] = list(
+        movies_df["description"] + " " + movies_df["keywords"]
+    )
+    movies_df["movie_tokens"] = movies_df["movie_text"].apply(nlp_clean)
     movies_df.drop(["@context", "@type"], axis=1, inplace=True)
 
     try:
         movies_df["film_director"] = movies_df.director.apply(lambda x: x["name"])
-        movies_df["director_id"] = movies_df.director.apply(lambda x: x["url"].strip("/name/nm"))
+        movies_df["director_id"] = movies_df.director.apply(
+            lambda x: x["url"].strip("/name/nm")
+        )
     except TypeError:
         pass
     # movies_df["director_id"] = movies_df.director.apply(lambda x: x["url"].strip("/name/nm"))
@@ -168,31 +172,31 @@ if __name__ == "__main__":
     movies_dataframe = process_movie_list_to_df(movies_json_list)
 
     # Save movies_df to local .pkl file
-    cwd = pathlib.Path('.').resolve()
-    data_dir = cwd.parents[0] / 'data'
-    movies_df_filename = data_dir / 'movies_df.pkl'
+    cwd = pathlib.Path(".").resolve()
+    data_dir = cwd.parents[0] / "data"
+    movies_df_filename = data_dir / "movies_df.pkl"
     movies_dataframe.to_pickle(str(movies_df_filename))
-    print(f'Saved to {str(movies_df_filename)}')
+    print(f"Saved to {str(movies_df_filename)}")
 
 # S3 file handling to be pushed off to the pipeline --------------------------
-    # Push movies_df.pkl to S3
-    # bucket_name = 'rdso-challenge2'
-    # try:
-    #     profile = os.environ['AWS_PROFILE']
-    #     session = boto3.Session(profile_name=profile)
-    #     s3 = session.client('s3')
-    # except KeyError:
-    #     try:
-    #         s3 = boto3.client(
-    #             "s3",
-    #             aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    #             aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    #         )
-    #     except KeyError:
-    #         raise ValueError("No AWS credentials found")
-    #
-    # with open(str(movies_df_filename), 'rb') as outfile:
-    #     s3.upload_fileobj(outfile, bucket_name,
-    #                       'data/' + str(movies_df_filename.stem + '.pkl'))
-    #
-    # print(f'Pushed movies_df.pkl to S3')
+# Push movies_df.pkl to S3
+# bucket_name = 'rdso-challenge2'
+# try:
+#     profile = os.environ['AWS_PROFILE']
+#     session = boto3.Session(profile_name=profile)
+#     s3 = session.client('s3')
+# except KeyError:
+#     try:
+#         s3 = boto3.client(
+#             "s3",
+#             aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+#             aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+#         )
+#     except KeyError:
+#         raise ValueError("No AWS credentials found")
+#
+# with open(str(movies_df_filename), 'rb') as outfile:
+#     s3.upload_fileobj(outfile, bucket_name,
+#                       'data/' + str(movies_df_filename.stem + '.pkl'))
+#
+# print(f'Pushed movies_df.pkl to S3')
