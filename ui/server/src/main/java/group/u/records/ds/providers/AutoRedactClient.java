@@ -1,15 +1,15 @@
-package group.u.records.ds;
+package group.u.records.ds.providers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.content.Dossier;
+import group.u.records.ds.EntityClassification;
+import group.u.records.ds.SpacyRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +20,12 @@ public class AutoRedactClient {
 
     private RestTemplate template;
     private String hostUrl;
+    private ObjectMapper objectMapper;
 
-    public AutoRedactClient(RestTemplate template, @Value("${app.ds.redact.host}") String hostUrl ) {
+    public AutoRedactClient(ObjectMapper objectMapper,
+                            RestTemplate template,
+                            @Value("${app.ds.redact.host}") String hostUrl) {
+        this.objectMapper = objectMapper;
         this.template = template;
         this.hostUrl = hostUrl;
     }
@@ -30,10 +34,10 @@ public class AutoRedactClient {
         SpacyRequest spacyRequest = new SpacyRequest(dossier.getSummary());
         HttpEntity<SpacyRequest> request = new HttpEntity(spacyRequest);
 
-        String response = template.exchange(hostUrl + "/ent", HttpMethod.POST, request, String.class).getBody();
         try {
-            return asList(new ObjectMapper().readValue(response, EntityClassification[].class));
-        } catch (IOException e) {
+            String response = template.exchange(hostUrl + "/ent", HttpMethod.POST, request, String.class).getBody();
+            return asList(objectMapper.readValue(response, EntityClassification[].class));
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

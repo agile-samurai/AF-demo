@@ -12,9 +12,17 @@ aws:
   bucketName: rdso-challenge2
   folder: data/movies_json
 app:
+  feature:
+    enableAutoRedact: true
+    enableDistributionImages: false
+
   ds:
     redact:
       host: http://spacy
+    images:
+      host: http://localhost:8000
+    similarities:
+      host: http://localhost:8000
   jwt:
     secret: secret
   business:
