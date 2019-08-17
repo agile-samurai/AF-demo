@@ -39,17 +39,21 @@ public class MovieDetail {
     private UUID id;
     private String name;
 
+    public String getImage() {
+        return image;
+    }
+
     public String getGenre() {
         return genre;
     }
-
+    private String image;
     private List<Person> people;
     private String summary;
     private List<String> keywords;
     private String contentRating;
 
     public MovieDetail(Movie movie ){
-        this(movie.getId(), movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now(), movie.getGenre().get(0));
+        this(movie.getId(), movie.getName(), movie.getActor(), movie.getDescription(), null, movie.getContentRating(), LocalDate.now(), movie.getGenre().get(0), movie.getImage());
     }
 
     public UUID getId() {
@@ -57,7 +61,7 @@ public class MovieDetail {
     }
 
     public MovieDetail(UUID id, String name, List<Person> people, String summary,
-                       List<String> keywords, String contentRating, LocalDate releaseDate, String genre) {
+                       List<String> keywords, String contentRating, LocalDate releaseDate, String genre, String image) {
         this.id = id;
         this.name = name;
         this.people = people;
@@ -66,6 +70,7 @@ public class MovieDetail {
         this.contentRating = contentRating;
         this.releaseDate = releaseDate;
         this.genre = genre;
+        this.image = image;
     }
 
     private LocalDate releaseDate;

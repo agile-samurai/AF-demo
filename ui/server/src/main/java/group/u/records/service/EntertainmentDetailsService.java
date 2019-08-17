@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.config.MovieDetailsDataSourceManager;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.people.PersonRegistry;
 import group.u.records.repository.PersonRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class EntertainmentDetailsService {
     private Logger logger = LoggerFactory.getLogger(EntertainmentDetailsService.class);
     private MoviePublicSummaryRepository moviePublicSummaryRepository;
     private MovieListIdentifierProvider identifierProvider;
+    private PersonRegistry personRegistry;
     private MovieDetailsDataSourceManager dataSourceManager;
 
     public EntertainmentDetailsService(PersonRepository personRepository,
@@ -29,12 +31,14 @@ public class EntertainmentDetailsService {
                                        DossierBuilderService dossierBuilderService,
                                        MoviePublicSummaryRepository moviePublicSummaryRepository,
                                        MovieListIdentifierProvider identifierProvider,
+                                       PersonRegistry personRegistry,
                                        MovieDetailsDataSourceManager dataSourceManager ){
         this.personRepository = personRepository;
         this.dataService = dataService;
         this.dossierBuilderService = dossierBuilderService;
         this.moviePublicSummaryRepository = moviePublicSummaryRepository;
         this.identifierProvider = identifierProvider;
+        this.personRegistry = personRegistry;
         this.dataSourceManager = dataSourceManager;
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,6 +53,7 @@ public class EntertainmentDetailsService {
         moviePublicSummaryRepository.deleteAll();
 
         for(String id : identifierProvider.movieIdentifiers() ){
+            logger.debug("Parsing movie: " + id );
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
 
@@ -60,18 +65,19 @@ public class EntertainmentDetailsService {
                     logger.debug("Movie data was not present with provider:  " + dataSource + " - " + id );
                 }
             }
-            buildSearchableProfiles(movieDetails);
+
+            personRegistry.reconcile(movieDetails);
             dossierBuilderService.generateDossiers(movieDetails);
         }
 
 //        dataService.processMovies(personRepository, moviePublicSummaryRepository, dossierBuilderService );
     }
 
-    private void buildSearchableProfiles(List<MovieDetail> movieDetails) {
-        movieDetails.forEach(f->{
-            f.getPeople().forEach(personRepository::save);
-        });
-    }
+//    private void buildSearchableProfiles(List<MovieDetail> movieDetails) {
+//        movieDetails.forEach(f->{
+//            f.getPeople().forEach(personRepository::save);
+//        });
+//    }
 
 
 }

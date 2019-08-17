@@ -73,6 +73,7 @@ public class Movie {
     }
 
     public void enrichModel() {
+        getActor().forEach(Person::enrichModel);
         this.id = UUID.nameUUIDFromBytes(url.getBytes());
     }
 }

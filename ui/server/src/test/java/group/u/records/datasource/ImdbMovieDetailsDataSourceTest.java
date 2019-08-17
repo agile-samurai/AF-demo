@@ -3,6 +3,7 @@ package group.u.records.datasource;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.people.PersonRegistry;
 import group.u.records.service.S3DataService;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class ImdbMovieDetailsDataSourceTest {
 
@@ -34,7 +36,8 @@ public class ImdbMovieDetailsDataSourceTest {
 
 
         S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",client, objectMapper);
-        ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource("rdso-challenge2", "data/movies_json",objectMapper,dataService);
+        PersonRegistry personRegistry = mock(PersonRegistry.class);
+        ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource("rdso-challenge2", "data/movies_json", personRegistry,objectMapper,dataService);
         MovieDetail detail = ds.getMovieDetails("0020980");
 //        MovieDetail detail = ds.getMovieDetails("8898648");
 //        MovieDetail detail = dataService.processMovie("8898648");

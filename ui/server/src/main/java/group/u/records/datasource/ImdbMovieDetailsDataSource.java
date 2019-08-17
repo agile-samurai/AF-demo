@@ -3,6 +3,8 @@ package group.u.records.datasource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.data.Movie;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.people.PersonRegistry;
+import group.u.records.repository.PersonRepository;
 import group.u.records.service.MovieDetailsDataSource;
 import group.u.records.service.S3DataService;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +17,18 @@ public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
 
     private String bucketName;
     private String folder;
+    private PersonRegistry personRegistry;
     private ObjectMapper objectMapper;
     private S3DataService dataService;
 
     public ImdbMovieDetailsDataSource(@Value("${aws.bucketName}") String bucketName,
                                       @Value("${aws.folder}") String folder,
+                                      PersonRegistry personRegistry,
                                       ObjectMapper objectMapper,
                                       S3DataService dataService) {
         this.bucketName = bucketName;
         this.folder = folder;
+        this.personRegistry = personRegistry;
         this.objectMapper = objectMapper;
         this.dataService = dataService;
     }
@@ -37,6 +42,8 @@ public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
             Movie movie = objectMapper.readValue(json, Movie.class);
             movie.enrichModel();
             movieDetail = new MovieDetail(movie);
+
+            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p,new MovieDetail(movie)));
         } catch (IOException e) {
             e.printStackTrace();
         }
