@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.config.MovieDetailsDataSourceManager;
 import group.u.records.models.entity.MovieDetail;
+import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.people.PersonRegistry;
 import group.u.records.repository.PersonRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
@@ -52,15 +53,17 @@ public class EntertainmentDetailsService {
         personRepository.deleteAll();
         moviePublicSummaryRepository.deleteAll();
 
-        for(String id : identifierProvider.movieIdentifiers() ){
+        for(String id : identifierProvider.getIMDBIdentifiers() ){
             logger.debug("Parsing movie: " + id );
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
 
                 try {
                     MovieDetail movieDetail = dataSource.getMovieDetails(id);
-                    if (movieDetail != null)
+                    if (movieDetail != null) {
+                        moviePublicSummaryRepository.save(new MoviePublicSummary());
                         movieDetails.add(movieDetail);
+                    }
                 }catch( Exception e ){
                     logger.debug("Movie data was not present with provider:  " + dataSource + " - " + id );
                 }
@@ -70,14 +73,6 @@ public class EntertainmentDetailsService {
             dossierBuilderService.generateDossiers(movieDetails);
         }
 
-//        dataService.processMovies(personRepository, moviePublicSummaryRepository, dossierBuilderService );
     }
-
-//    private void buildSearchableProfiles(List<MovieDetail> movieDetails) {
-//        movieDetails.forEach(f->{
-//            f.getPeople().forEach(personRepository::save);
-//        });
-//    }
-
 
 }

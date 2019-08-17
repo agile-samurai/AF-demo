@@ -8,7 +8,6 @@ import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.models.entity.MovieTitle;
 import group.u.records.repository.PersonRepository;
-import group.u.records.repository.MoviePublicSummaryRepository;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class S3DataService implements DataService {
@@ -156,7 +153,7 @@ public class S3DataService implements DataService {
 
         List<Movie> extractedMovies = new ArrayList();
             try {
-                String json = getFileAsString(convertId(folder, imdb), bucketName);
+                String json = getFileAsString(convertId(folder, imdb));
                 Movie movie = objectMapper.readValue(json, Movie.class);
                 movie.enrichModel();
 
@@ -180,7 +177,7 @@ public class S3DataService implements DataService {
         return null;
 }
 
-    public String getFileAsString(String key, String bucketName) throws IOException {
+    public String getFileAsString(String key) throws IOException {
         logger.debug("Fetching file:  " + bucketName + ":  " + key );
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(key).build());
         logger.debug("Response String:  " + response.response().toString());

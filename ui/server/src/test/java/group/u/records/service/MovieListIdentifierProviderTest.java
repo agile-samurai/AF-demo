@@ -2,6 +2,7 @@ package group.u.records.service;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,15 @@ public class MovieListIdentifierProviderTest {
     @Test
     public void shouldReadALlOfTheEntriesOnTheFile(){
         MovieListIdentifierProvider provider = new MovieListIdentifierProvider();
-        assertThat(provider.movieIdentifiers()).hasSize(17425);
+        assertThat(provider.getIMDBIdentifiers()).hasSize(17425);
+    }
+
+    @Test
+    public void shouldReturnAllOfTheTitleForMoviesInList(){
+        String line = "8898498::Raghda Motawahesha (2018)::Family";
+        List<String> titles = new MovieListIdentifierProvider().getTitles();
+        System.out.println(titles);
+        assertThat(titles).contains("Raghda Motawahesha");
     }
 
     @Test

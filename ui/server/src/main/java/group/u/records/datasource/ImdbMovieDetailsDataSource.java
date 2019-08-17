@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.data.Movie;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.people.PersonRegistry;
-import group.u.records.repository.PersonRepository;
 import group.u.records.service.MovieDetailsDataSource;
 import group.u.records.service.S3DataService;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +37,7 @@ public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
         MovieDetail movieDetail = null;
 
         try {
-            String json = dataService.getFileAsString(this.convertId(folder, id ), bucketName);
+            String json = dataService.getFileAsString(this.convertId(folder, id ));
             Movie movie = objectMapper.readValue(json, Movie.class);
             movie.enrichModel();
             movieDetail = new MovieDetail(movie);

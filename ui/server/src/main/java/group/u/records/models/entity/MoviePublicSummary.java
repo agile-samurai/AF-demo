@@ -38,4 +38,10 @@ public class MoviePublicSummary {
         this.people = movie.getActor();
         this.name = movie.getName();
     }
+
+    public MoviePublicSummary(MovieDetail movie) {
+        this.id = movie.getId();
+        this.people = movie.getPeople();
+        this.name = movie.getName();
+    }
 }
