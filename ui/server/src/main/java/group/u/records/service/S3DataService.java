@@ -108,7 +108,9 @@ public class S3DataService implements DataService {
 
         //Todo: Make this more reusable.
         try {
-            return IOUtils.toString(response.readAllBytes());
+            String rawDoc = IOUtils.toString(response.readAllBytes());
+            logger.debug("About to retrieve dossier:  " + rawDoc );
+            return rawDoc;
 
         } catch (IOException e) {
             e.printStackTrace();
