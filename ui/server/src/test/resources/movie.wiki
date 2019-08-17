@@ -1,0 +1,272 @@
+{{short description|2016 American action film directed by Babak Najafi}}
+{{Use mdy dates|date=September 2016}}
+{{Infobox film
+| name             = London Has Fallen
+| image            = London Has Fallen poster.jpg
+| image_size       = 220px
+| caption          = Theatrical release poster
+| director         = [[Babak Najafi]]
+| producer         = {{plainlist|
+* [[Gerard Butler]]
+* Alan Siegel
+* Mark Gill
+* John Thompson
+* Matt O'Toole
+* Les Weldon
+}}
+| screenplay       = {{plainlist|
+* Creighton Rothenberger
+* Katrin Benedikt
+* [[Christian Gudegast]]
+* Chad St. John
+}}
+| story            = {{plainlist|
+* Creighton Rothenberger
+* Katrin Benedikt
+}}
+| based on         = {{basedon|Characters|Creighton Rothenberger<br>Katrin Benedikt}}
+| starring         = {{plainlist|<!--PER POSTER BILLING-->
+* Gerard Butler
+* [[Aaron Eckhart]]
+* [[Morgan Freeman]]
+* [[Alon Aboutboul|Alon Moni Aboutboul]]
+* [[Angela Bassett]]
+* [[Robert Forster]]
+* [[Jackie Earle Haley]]
+* [[Melissa Leo]]
+* [[Radha Mitchell]]
+* [[Sean O'Bryan]]
+* [[Waleed Zuaiter]]
+}}
+| music          = [[Trevor Morris (musician)|Trevor Morris]]
+| cinematography = Ed Wild
+| editing        = {{plainlist|
+* Paul Martin Smith
+* Michael Duthie
+}}
+| studio         = {{plainlist|
+* [[Nu Image|Millennium Films]]
+* G-BASE
+* Caffeination Studios
+* LHF Film
+* Nu Boyana Film Studios<ref>https://nuboyana.com/movie-reel/</ref>
+* [[Lionsgate Films]]
+}}
+| distributor    = {{plainlist|
+* [[Focus Features|Focus Features LLC]]<ref name="deadline.com">{{cite news|last1=Petski|first1=Denise|title=Focus Features Revives Gramercy Pictures Label For Genre Films|url=http://deadline.com/2015/05/focus-features-revives-gramercy-pictures-label-genre-films-1201430500/|accessdate=May 20, 2015|website=Deadline Hollywood|date=May 20, 2015}}</ref>
+* [[Gramercy Pictures|Gramercy Pictures (I)]]
+}}
+| released       = {{Film date|2016|03|01|[[Hollywood]]|2016|03|04|United States}}
+| runtime        = 99 minutes<!--Theatrical runtime: 98:53--><ref>{{cite web | url=http://www.bbfc.co.uk/releases/london-has-fallen-film | title=''LONDON HAS FALLEN'' (15) | work=[[British Board of Film Classification]] | date=February 4, 2016 | accessdate=February 4, 2016}}</ref>
+| country        = United States
+| language       = English
+| budget         = $60 million<ref name="budget">{{cite web|url=https://variety.com/2016/film/box-office/zootopia-deadpool-box-office-1201720769/ |title=Box Office: 'Zootopia' to Take Down 'Deadpool' With Huge $60 Million-Plus Debut|work=Variety|date=2016-03-02}}</ref>
+| gross          = $205.8 million<ref name="BOM">{{cite web |url=http://www.boxofficemojo.com/movies/?id=londonhasfallen.htm |title=London Has Fallen (2016) |website=Box Office Mojo |accessdate=March 5, 2018}}</ref>
+}}
+
+'''''London Has Fallen''''' is a 2016 American [[action thriller]] film directed by [[Babak Najafi]] and written by Creighton Rothenberger, Katrin Benedikt, Chad St. John and [[Christian Gudegast]]. It is a sequel to [[Antoine Fuqua]]'s 2013 film ''[[Olympus Has Fallen]]'' and stars [[Gerard Butler]], [[Aaron Eckhart]] and [[Morgan Freeman]], with [[Alon Aboutboul|Alon Moni Aboutboul]], [[Angela Bassett]], [[Robert Forster]], [[Jackie Earle Haley]], [[Melissa Leo]], [[Radha Mitchell]], [[Sean O'Bryan]], [[Waleed Zuaiter]] and [[Charlotte Riley]] in supporting roles. The film follows a plot to assassinate the world leaders who are attending the funeral of British Prime Minister in London and Secret Service agent Mike Banning's efforts to protect US President Benjamin Asher from being killed by the terrorists.
+
+Filming began in London on October 24, 2014. A Christmas break started in November with filming resuming in February 2015. The film was released by [[Focus Features]] under their recently revived [[Gramercy Pictures]] label on March 4, 2016, and grossed $205 million worldwide. However, the critical reception was generally negative, with ''[[Variety (magazine)|Variety]]'' accusing it of fear-mongering and "terrorsploitation" while ''[[The A.V. Club]]'' named it worst film of the year.
+
+A third film, titled ''[[Angel Has Fallen]]'', is set to be released on August 23, 2019.
+
+==Plot==
+Western intelligence services of the [[Group of Eight|G8]] track down Pakistani arms dealer Aamir Barkawi ([[Alon Abutbul|Alon Moni Aboutboul]]) as the mastermind behind several terrorist attacks, and authorize an American drone strike on Barkawi's compound, apparently killing Barkawi and his family.
+
+Two years later, [[Prime Minister of the United Kingdom|UK Prime Minister]] James Wilson suddenly dies, and arrangements are made for the Western world leaders to attend his funeral in London. [[Director of the United States Secret Service|Secret Service Director]] Lynne Jacobs ([[Angela Bassett]]) assigns agent Mike Banning ([[Gerard Butler]]), a close friend of [[President of the United States|U.S. President]] Benjamin Asher ([[Aaron Eckhart]]), to lead Asher's security detail while overseas, even though Banning's wife Leah ([[Radha Mitchell]]) is due to give birth to their child in a few weeks. The entourage arrives via [[Air Force One]] at [[London Stansted Airport|Stansted Airport]], and Banning pushes their arrival at [[Somerset House]] in London via [[Marine One]] to earlier.
+
+As Asher's [[Presidential State Car (United States)|Presidential State Car]] arrives at [[St Paul's Cathedral]], a series of coordinated attacks by terrorists disguised as [[Metropolitan Police Service|Metropolitan Police]], the [[Queen's Guard]]smen, and other [[first responders]] erupts, killing five Western leaders, damaging or destroying major landmarks and generating mass panic. Asher's early arrival has thrown the attack on him at St. Paul's off-guard, and Banning is able to rescue Asher and Jacobs and rushes them back to Marine One.
+
+As the helicopter and its escorts takes off, the terrorists fire [[FIM-92 Stinger|Stinger missiles]] at them, destroying the escorts and forcing the damaged helicopter to crash-land in [[Hyde Park, London|Hyde Park]]. Banning and Asher suffer only minor wounds, but Jacobs is fatally injured, and she makes Banning promise to stay alive for his unborn child and get back at whoever did this. Banning quickly escorts Asher into the [[London Underground]] as the city's power is lost and people take shelter in their homes.
+
+In Washington, D.C., [[Vice President of the United States|U.S. Vice President]] Allan Trumbull ([[Morgan Freeman]]) works with the British authorities to investigate the incident while trying to track down the President. Trumbull receives a call from Barkawi, still alive after all and operating out of [[Yemen]]. The man takes responsibility for the attacks, coordinated by his son Kamran ([[Waleed Zuaiter]]).
+
+Barkawi purposely had Wilson poisoned to lure the Western leaders to London to attack them. Barkawi knows Asher is still alive, and promises that if Kamran captures him, he will broadcast the execution of the President on the Internet. Trumbull orders his intelligence staff to locate Barkawi's known operatives to find any connection to the attack, while British authorities have all first responders stand down, so that any left in the open can be identified as terrorists.
+
+After leaving a sign to be picked up by satellite tracking, Banning leads Asher to an [[Secret Intelligence Service|MI6]] safe-house, where Jacquelin "Jax" Marshall ([[Charlotte Riley]]) briefs them on what their intelligence has learned. Marshall receives a voice message from Trumbull that confirms they saw Banning's sign and that an extraction team is en route. Security monitors show the approach of a [[Delta Force]] team, but Banning suspects they have arrived far too soon and may be more terrorists.
+
+He covers and fights off the terrorists before Asher and Banning drive away, but their car is struck by a truck driven by terrorists, allowing them to kidnap Asher. Banning is rescued by the extraction team, a combined Delta Force and [[Special Air Service|SAS]] squad. They also suspect that there is a mole in the British government.
+
+Trumbull's staff have identified a building in London owned by one of Barkawi's companies, which still appears to be drawing massive amounts of power despite supposedly being under construction and unoccupied, and suspect it is Kamran's headquarters. Banning joins the extraction team to infiltrate the building and stop Kamran before he can kill Asher.
+
+Banning and Asher escape just before the building is destroyed by the Delta Force/SAS squad, killing Kamran and the remaining terrorists. Marshall has worked with British authorities to restore London's security system and, discovering that [[MI5]] Intelligence Chief John Lancaster ([[Patrick Kennedy (actor)|Patrick Kennedy]]) aided in Barkawi's attack, she kills him. Meanwhile, Trumbull contacts Barkawi to tell him that his plan failed, and then to look outside, moments before the building is destroyed by another drone strike, killing him.
+
+Two weeks after the attack on London, Banning is home spending time with Leah and their newborn child, named Lynne after his deceased superior. He sits in front of his laptop and contemplates sending his letter of resignation. On TV, Trumbull speaks regarding the recent events, leaving an inspiring message that the U.S. will prevail. This convinces Banning to delete the letter.
+
+==Cast==
+{{div col|colwidth=30em}}
+* [[Gerard Butler]] as [[United States Secret Service|Secret Service]] Agent Mike Banning<ref name="London, Butler and others" />
+* [[Aaron Eckhart]] as [[President of the United States|US President]] Benjamin Asher<ref name="London, Butler and others" />
+* [[Morgan Freeman]] as [[Vice President of the United States|US Vice President]] Allan Trumbull<ref name="filmingbeginsonlondonhasfallen">{{cite web|url=http://collider.com/london-has-fallen-synopsis/|title=Filming begins on London Has Fallen starring Gerard Butler; First Synopsis Revealed|publisher=Collider|first=Matt|last=Goldberg|date=November 4, 2014|accessdate=April 5, 2015}}</ref>
+* [[Alon Aboutboul]] as Aamir Barkawi, an arms dealer and terrorist mastermind who is No. 6 on the [[FBI Ten Most Wanted Fugitives|FBI's 10 Most Wanted]] list.<ref name="filmingandcast" />
+* [[Angela Bassett]] as [[Director of the United States Secret Service|Secret Service Director]] Lynne Jacobs<ref name="London, Butler and others" />
+* [[Robert Forster]] as [[United States Army|US Army]] [[General (United States)|General]] Edward Clegg, [[Chairman of the Joint Chiefs of Staff]].<ref name="filmingandcast">{{cite web|url=http://www.screendaily.com/news/london-has-fallen-begins-filming/5079401.article?referrer=RSS|title=London Has Fallen begins filming|work=Screen Daily|first=Michael|last=Rosser|date=November 3, 2014|accessdate=November 3, 2014}}</ref>
+* [[Jackie Earle Haley]] as [[White House Deputy Chief of Staff]] DC Mason<ref name=Haley />
+* [[Melissa Leo]] as [[United States Secretary of Defense|Secretary of Defense]] Ruth McMillan<ref name="NajafiLeo" />
+* [[Radha Mitchell]] as Leah Banning, Mike's wife.<ref name="London, Butler and others" />
+* [[Sean O'Bryan]] as [[Deputy Director of the National Security Agency|NSA Deputy Director]] Ray Monroe<ref name="filmingandcast" />
+* [[Charlotte Riley]] as [[Secret Intelligence Service|MI6]] Agent Jacquelin "Jax" Marshall<ref>{{cite web|url=http://collider.com/london-has-fallen-poster-destroys-big-ben/|title=First LONDON HAS FALLEN Poster Is Already Hating British Landmarks|publisher=Collider|first=Matt|last=Goldberg|date=May 8, 2015|accessdate=May 8, 2015}}</ref>
+* [[Waleed Zuaiter]] as Kamran Barkawi, Aamir's son and sub-commander<ref name="filmingandcast" />
+* [[Colin Salmon]] as Commissioner Sir Kevin Hazard, head of the [[Metropolitan Police Service|Metropolitan Police]]
+* [[Bryan Larkin]] as [[Special Air Service|SAS]] Captain Will Davies<ref>{{cite web|url=http://www.heraldscotland.com/news/14297047.Role_in_London_has_Fallen_for_Scottish_actor_marks_first_step_into_world_of_blockbusters/|title=Role in London has Fallen for Scottish actor marks first step into world of blockbusters|first=Phil|last=Miller|date=February 26, 2016|accessdate=March 5, 2016}}</ref>
+* [[Patrick Kennedy (actor)|Patrick Kennedy]] as [[MI5]] Counter-Intelligence Chief John Lancaster
+* [[Mehdi Dehbi]] as Sultan Mansoor, the terrorist hacker<ref name="DehbiCast" />
+* [[Adel Bencherif]] as Raza Mansoor, Sultan's brother and a terrorist
+* [[Michael Wildman]] as [[United States Secret Service|Secret Service]] Agent Voight
+* [[Andrew Pleavin]] as [[United States Secret Service|Secret Service]] Agent Bronson
+* [[Deborah Grant]] as Doris, Leah's mother
+* Clarkson Guy Williams as [[Prime Minister of the United Kingdom|British Prime Minister]] Leighton Clarkson
+* [[Penny Downie]] as [[Home Secretary]] Rose Kenter
+* Philip Delancy as [[President of France|French President]] Jacques Mainard
+* [[Alex Giannini]] as [[Prime Minister of Italy|Italian Prime Minister]] Antonio Gusto. It was Giannini's last movie role before his death in October 2, 2015.<ref>{{cite web|url=http://www.hollywoodreporter.com/news/alex-giannini-legend-actor-dies-829280|title=Alex Giannini, 'Legend' Actor, Dies at 52}}</ref><ref>{{cite web|url=http://www.bognor.co.uk/what-s-on/entertainment/theatre-world-mourns-mack-mabel-actor-alex-giannini-1-7001844|title=Theatre world mourns Mack & Mabel actor Alex Giannini}}</ref>
+* Elsa Mollien as Mrs Viviana Gusto
+* Nancy Baldwin as [[Chancellor of Germany|German Chancellor]] Agnes Bruckner
+* [[Nigel Whitmey]] as [[Prime Minister of Canada|Canadian Prime Minister]] Robert Bowman
+* Julia Montgomery Brown as Mrs Bowman
+* Tsuwayuki Saotome as [[Prime Minister of Japan|Japanese Prime Minister]] Tsutomu Nakushima
+{{div col end}}
+
+==Production==
+===Casting===
+Butler, Eckhart, Freeman, Bassett, Leo, Forster and Mitchell reprised their roles from ''[[Olympus Has Fallen]]''.<ref name="London, Butler and others">{{cite web|url=http://collider.com/olympus-has-fallen-sequel-london-has-fallen-gerard-butler/|title=OLYMPUS HAS FALLEN Sequel LONDON HAS FALLEN Moving Forward with Gerard Butler|date=October 29, 2013}}</ref> Production had been scheduled to begin in May 2015 in London, with Creighton Rothenberger and Katrin Benedikt returning to write the script. Director Antoine Fuqua, however, did not return, due to his commitments with ''[[The Equalizer (film)|The Equalizer]]''.<ref>{{cite web|url=http://www.screendaily.com/festivals/afm/afm-news/london-has-fallen-heads-to-afm/5063031.article|title=London Has Fallen heads to AFM}}</ref> On May 1, 2014, it was announced [[Focus Features]] had acquired distribution rights to the sequel, and would release the film on October 2, 2015.<ref>{{cite web| url=http://www.deadline.com/2014/05/focus-features-dates-olympus-sequel-london-has-fallen-for-october-2015/ |title=Focus Features Dates 'Olympus' Sequel 'London Has Fallen' For October 2015 |website=Deadline Hollywood |date=March 22, 2013 |accessdate=May 1, 2014}}</ref> On August 18, 2014, it was announced that ''[[Charlie Countryman]]'' director Fredrik Bond would take over direction from Fuqua,<ref>{{cite web|url=https://variety.com/2014/film/news/fredrik-bond-olympus-has-fallen-sequel-1201285643/|title=Fredrik Bond to Direct 'Olympus Has Fallen' Sequel |work=Variety|date=August 18, 2014|accessdate=August 19, 2014}}</ref> but Bond left the film on September 18, six weeks before the shooting was to begin.<ref>{{cite news|last1=Kit|first1=Borys|title='Olympus Has Fallen' Sequel Loses Its Director|url=http://www.hollywoodreporter.com/heat-vision/olympus-has-fallen-sequel-loses-734224|accessdate=September 19, 2014|work=The Hollywood Reporter|date=September 18, 2014}}</ref> On September 28, director Babak Najafi signed on to direct the film.<ref name=NajafiLeo>{{cite news|last1=Kit|first1=Borys|title=Troubled 'Olympus Has Fallen' Sequel Finds Director|url=http://www.hollywoodreporter.com/heat-vision/troubled-olympus-has-fallen-sequel-736224|accessdate=September 29, 2014|work=The Hollywood Reporter |date=September 28, 2014}}</ref> On October 10, [[Jackie Earle Haley]] joined the film to play Deputy Chief Mason.<ref name=Haley>{{cite news|last1=Sneider |first1=Jeff|title='Olympus Has Fallen' Sequel Lands Jackie Earle Haley As First New Cast Member|url=http://www.thewrap.com/olympus-has-fallen-sequel-lands-jackie-earle-haley-as-first-new-cast-member-exclusive/|accessdate=October 11, 2014|publisher=thewrap.com|date=October 10, 2014}}</ref> On November 12, [[Mehdi Dehbi]] joined the film to play Sultan Mansoor, the youngest of three brothers whose life has been forever changed after a drone strike.<ref name=DehbiCast>{{cite news|last1=Yamato|first1=Jen|title='London Has Fallen' Adds 'Tyrant' Thesp|url=http://deadline.com/2014/11/wonder-woman-suicide-squad-london-has-fallen-paper-towns-casting-1201282960/|accessdate=November 13, 2014|website=Deadline Hollywood|date=November 12, 2014}}</ref>
+
+===Filming===
+[[Principal photography]] began on October 24, 2014, in London.<ref name="filmingandcast" /><ref name=NickMcArdle>{{cite web| url=https://instagram.com/p/uiF4n4kqUP/|title=First day of filming 'London Has Fallen' sequel to "Olympus Has Fallen". Gerard Butler and Morgan Freeman|date=October 24, 2014|website=Nick McArdle on Instagram}}</ref> Four weeks of shooting were to take place, involving actors Freeman, Eckhart, Bassett and Melissa Leo, before a break for Christmas. Gerard Butler—who had been filming ''[[Geostorm]]'' in October—joined the shoot later, filming scenes with Eckhart in March 2015.<ref name="Filming">{{cite web|url=http://www.dailymail.co.uk/tvshowbiz/article-2981342/Gerard-Butler-hits-London-Fallen-set-Aaron-Eckhart.html|title=A bloodied Gerard Butler hits the London Has Fallen set wearing a battered suit and tie with co-star Aaron Eckhart|publisher=Daily Mail.com|first=Hanna|last=Flint|date=March 5, 2015 |accessdate= March 7, 2015}}</ref> A helicopter was seen making a landing in the courtyard of [[Somerset House]].<ref>{{cite web|url=http://www.dailymail.co.uk/tvshowbiz/article-2986086/Helicopter-makes-dramatic-landing-London-s-Somerset-House-Gerard-Butler-continues-filming-new-movie.html|title=PICTURED: Helicopter makes a dramatic landing at Somerset House as Gerard Butler continues filming his new movie London Has Fallen|publisher=Daily Mail.com|date=March 9, 2015|accessdate=March 10, 2015}}</ref> Butler and Angela Bassett were seen filming in Somerset House.<ref name=Roar>{{cite web |url=http://roarnews.co.uk/wordpress/?p=17044|title=PICS: Gerard Butler spotted speeding down Strand in filming of action thriller|website=Roar News|date=March 8, 2015|accessdate=March 8, 2015}}</ref> Butler stated in an interview that the movie was also filmed in India and was to continue in Bulgaria.<ref name=SaudiBeauty>{{cite web|last1=Haq|first1=Nilo|title=Interview with Gerard Butler in Dubai |url=http://saudibeautyblog.com/interview-with-gerard-butler-in-dubai/|website=Saudi Beauty blog|location=Dubai|date=March 31, 2015|quote=Eye candy Gerard Butler is the new ambassador for Boss Bottled}}</ref> Then [[President of Bulgaria]], [[Rosen Plevneliev]], visited the set of ''London Has Fallen'' during filming at Boyana Cinema Center in Bulgaria.<ref>{{cite web |url=http://btvnovinite.bg/article/bulgaria/plevneliev-tri-pati-poveche-filmi-mozhe-da-se-snimat-u-nas.html|website=btv Новините |date=March 24, 2015|accessdate=April 19, 2015|title=Плевнелиев: Три пъти повече филми може да се снимат у нас }}</ref><ref name=BulgarianPrez>{{cite web|title=Bulgarian President visits London Has Fallen|url=http://gerardbutlergals.com/content/press/bulgarian-president-visits-london-has-fallen/|website=Gerard Butler GALS|location=Bulgaria|date=March 24, 2015|accessdate=April 19, 2015}}</ref> Filming lasted through April 2015.<ref name="NajafiLeo" />
+
+===Score===
+The music was composed and conducted by [[Trevor Morris (musician)|Trevor Morris]], who provided the score for the first film.<ref name=FilmMusic>{{cite web|title=Trevor Morris to Return for 'London Has Fallen'|url=http://filmmusicreporter.com/2015/04/23/trevor-morris-to-return-for-london-has-fallen/|website=Film Music Reporter|accessdate=April 24, 2015 |date=April 23, 2015}}</ref> The record was released on March 4, 2016, by Back Lot Music.<ref>{{cite web|title=London Has Fallen (Original Motion Picture Soundtrack)|url=https://itunes.apple.com/album/london-has-fallen-original/id1088530206?v0=9988&ign-mpt=uo%3D1|website=Apple|accessdate=March 5, 2016|date=March 4, 2016}}</ref>The score was recorded at [[Abbey Road Studios]] with The Chamber Orchestra of London.
+
+All music composed by [[Trevor Morris (musician)|Trevor Morris]]
+
+{{Track listing
+| headline = ''London Has Fallen (Original Motion Picture Soundtrack)''
+| collapsed = yes
+| title1 = London Has Fallen
+| length1 = 1:58
+| title2 = Spotting Barkawi
+| length2 = 2:25
+| title3 = Bourbon and Poor Choices
+| length3 = 1:17
+| title4 = Nursery
+| length4 = 0:49
+| title5 = Scotland Yard
+| length5 = 0:57
+| title6 = President Arrives in the UK
+| length6 = 0:49
+| title7 = Motorcade / Marine One Lands
+| length7 = 1:44
+| title8 = London Attacked
+| length8 = 4:53
+| title9 = London Goes Dark
+| length9 = 1:49
+| title10 = Marine One Crash
+| length10 = 3:20
+| title11 = Jacob's Death
+| length11 = 1:42
+| title12 = Not Much of a Talker
+| length12 = 1:57
+| title13 = How Bad Is It?
+| length13 = 1:03
+| title14 = I'm Not Going to Die on YouTube
+| length14 = 9:04
+| title15 = Don't Jinx Me
+| length15 = 4:04
+| title16 = Right Under Our Noses
+| length16 = 3:51
+| title17 = Rescuing Asher
+| length17 = 12:30
+| title18 = Hand Fight and Hand Grenade
+| length18 = 1:59
+| title19 = Let's Get Outta Here
+| length19 = 1:41
+| title20 = I Hate Funerals
+| length20 = 1:18
+| title21= Traitor
+| length21 = 2:12
+| title22 = Reciprocity
+| length22 = 1:44
+| title23 = Resignation Letter
+| length23 = 0:50
+| title24 = End Titles / Credits
+| length24 = 1:26
+| total_length = 52:00
+}}
+
+==Release==
+On May 20, 2015, [[Focus Features]] relaunched their [[Gramercy Pictures]] label for action, horror, and science fiction releases, with ''London Has Fallen'' being one of Gramercy's first titles.<ref name="deadline.com"/> The film was planned for an October 2, 2015, release, however, on June 12, 2015, it was announced that the film had been moved back to January 22, 2016, to avoid competition with ''[[The Martian (film)|The Martian]]'', which swapped its original November 25 release date with ''[[Victor Frankenstein (film)|Victor Frankenstein]]''.<ref>{{cite news |last1=Lesnick |first1=Silas |title=London Has Fallen Has Moved to 2016 |url=http://www.comingsoon.net/movies/news/449899-london-has-fallen-has-moved-to-2016#/slide/1|accessdate=June 12, 2015|publisher=ComingSoon.net|date=June 12, 2015}}</ref><ref>{{cite news |title=Fox Switches 'The Martian' and 'Victor Frankenstein' Release Dates |url=http://deadline.com/2015/06/fox-switches-the-martian-and-victor-frankenstein-release-dates-1201441061/ |accessdate=June 12, 2015 |date=June 10, 2015}}</ref> On July 1, 2015, the film's teaser trailer was released.<ref>{{cite news|url=https://variety.com/2015/film/news/london-has-fallen-trailer-gerard-butler-aaron-eckhart-1201532421/|title=Watch: Gerard Butler, Aaron Eckhart Fight for Their Lives in ‘London Has Fallen’ Teaser|work=Variety|date=July 1, 2015|accessdate=July 1, 2015}}</ref> The timing of the release was criticized as "insensitive" by the Chair of the Tavistock Square Memorial Trust, Philip Nelson, as it coincided with the week of the 10th anniversary of the [[7 July 2005 London bombings]], in which 52 people were killed, and with the [[2015 Sousse attacks]], in which 30 British nationals were killed.<ref>{{cite news|title=Gerard Butler film London Has Fallen SLAMMED as 'insensitive' while promoting capital's destruction days before 7/7 bombings anniversary |url= https://www.mirror.co.uk/tv/tv-news/gerard-butler-film-london-fallen-5985310 |accessdate=July 7, 2015 | date=July 1, 2015}}</ref> On September 16, 2015, the film's release was moved back again to March 4, 2016, because the studios needed more time to finish the film's visual effects.<ref>{{cite news |last1=D'Alessandro |first1=Anthony|title='London Has Fallen' On A New Release Date: Gerard Butler Action Film To Open March 4, 2016|url=http://deadline.com/2015/09/london-has-fallen-release-date-change-march-2016-1201530670/|accessdate=September 18, 2015|website=Deadline Hollywood|date=September 16, 2015}}</ref> The U.S. trailer was released on November 5, 2015.<ref>{{cite web|url=http://www.thewrap.com/gerard-butler-protects-aaron-eckhart-from-terrorists-in-london-has-fallen-trailer-video/|title=Gerard Butler Protects Aaron Eckhart From Terrorists in 'London Has Fallen' Trailer (Video)|publisher=The Wrap|first=Jeff|last=Sneider|date=November 5, 2015|accessdate=November 5, 2015}}</ref> A new theatrical poster of the film was released on January 21, 2016.<ref>{{cite web|url=http://www.ew.com/article/2016/01/21/london-has-fallen-exclusive-poster |title=See the exclusive new poster for action sequel London Has Fallen |work=Entertainment Weekly|first=Clark|last=Collis|date=January 21, 2016|accessdate=January 21, 2016}}</ref>
+
+==Home media==
+''London Has Fallen'' was released on [[Blu-ray]] and DVD on June 14, 2016.
+
+==Reception==
+===Box office===
+''London Has Fallen'' grossed $62.7 million in North America and $143.2 million in other territories for a worldwide total of $205.9 million, against a budget of $60 million.<ref name=BOM/> The film outgrossed its predecessor's total of $170 million.
+
+In the United States and Canada, pre-release tracking suggested the film would gross $20–23 million from 3,490 theaters in its opening weekend, trailing fellow newcomer ''[[Zootopia]]'' ($60–70 million projection) but besting ''[[Whiskey Tango Foxtrot (film)|Whiskey Tango Foxtrot]]'' ($10–12 million projection).<ref name="preview">{{cite web|url=http://deadline.com/2016/03/zootopia-london-has-fallen-box-office-preview-whiskey-tango-foxtrot-deadpool-1201712794/ |title=Disney Unleashed: 'Zootopia' Toon Expected To Roar Past $60M – Weekend Preview |website=Deadline Hollywood|date=March 2, 2016}}</ref> The film made $850,000 from its Thursday night previews and $7.6 million on its first day. It went on to gross $21.6 million in its opening weekend, finishing second at the box office behind ''Zootopia'' ($75 million).<ref name=CinemaScore/>
+
+===Critical response===
+On [[Rotten Tomatoes]], the film has an approval rating of 26% based on 191 reviews, with an [[average rating]] of 3.96/10. The site's critical consensus reads, "''London Has Fallen'' traps a talented cast – and all who dare to see it – in a mid-1990s basic-cable nightmare of a film loaded with xenophobia, and threadbare action-thriller clichés."<ref>{{cite web |url=http://www.rottentomatoes.com/m/london_has_fallen/ |title=''London Has Fallen'' (2016) |website=[[Rotten Tomatoes]] |publisher=[[Fandango (company)|Fandango]] |accessdate=August 3, 2019}}</ref> On [[Metacritic]], the film has a score of 28 out of 100, based on reviews from 35 critics, indicating "generally unfavorable reviews".<ref>{{cite web |url=http://www.metacritic.com/movie/london-has-fallen |title=''London Has Fallen'' Reviews |work=[[Metacritic]] |publisher=[[CBS Interactive]] |accessdate=August 3, 2019}}</ref> Audiences polled by [[CinemaScore]] gave the film an average grade of "A–" on an A+ to F scale,<ref name="CinemaScore">{{cite web |url=https://twitter.com/cinemascore/status/706019028377198592 |title=''London Has Fallen'' |author=[[CinemaScore]] on [[Twitter]] |date=March 4, 2016 |accessdate=April 9, 2017}}</ref> the same score as the first film.<ref>{{cite web |url=http://deadline.com/2016/03/weekend-box-office-zootopia-london-has-fallen-whiskey-tango-foxtrot-1201714373/ |title='Zootopia' $73.7M Opening Sets Record For Original Disney Toon; 'London' Raises $21.7M; 'Whiskey' Trips |first=Anthony |last=D'Alessandro |date=March 7, 2016 |accessdate=July 21, 2016 |website=[[Deadline Hollywood]]}}</ref>
+
+Ignatiy Vishnevetsky of ''[[The A.V. Club]]'' wrote: "A murky, brain-dead stab-a-thon packed with so many inane chases, laughable special effects, and mismatched stock footage shots that it begs to be made into a drinking game, ''London Has Fallen'' is one of those rare films that is good at absolutely nothing."<ref>{{cite web|url=http://www.avclub.com/review/gerard-butler-scowls-his-way-through-atrocious-lon-232908|first=Ignatiy|last=Vishnevetsky|title=Gerard Butler scowls his way through the atrocious London Has Fallen |work=The A.V. Club|date=March 2, 2016|access-date=March 2, 2016}}</ref> ''The A.V. Club'' later picked it as their worst movie of the year.<ref>{{cite web|url=http://www.avclub.com/article/20-worst-films-2016-247125|title=The 20 worst films of 2016|date=December 15, 2016|work=The A.V. Club|access-date=January 25, 2017}}</ref>
+
+===Controversy===
+''[[Variety (magazine)|Variety]]'' described ''London Has Fallen'' as "effortlessly racist" invoking "familiar Islamophobia", a "terrorsploitation" fantasy designed to spread fear after the [[November 2015 Paris attacks]], and "ugly, reactionary fear-mongering."<ref name="Variety-Hollywood-Reporter-independent.co.uk">{{cite news |url=https://www.independent.co.uk/arts-entertainment/films/news/london-has-fallen-movie-condemned-as-racist-terrorsploitation-for-donald-trump-era-a6909596.html |title=London Has Fallen has been condemned as racist 'terrorsploitation' for the Trump era |date= March 3, 2016 |work=[[The Independent]] |language=en-GB |access-date=June 16, 2016}}</ref>
+Meanwhile, ''[[The Hollywood Reporter]]'' styled it as "major world capitals destruction porn sub-genre" that feeds a "paranoia".<ref name="Variety-Hollywood-Reporter-independent.co.uk"/>
+
+The film has been called "extremely insensitive" by families of the victims of the [[7/7 bombings]] after an early trailer was released ahead of the 10th anniversary of the attacks.<ref>{{Cite news|url=https://www.theguardian.com/film/2015/jul/02/london-has-fallen-attacked-for-insensitivity-by-77-victims-trust|title=London Has Fallen attacked for 'insensitivity' by 7/7 victims' trust|last=Child|first=Ben |date=July 2, 2015|newspaper=The Guardian |access-date=June 16, 2016}}</ref>
+
+==Sequel==
+{{Main|Angel Has Fallen}}
+On October 26, 2016, it was announced that a sequel titled ''Angel Has Fallen'' is in development, with Gerard Butler reprising his role, as well as once again acting as a producer on the film.<ref>{{cite web|last=Lodderhose |first=Diana |url=http://deadline.com/2016/10/gerard-butler-millennium-films-avi-lerner-angel-has-fallen-olympus-has-fallen-1201843139/ |title=Gerard Butler Heads To Millennium Films' Threequel 'Angel Has Fallen' |website=Deadline Hollywood |date=October 26, 2016 |accessdate=November 2, 2016}}</ref>
+
+On July 25, 2017, Ric Roman Waugh was announced as director for ''Angel Has Fallen''.<ref>{{cite web| last= Kroll |first=Justin |url=https://variety.com/2017/film/news/olympus-has-fallen-sequel-angel-has-fallen-director-ric-roman-waugh-1202504451/ | title= 'Shot Caller' Director Boards 'Olympus Has Fallen' Sequel 'Angel Has Fallen'| publisher= Variety |date=July 25, 2017 | accessdate=July 27, 2017}}</ref> On January 10, 2018, [[Holt McCallany]] joined the cast as Wade Jennings, an ex-military turned head of a technology company.<ref>{{cite web|url=http://deadline.com/2018/01/mindhunter-holt-mccallany-angel-has-fallen-olympus-has-fallen-gerard-butler-1202239912/ |title='Mindhunter's Holt McCallany Joins Gerard Butler In 'Angel Has Fallen' |website=Deadline Hollywood |first=Dominic| last=Patten |date=January 10, 2018 |accessdate=January 11, 2018}}</ref> On January 18, 2018, [[Jada Pinkett Smith]] and [[Tim Blake Nelson]] were confirmed to appear in ''Angel Has Fallen''. On February 13, 2018, [[Piper Perabo]] joined the cast.<ref>{{cite web|url=http://deadline.com/2018/02/piper-perabo-gerard-butler-angel-has-fallen-1202287348/|title=Piper Perabo Boards Gerard Butler-Toplined Sequel 'Angel Has Fallen'|website=Deadline Hollywood|first=Amanda|last=N'Duka|date=February 13, 2018|accessdate=February 13, 2018}}</ref> Filming started on February 7, 2018<ref>{{cite web|url=http://deadline.com/2018/01/jada-pinkett-smith-facebook-talk-show-willow-smith-adrienne-banfield-norris-red-table-talks-sundance-1202248032/|website=Deadline Hollywood|first=Mike|last=Fleming Jr.|date=January 18, 2018|accessdate=January 19, 2018|title=Jada Pinkett Smith, Daughter Willow & Mom Adrienne Set Facebook Talk Show: Sundance}}</ref> in [[Virginia Water Lake]].<ref>{{cite web|url=https://www.getsurrey.co.uk/news/surrey-news/angel-fallen-filming-preparations-under-14330149|title=Angel Has Fallen filming: Preparations under way for shooting in Virginia Water as crews spotted at popular beauty spot|publisher=Get Surrey|first=Catarina|last=Demony|date=February 27, 2018|accessdate=February 27, 2018}}</ref>
+
+The film is scheduled to be released on August 23, 2019.
+
+==References==
+{{Reflist|colwidth=30em}}
+
+==External links==
+* {{Official website|http://www.londonhasfallen.com/}}
+* {{IMDb title|3300542}}
+* {{Mojo title|londonhasfallen}}
+* {{rotten-tomatoes|london_has_fallen}}
+* {{metacritic film|london-has-fallen}}
+* {{AllMovie title|590860}}
+* {{tcmdb title|id=2032683}}
+
+{{Babak Najafi}}
+
+{{DEFAULTSORT:London Has Fallen}}
+[[Category:2010s action thriller films]]
+[[Category:2010s sequel films]]
+[[Category:2016 films]]
+[[Category:American action thriller films]]
+[[Category:American films]]
+[[Category:American political thriller films]]
+[[Category:American sequel films]]
+[[Category:English-language films]]
+[[Category:Films about fictional Presidents of the United States]]
+[[Category:Films about revenge]]
+[[Category:Films about terrorism]]
+[[Category:Films about the Secret Intelligence Service]]
+[[Category:Films directed by Babak Najafi]]
+[[Category:Films set in Essex]]
+[[Category:Films set in London]]
+[[Category:Films set in Manila]]
+[[Category:Films set in Nevada]]
+[[Category:Films set in New York City]]
+[[Category:Films set in Punjab, Pakistan]]
+[[Category:Films set in the White House]]
+[[Category:Films set in Tokyo]]
+[[Category:Films set in Washington, D.C.]]
+[[Category:Films set in Yemen]]
+[[Category:Films set on the London Underground]]
+[[Category:Films shot in Bulgaria]]
+[[Category:Foreign films shot in India]]
+[[Category:Films shot in London]]
+[[Category:Films about Delta Force]]
+[[Category:FilmDistrict films]]
+[[Category:Nu Image films]]
+[[Category:Focus Features films]]
+[[Category:Gramercy Pictures films]]
