@@ -2,13 +2,18 @@ package group.u.records.models.entity;
 
 import group.u.records.models.data.Movie;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.util.UUID;
+
+import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "movieTitle", type = "movieTitle", shards = 1, replicas = 0, refreshInterval = "-1")
 public class MovieTitle {
     private String name;
+
     private String image;
+
     private UUID id;
 
     public MovieTitle(){}

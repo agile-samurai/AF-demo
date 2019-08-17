@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.data.elasticsearch.annotations.FieldType.Keyword;
+import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
 import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "actor", type = "actor", shards = 1, replicas = 0, refreshInterval = "-1")
 public class Actor {
-
-    private List<String> aliases;
     @Id
     private UUID id;
+
     private String url;
     @MultiField(
             mainField = @Field(type = Text, fielddata = true),
@@ -27,7 +27,11 @@ public class Actor {
             }
     )
     private String name;
+
+    @Field(type = Nested)
     private List<MovieTitle> titles;
+
+    private List<String> aliases;
 
     public List<String> getAliases() {
         return aliases;
