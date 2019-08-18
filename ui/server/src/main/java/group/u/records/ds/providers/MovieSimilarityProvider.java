@@ -44,8 +44,7 @@ public class MovieSimilarityProvider {
         try {
             logger.debug("Raw result:  " + rawResponse.getBody());
             Set<String> similar = new HashSet();
-            Matcher m = Pattern.compile("tt\\d\\d*")
-                    .matcher(rawResponse.getBody());
+            Matcher m = Pattern.compile("tt\\d\\d*").matcher(rawResponse.getBody());
             while(m.find()){
                 similar.add(m.group().substring(2));
             }

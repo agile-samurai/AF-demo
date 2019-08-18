@@ -51,7 +51,7 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
         try {
             String json = dataService.getFileAsString(this.convertId(folder, id ));
             Movie movie = objectMapper.readValue(json, Movie.class);
-            movie.enrichModel();
+            movie.enrichModel(id);
             movieDetail = new MovieDetail(movie, this.getLineage());
             movieDetail.getPeople().forEach(p->personRegistry.reconcile(p, new MovieDetail(movie, this.getLineage())));
             getCharacters(id);
