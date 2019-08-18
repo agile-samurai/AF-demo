@@ -17,11 +17,10 @@ import java.util.List;
 
 import static group.u.records.service.Lineage.IMDB;
 import static java.lang.Enum.valueOf;
+import static java.util.Arrays.asList;
 
 @Component
 public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
-
-    private String bucketName;
     private String folder;
     private String characterFolder;
     private PersonRegistry personRegistry;
@@ -29,14 +28,12 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
     private S3DataService dataService;
     private Logger logger = LoggerFactory.getLogger(ImdbMovieDetailsDataSource.class);
 
-    public ImdbMovieDetailsDataSource(@Value("${aws.bucketName}") String bucketName,
-                                      @Value("${aws.folder}") String folder,
+    public ImdbMovieDetailsDataSource(@Value("${aws.folder}") String folder,
                                       @Value("${aws.characterFolder}") String characterFolder,
                                       PersonRegistry personRegistry,
                                       ObjectMapper objectMapper,
                                       S3DataService dataService) {
         super(IMDB);
-        this.bucketName = bucketName;
         this.folder = folder;
         this.characterFolder = characterFolder;
         this.personRegistry = personRegistry;
@@ -66,13 +63,9 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
         try {
             String json = dataService.getFileAsString(this.convertId(characterFolder, id ));
             logger.debug("Character information being processed:  " + json );
-//            Movie movie = objectMapper.readValue(json, Movie.class);
-//            movie.enrichModel();
-
-//            movieDetail = new MovieDetail(movie, this.getLineage());
-//            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p, new MovieDetail(movie, this.getLineage())));
+            asList(objectMapper.readValue(json,MovieCharacter[].class));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error while extracting characters for movie:  " + id );
         }
 
         return null;
