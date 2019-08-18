@@ -113,7 +113,6 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Test
     - Deploy Services To Production
-    #- OWASP Prod Security Scan
     - Execute main-ds-service Tests
     - Build Data Model
     - Capture data and push to s3
@@ -505,10 +504,6 @@ jobs:
                 echo "installing sonarqube"
                 sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
                 echo "pushing results to sonarqube complete"
-
-                # echo "running pa11y"
-                # npm install -g pa11y --silent
-                # pa11y source/ui
 
                 echo "preparing files for container build"
                 cp ./container/Dockerfile ../../../docker/.
@@ -953,6 +948,10 @@ jobs:
         TF_VAR_db_user: dbusername1
         TF_VAR_infra_version: useless
         TF_VAR_aws_account_id: ((aws_account_id))
+        TF_VAR_jwt_secret: ((jwt_secret))
+        TF_VAR_business_user_password: ((business_user_password))
+        TF_VAR_business_supervisor_password: ((business_supervisor_password))
+        TF_VAR_system_user_password: ((system_user_password))
       config:
         platform: linux
         image_resource:
@@ -978,12 +977,13 @@ jobs:
 
             echo "Waiting for server to come up"
             export SERVER_DNS_NAME=`terraform output server_dns_name`
+            export WWW_DNS_NAME=`terraform output www-url`
             cd ../..
             ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
             echo "Server is up!!"
-            export WWW_DNS_NAME=`terraform output www-url`
-            ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/health" 200
-            echo "UI is up!!"
+            # export WWW_DNS_NAME=`terraform output www-url`
+            # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
+            # echo "UI is up!!"
         inputs:
         - name: source
         - name: version
@@ -1198,7 +1198,7 @@ jobs:
             - |
                 echo "name: $(cat terraform/name)"
                 echo "metadata: $(cat terraform/metadata)"
-                
+
   - name: OWASP Prod Security Scan
     serial: false
     plan:
