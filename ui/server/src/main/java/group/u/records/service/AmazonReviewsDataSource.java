@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static group.u.records.service.Lineage.AMAZON;
+import static java.util.Arrays.asList;
 
 @Component
 public class AmazonReviewsDataSource extends MovieDetailsDataSource {
@@ -34,7 +35,6 @@ public class AmazonReviewsDataSource extends MovieDetailsDataSource {
                 people,
                 Faker.instance().lorem().paragraph(),
                 Faker.instance().lorem().words(3),
-                "R",
                 LocalDate.now(),
                 "Fake",
                 "url",
