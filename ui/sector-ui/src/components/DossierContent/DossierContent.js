@@ -10,7 +10,6 @@ export default class DossierContent extends React.Component {
         super(props);
         this.state = {
             redactionEnabled: false,
-            encryptedDataLoaded: false,
             dossierData: null,
             loaded: false
         };
@@ -23,6 +22,7 @@ export default class DossierContent extends React.Component {
 
     // TODO use to conditionally allow Dossier deletion
     /*<ShowElementByRole role='ROLE_SUPERVISOR'>*/
+
     /*</ShowElementByRole>*/
 
     render() {
@@ -44,31 +44,36 @@ export default class DossierContent extends React.Component {
 
         const perLineageDossierContentList = dossiers
             .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
-            dossierData={perLineageDossier}/>);
+                                                                dossierData={perLineageDossier}/>);
 
         return (
             <div className="dossier-main-section-wrapper">
                 <div className="dossier-main-section">
                     <div className="dossier-name">{dossiers[0].name}</div>
                     {perLineageDossierContentList}
-                    <DossierNotes dossierID={dossierData.id}/>
+                    <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
+                                  refreshData={this.loadEncryptedData.bind(this)}/>
                 </div>
             </div>
         );
     }
 
     loadEncryptedData(dossierID) {
-        axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`, {
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
-            }
-        })
-            .then(response => {
-                this.setState({
-                    dossierData: response.data,
-                    loaded: true
+        this.setState({
+            loaded: false
+        }, () => {
+            axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`, {
+                auth: {  // TODO remove
+                    username: 'business-user',
+                    password: 'password'
+                }
+            })
+                .then(response => {
+                    this.setState({
+                        dossierData: response.data,
+                        loaded: true
+                    });
                 });
-            });
+        });
     }
 }
