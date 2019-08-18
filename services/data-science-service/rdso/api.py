@@ -21,47 +21,21 @@ def load_movies_df(api):
     """
     global movies_df
     cwd = pathlib.Path(".").resolve()
-    data_dir = cwd.parents[0] / "data"
+    data_dir = cwd.parents[0] /"data"
     if not data_dir.is_dir():
         data_dir = cwd / "data"
         if not data_dir.is_dir():
             data_dir.mkdir()
     movies_df_file = data_dir / "movies_df.pkl"
-
-    # S3 file handling to be pushed off to the pipeline --------------------------
-    # If movies_df.pkl is not in the data directory, download it from S3
-    # if not movies_df_file.is_file():
-    #
-    #     bucket_name = 'rdso-challenge2'
-    #     s3 = None
-    #     try:
-    #         profile = os.environ['AWS_PROFILE']
-    #         session = boto3.Session(profile_name=profile)
-    #         s3 = session.client('s3')
-    #     except KeyError:
-    #         pass
-    #     if s3 is None:
-    #         try:
-    #             access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
-    #             access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-    #             session = boto3.Session(aws_access_key_id=access_key_id,
-    #                                     aws_secret_access_key=access_key)
-    #             s3 = session.client('s3')
-    #         except KeyError:
-    #             raise ValueError("No AWS credentials found")
-    #
-    #     with open(str(movies_df_file), 'wb') as infile:
-    #         s3.download_fileobj(bucket_name, 'data/movies_df.pkl', infile)
-    #     print('Downloaded movies_df.pkl from S3')
-
     movies_df = pd.read_pickle(str(movies_df_file))
+    print()
 
 
 @hug.startup()
 def load_metrics(api):
     global metrics
     cwd = pathlib.Path(".").resolve()
-    models_dir = cwd.parents[0] / "models"
+    models_dir = cwd / "models"
     latest_metrics = "0.0.0"
     for file in models_dir.iterdir():
         # Find the highest version of the metrics file
@@ -96,37 +70,6 @@ def load_model(api):
         if not models_dir.is_dir():
             models_dir.mkdir()
     models_file = models_dir / model_filename
-
-    # S3 file handling to be pushed off to the pipeline --------------------------
-    #     models_trainables_file = models_dir / trainables_filename
-    #     models_vectors_file = models_dir / vectors_filename
-    #     if not models_file.is_file():
-    #         bucket_name = 'rdso-challenge2'
-    #         s3 = None
-    #         try:
-    #             profile = os.environ['AWS_PROFILE']
-    #             session = boto3.Session(profile_name=profile)
-    #             s3 = session.client('s3')
-    #         except KeyError:
-    #             pass
-    #         if s3 is None:
-    #             try:
-    #                 access_key_id = os.environ["AWS_ACCESS_KEY_ID"]
-    #                 access_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-    #                 session = boto3.Session(aws_access_key_id=access_key_id,
-    #                                         aws_secret_access_key=access_key)
-    #                 s3 = session.client('s3')
-    #             except KeyError:
-    #                 raise ValueError("No AWS credentials found")
-    #
-    #         with open(str(models_file), 'wb') as inf:
-    #             s3.download_fileobj(bucket_name, 'models/' + model_filename, inf)
-    #         with open(str(models_vectors_file), 'wb') as inf:
-    #             s3.download_fileobj(bucket_name, 'models/' + vectors_filename, inf)
-    #         with open(str(models_trainables_file), 'wb') as inf:
-    #             s3.download_fileobj(bucket_name, 'models/' + trainables_filename, inf)
-    #         print('Downloaded Doc2Vec model from S3')
-
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
@@ -134,6 +77,10 @@ def load_model(api):
 def most_similar_movies(imdbID: hug.types.text):
     if not imdbID.startswith("tt"):
         imdbID = "tt" + imdbID
+
+    print('this is the id ' + imdbID)
+    print(movies_df)
+
     selected_movie = movies_df[movies_df["film_id"] == imdbID]
     if len(selected_movie) == 0:
         return {"Error": "Movie ID not found in dataset"}
