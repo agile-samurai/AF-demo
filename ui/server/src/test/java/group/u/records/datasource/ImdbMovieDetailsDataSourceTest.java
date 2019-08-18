@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-public class ImdbMovieDetailsLineageTest {
+public class ImdbMovieDetailsDataSourceTest {
 
     @Test
     @Ignore
@@ -37,7 +37,7 @@ public class ImdbMovieDetailsLineageTest {
 
         S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",client, objectMapper);
         PersonRegistry personRegistry = mock(PersonRegistry.class);
-        ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource("rdso-challenge2", "data/movies_json", personRegistry,objectMapper,dataService);
+        ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource("rdso-challenge2", "data/movies_json", "data/characters_json", personRegistry,objectMapper,dataService);
         MovieDetail detail = ds.getMovieDetails("0020980");
 //        MovieDetail detail = ds.getMovieDetails("8898648");
 //        MovieDetail detail = dataService.processMovie("8898648");
