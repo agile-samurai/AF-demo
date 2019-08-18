@@ -125,7 +125,7 @@ def get_all_movie_plot():
 
 @hug.get("/highlighted_film_plot/{imdbID}")
 def get_highlighted_plot(imdbID: hug.types.text):
-    mdf = movie_df
+    mdf = movies_df
     p = plot.sc_plot_for_one(mdf, imdbID)
     if not imdbID:
         p = plot.sc_plot_genre_colors(mdf)
