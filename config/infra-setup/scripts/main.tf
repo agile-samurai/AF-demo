@@ -6,6 +6,10 @@ terraform {
   }
 }
 
+terraform {
+  required_version = "0.12.5"
+}
+
 # Fetch AZs in the current region
 data "aws_availability_zones" "available" {}
 
