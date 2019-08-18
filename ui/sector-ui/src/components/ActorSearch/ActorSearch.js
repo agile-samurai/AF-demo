@@ -49,7 +49,7 @@ export default class ActorSearch extends React.Component {
                 <div className="main-section">
                     <TextField
                         id="standard-name"
-                        placeholder="Search for actor"
+                        placeholder="Search for celebrity"
                         value={searchTerm}
                         className="text-field"
                         onChange={this.handleInputChange}
@@ -61,7 +61,10 @@ export default class ActorSearch extends React.Component {
                             </InputAdornment>,
                         }}
                     />
+                    <div>Search by celebrity name, or celebrity alias, or movie name</div>
                 </div>
+
+
                 <div className="search-results-wrapper">
                     <div className="search-results">
                         {actorRows}
