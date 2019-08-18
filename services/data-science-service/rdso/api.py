@@ -6,6 +6,8 @@ import json
 import os
 import pandas as pd
 import pathlib
+
+# local imports
 import plot
 import movies
 
@@ -123,7 +125,7 @@ def get_all_movie_plot():
 
 @hug.post("/highlighted_film_plot")
 def get_highlighted_plot(imdbID: hug.types.text):
-    mdf = movies.merged_movie_data(1000)
+    mdf = movie_df
     p = plot.sc_plot_for_one(mdf, imdbID)
     return plot.jsonify_image(p)
 
