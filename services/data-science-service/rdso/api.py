@@ -6,12 +6,15 @@ import json
 import os
 import pandas as pd
 import pathlib
+
+# local imports
 import plot
 import movies
 
 doc2vec_model = None
 movies_df = None
 metrics = None
+
 
 @hug.startup()
 def load_movies_df(api):
@@ -20,7 +23,7 @@ def load_movies_df(api):
     """
     global movies_df
     cwd = pathlib.Path(".").resolve()
-    data_dir = cwd.parents[0] /"data"
+    data_dir = cwd.parents[0] / "data"
     if not data_dir.is_dir():
         data_dir = cwd / "data"
         if not data_dir.is_dir():
@@ -34,7 +37,12 @@ def load_movies_df(api):
 def load_metrics(api):
     global metrics
     cwd = pathlib.Path(".").resolve()
-    models_dir = cwd / "models"
+    models_dir = cwd.parents[0] / "data"
+    if not models_dir.is_dir():
+        models_dir = cwd / "models"
+        if not models_dir.is_dir():
+            models_dir.mkdir()
+    # models_dir = cwd / "models"
     latest_metrics = "0.0.0"
     for file in models_dir.iterdir():
         # Find the highest version of the metrics file
@@ -46,6 +54,7 @@ def load_metrics(api):
     metrics_file = models_dir / f"metrics.{latest_metrics}.json"
     with metrics_file.open("r") as infile:
         metrics = json.load(infile)
+
 
 @hug.startup()
 def load_model(api):
@@ -71,12 +80,24 @@ def load_model(api):
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
-@hug.get('/most_similar/{imdbID}')
+@hug.get("/all_available_movies/", examples="n=6")
+def get_all_available_movies(n=None):
+    mdf = movies_df
+    mdf = mdf[mdf.top_genre.notna()]
+    if not n:
+        n = len(mdf)
+    else:
+        n = int(n)
+    mdf = mdf.sample(n)
+    return mdf[["imdb_id", "title", "top_genre"]].to_dict(orient="record")
+
+
+@hug.get("/most_similar/{imdbID}")
 def most_similar_movies(imdbID: str):
     if not imdbID.startswith("tt"):
         imdbID = "tt" + imdbID
 
-    print('this is the id ' + imdbID)
+    print("this is the id " + imdbID)
     print(movies_df)
 
     selected_movie = movies_df[movies_df["film_id"] == imdbID]
@@ -93,6 +114,7 @@ def most_similar_movies(imdbID: str):
 
     return most_similar_movies
 
+
 @hug.get("/all_movie_scatter_plot")
 def get_all_movie_plot():
     mdf = movies_df  # global, set at startup
@@ -103,7 +125,7 @@ def get_all_movie_plot():
 
 @hug.post("/highlighted_film_plot")
 def get_highlighted_plot(imdbID: hug.types.text):
-    mdf = movies.merged_movie_data(1000)
+    mdf = movie_df
     p = plot.sc_plot_for_one(mdf, imdbID)
     return plot.jsonify_image(p)
 

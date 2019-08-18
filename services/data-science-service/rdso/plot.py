@@ -3,6 +3,8 @@ from bokeh.plotting import ColumnDataSource
 from bokeh.embed import json_item
 from bokeh.io import export_png
 from bokeh.models.markers import CircleX
+from bokeh import palettes
+import pandas as pd
 import numpy as np
 
 
@@ -54,10 +56,28 @@ def sc_plot_genre_colors(mdf):
     mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
     mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
 
+    # only want to use it to plot if there is a genre attached
+    mdf = mdf[mdf.top_genre.notna()]
+
     colormap = dict(
-        zip(mdf.primary_genre.unique(), Category20[len(mdf.primary_genre.unique())])
+        zip(
+            mdf.top_genre.unique(),
+            (
+                np.random.choice(
+                    list(
+                        set(
+                            palettes.Magma256
+                            + palettes.Viridis256
+                            + palettes.cividis(18)
+                        )
+                    ),
+                    size=mdf.top_genre.nunique(),
+                    replace=False,
+                )
+            ),
+        )
     )
-    mdf["color"] = mdf.primary_genre.map(lambda j: colormap[j])
+    mdf["color"] = mdf.top_genre.map(lambda j: colormap[j])
 
     source = ColumnDataSource(
         data=dict(
@@ -65,7 +85,7 @@ def sc_plot_genre_colors(mdf):
             y=mdf.y,
             name=mdf.name,
             year=mdf.year,
-            genre=mdf.primary_genre,
+            genre=mdf.top_genre,
             color=mdf.color,
         )
     )
@@ -102,9 +122,28 @@ def sc_plot_for_one(mdf, imdbID: str):
     # first two principal components of the Doc2Vec model to populate the x and y vars
     mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
     mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
+    mdf = mdf[mdf.top_genre.notna()]
     item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
+    # colormap = dict(
+    #     zip(mdf.top_genre.unique(), Category20[len(mdf.top_genre.unique())])
+    # )
     colormap = dict(
-        zip(mdf.primary_genre.unique(), Category20[len(mdf.primary_genre.unique())])
+        zip(
+            mdf.top_genre.unique(),
+            (
+                np.random.choice(
+                    list(
+                        set(
+                            palettes.Magma256
+                            + palettes.Viridis256
+                            + palettes.cividis(18)
+                        )
+                    ),
+                    size=mdf.top_genre.nunique(),
+                    replace=False,
+                )
+            ),
+        )
     )
     genre_of_item = item["primary_genre"]
     color_of_item = colormap[item["primary_genre"]]
@@ -112,7 +151,7 @@ def sc_plot_for_one(mdf, imdbID: str):
     grayed_out_colormap = dict(zip(colormap.keys(), ["gray"] * len(colormap)))
     grayed_out_colormap[genre_of_item] = color_of_item
 
-    mdf["color"] = mdf.primary_genre.map(lambda x: grayed_out_colormap[x])
+    mdf["color"] = mdf.top_genre.map(lambda x: grayed_out_colormap[x])
 
     p = sc_plot_genre_colors(mdf, grayed_out_colormap)
 

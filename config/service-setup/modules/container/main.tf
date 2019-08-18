@@ -45,6 +45,14 @@ resource "aws_ecs_task_definition" "service" {
      { "name": "ELASTICSEARCH_HOST", "value" :"http://${var.es_endpoint}"},
      { "name": "ELASTICSEARCH_PORT", "value" :"80"},
 
+    { "name": "APP_DS_REDACT_HOST", "value" :"${var.ds_redact_host}"},
+    { "name": "APP_DS_IMAGES_HOST", "value" :"${var.ds_images_host}"},
+    { "name": "APP_DS_SIMILARITIES_HOST", "value" :"http://${var.ds_similarities_host}"},
+    { "name": "APP_JWT_SECRET", "value" :"${var.jwt_secret}"},
+    { "name": "APP_BUSINESS_USER_PASSWORD", "value" :"${var.business_user_password}"},
+    { "name": "APP_BUSINESS_SUPERVISOR_PASSWORD", "value" :"${var.business_supervisor_password}"},
+    { "name": "APP_SYSTEM_USER_PASSWORD", "value" :"${var.system_user_password}"},
+
      { "name": "AWS_ACCESS_KEY_ID", "value" :"${var.access_key}"},
      { "name": "AWS_SECRET_ACCESS_KEY", "value" :"${var.access_secret}"}
    ]

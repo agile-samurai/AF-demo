@@ -68,6 +68,14 @@ variable "zone_id" {}
 #   default = 27017
 # }
 
+variable "ds_redact_host" {}
+variable "ds_images_host" {}
+variable "ds_similarities_host" {}
+variable "jwt_secret" {}
+variable "business_user_password" {}
+variable "business_supervisor_password" {}
+variable "system_user_password" {}
+
 variable "data_science_url" {}
 
 

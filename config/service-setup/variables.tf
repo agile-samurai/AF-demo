@@ -101,3 +101,11 @@ variable "postgres_password" {
 variable "access_key" {}
 
 variable "access_secret" {}
+
+
+
+
+variable "jwt_secret" {}
+variable "business_user_password" {}
+variable "business_supervisor_password" {}
+variable "system_user_password" {}
