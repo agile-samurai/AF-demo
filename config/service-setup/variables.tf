@@ -101,3 +101,12 @@ variable "postgres_password" {
 variable "access_key" {}
 
 variable "access_secret" {}
+
+
+
+variable "ds_images_host" {}
+variable "ds_similarities_host" {}
+variable "jwt_secret" {}
+variable "business_user_password" {}
+variable "business_supervisor_password" {}
+variable "system_user_password" {}

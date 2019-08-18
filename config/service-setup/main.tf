@@ -178,19 +178,14 @@ module "server" {
   access_key    = var.access_key
   access_secret = var.access_secret
 
-  /*app_business_user_password
-  app_jwt_secret= "" #randome string to use for salt
-  spacy_url=""   #http
-  app_ds_images_host=""  #http datascience url
-  app_ds_similarities_host=""  #http datascience url in container Uppercase
-    APP_DS_REDACT_HOST
-  APP_DS_IMAGES_HOST
-  APP_DS_SIMILARITIES_HOST
 
-  APP_JWT_SECRET
-  APP_BUSINESS_USER_PASSWORD
-  APP_BUSINESS_SUPERVISOR_PASSWORD
-  APP_SYSTEM_USER_PASSWORD*/
+  ds_redact_host="http://${module.ds-spaCy-model.dns_name}"   #spaCy url add http://
+  ds_images_host=var.ds_images_host
+  ds_similarities_host=var.ds_similarities_host
+  jwt_secret=var.jwt_secret
+  business_user_password=var.business_user_password
+  business_supervisor_password=var.business_supervisor_password
+  system_user_password=var.system_user_password
 }
 
 module "datascience" {
@@ -242,10 +237,10 @@ module "ds-spaCy-model" {
 }
 
 
-module "hsm"{
-  source = "./modules/hsm"
-  region = terraform.workspace
-  vpc_id             = module.network.vpc_id
-  private_subnets    = module.network.private_subnets
-  public_subnets     = module.network.public_subnets
-}
+# module "hsm"{
+#   source = "./modules/hsm"
+#   region = terraform.workspace
+#   vpc_id             = module.network.vpc_id
+#   private_subnets    = module.network.private_subnets
+#   public_subnets     = module.network.public_subnets
+# }
