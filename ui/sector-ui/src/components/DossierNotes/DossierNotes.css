@@ -1,0 +1,42 @@
+.dossier-notes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.notes-section-heading {
+    font-size: 36px;
+}
+
+.dossier-notes .add-note-button, .dossier-notes .add-note-button:hover {
+    background-color: #56B55A;
+    color: #FCFCFC;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: absolute;
+    width: 700px;
+    background-color: #fff;
+    padding: 30px;
+    top: 40%;
+    left: calc(50% - 350px);
+    border-radius: 4px;
+}
+
+.note-content, .note-input-textfield {
+    width: 100%;
+}
+
+.add-note-link {
+    align-self: flex-end;
+    margin-top: 25px;
+}

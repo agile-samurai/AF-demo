@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,7 +22,6 @@ public class MasterDossierRepository {
     }
 
     public void save(MasterDossier dossier) {
-
         dataService.save(dossier.getId(), dossierEncryptionService.encrypt(dossier) );
     }
 
@@ -36,7 +36,8 @@ public class MasterDossierRepository {
 
     public void addNote(UUID id, String name, String note) {
         MasterDossier dossier = get(id);
-        dossier.addNote(LocalDateTime.now(), name, note);
+        dossier.addNote(LocalDateTime.now().toString(), name, note);
         logger.debug("Saving note in dossier from user:  " + name );
+        save(dossier);
     }
 }

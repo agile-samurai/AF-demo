@@ -3,7 +3,6 @@ package group.u.records.service;
 import group.u.records.content.Dossier;
 import group.u.records.models.Note;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,10 +35,10 @@ public class MasterDossier {
         this.dossiers = dossiers;
         this.similarMovies = similarMovies;
         this.id = id;
-        this.notes = new ArrayList();
+        this.notes = new ArrayList<>();
     }
 
-    public void addNote(LocalDateTime time, String name, String note) {
+    public void addNote(String time, String name, String note) {
         this.notes.add(new Note(time,name,note));
     }
 }
