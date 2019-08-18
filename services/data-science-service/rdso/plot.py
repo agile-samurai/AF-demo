@@ -35,7 +35,7 @@ def save_image(p, filename, format="png"):
         export_png(p, filename=filename)
 
 
-def sc_plot_genre_colors(mdf):
+def sc_plot_genre_colors(mdf, colormap=None):
     """Uses the full dataset, represents all movies in dataset using vectorized
     placement and colorized by genre.
 
@@ -59,24 +59,25 @@ def sc_plot_genre_colors(mdf):
     # only want to use it to plot if there is a genre attached
     mdf = mdf[mdf.top_genre.notna()]
 
-    colormap = dict(
-        zip(
-            mdf.top_genre.unique(),
-            (
-                np.random.choice(
-                    list(
-                        set(
-                            palettes.Magma256
-                            + palettes.Viridis256
-                            + palettes.cividis(18)
-                        )
-                    ),
-                    size=mdf.top_genre.nunique(),
-                    replace=False,
-                )
-            ),
+    if not colormap:
+        colormap = dict(
+            zip(
+                mdf.top_genre.unique(),
+                (
+                    np.random.choice(
+                        list(
+                            set(
+                                palettes.Magma256
+                                + palettes.Viridis256
+                                + palettes.cividis(18)
+                            )
+                        ),
+                        size=mdf.top_genre.nunique(),
+                        replace=False,
+                    )
+                ),
+            )
         )
-    )
     mdf["color"] = mdf.top_genre.map(lambda j: colormap[j])
 
     source = ColumnDataSource(
@@ -156,10 +157,6 @@ def sc_plot_for_one(mdf, imdbID: str):
     p = sc_plot_genre_colors(mdf, grayed_out_colormap)
 
     p.circle_x(
-        x=item["random_x"],
-        y=item["random_y"],
-        size=20,
-        fill_color=color_of_item,
-        line_color="red",
+        x=item["x"], y=item["y"], size=20, fill_color=color_of_item, line_color="red"
     )
     return p
