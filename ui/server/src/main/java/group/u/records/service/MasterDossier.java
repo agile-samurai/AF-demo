@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public class MasterDossier {
     private List<Dossier> dossiers;
+    private List<UUID> similarMovies;
     private UUID id;
     private List<Note> notes;
 
@@ -23,8 +24,17 @@ public class MasterDossier {
 
     public MasterDossier(){}
 
-    public MasterDossier(List<Dossier> dossiers, UUID id) {
+    public List<UUID> getSimilarMovies() {
+        return similarMovies;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public MasterDossier(List<Dossier> dossiers, List<UUID> similarMovies, UUID id) {
         this.dossiers = dossiers;
+        this.similarMovies = similarMovies;
         this.id = id;
         this.notes = new ArrayList();
     }
