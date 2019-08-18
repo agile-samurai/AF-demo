@@ -37,6 +37,4 @@ public class DossierController {
         masterDossierRepository.delete(id);
         return ok().build();
     }
-
-
 }

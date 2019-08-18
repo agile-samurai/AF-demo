@@ -7,7 +7,7 @@ import group.u.records.models.entity.MovieCharacter;
 import group.u.records.models.entity.Review;
 import group.u.records.service.Lineage;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +21,6 @@ public class Dossier {
     private List<Review> reviews;
     private String image;
     private List<Genre> genres;
-    private List<Note> notes;
     private Lineage lineage;
 
 
@@ -62,7 +61,6 @@ public class Dossier {
         this.image = image;
         this.genres = genres;
         this.lineage = lineage;
-        this.notes = new ArrayList();
     }
 
     public Dossier(){}
@@ -77,13 +75,5 @@ public class Dossier {
 
     public void setRedactionSuggestions(List<EntityClassification> entityClassifications) {
         this.entityClassifications = entityClassifications;
-    }
-
-    public void addNote(LocalDateTime timeStamp, String user, String note) {
-        this.notes.add(new Note(timeStamp,user,note));
-    }
-
-    public List<Note> getNotes() {
-        return notes;
     }
 }
