@@ -49,7 +49,12 @@ public class JWTSecurityEnhancementFilter implements Filter {
 
         auth = resumeSession((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, auth);
         SecurityContextHolder.getContext().setAuthentication(auth);
-        setJWTResponseHeader(auth, (HttpServletResponse) servletResponse);
+
+        try {
+            setJWTResponseHeader(auth, (HttpServletResponse) servletResponse);
+        } catch (IllegalAccessException exception) {
+            throw new ServletException(exception);
+        }
 
         auth = SecurityContextHolder.getContext().getAuthentication();
         logger.debug("Authentication:  " + auth.getName());
@@ -70,14 +75,18 @@ public class JWTSecurityEnhancementFilter implements Filter {
         return auth;
     }
 
-    private void setJWTResponseHeader(Authentication auth, HttpServletResponse servletResponse) throws UnsupportedEncodingException {
-        String jwt = JWT.create()
-                .withIssuer(ISSUER)
-                .withSubject(auth.getName())
-                .withClaim(ROLES, auth.getAuthorities().toArray(new GrantedAuthority[1])[0].getAuthority())
-                .sign(algorithm);
+    private void setJWTResponseHeader(Authentication auth, HttpServletResponse servletResponse) throws IllegalAccessException {
+        try {
+            String jwt = JWT.create()
+                    .withIssuer(ISSUER)
+                    .withSubject(auth.getName())
+                    .withClaim(ROLES, auth.getAuthorities().toArray(new GrantedAuthority[1])[0].getAuthority())
+                    .sign(algorithm);
 
-        servletResponse.setHeader(SECURITY_TOKEN_HEADER, jwt);
+            servletResponse.setHeader(SECURITY_TOKEN_HEADER, jwt);
+        } catch (NullPointerException exception) {
+            throw new IllegalAccessException("Access not allowed");
+        }
     }
 
     private Authentication extractJWT(HttpServletRequest servletRequest) {
