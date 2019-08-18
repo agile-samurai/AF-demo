@@ -3,6 +3,7 @@ import axios from "axios/index";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './DossierContent.css';
 import PerLineageDossierContent from "../PerLineageDossierContent/PerLineageDossierContent";
+import DossierNotes from "../DossierNotes/DossierNotes";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -49,6 +50,7 @@ export default class DossierContent extends React.Component {
                 <div className="dossier-main-section">
                     <div className="dossier-name">{dossiers[0].name}</div>
                     {perLineageDossierContentList}
+                    <DossierNotes/>
                 </div>
             </div>
         );
