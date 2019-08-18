@@ -18,3 +18,25 @@
     box-shadow: none;
 }
 
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: absolute;
+    width: 700px;
+    background-color: #fff;
+    padding: 30px;
+    top: 40%;
+    left: calc(50% - 350px);
+    border-radius: 4px;
+}
+
+.note-content, .note-input-textfield {
+    width: 100%;
+}
+
+.add-note-link {
+    align-self: flex-end;
+    margin-top: 25px;
+}

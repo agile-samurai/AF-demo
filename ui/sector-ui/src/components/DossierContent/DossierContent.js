@@ -42,7 +42,8 @@ export default class DossierContent extends React.Component {
 
         const {dossiers} = dossierData;
 
-        const perLineageDossierContentList = dossiers.map(perLineageDossier => <PerLineageDossierContent
+        const perLineageDossierContentList = dossiers
+            .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
             dossierData={perLineageDossier}/>);
 
         return (
@@ -50,7 +51,7 @@ export default class DossierContent extends React.Component {
                 <div className="dossier-main-section">
                     <div className="dossier-name">{dossiers[0].name}</div>
                     {perLineageDossierContentList}
-                    <DossierNotes/>
+                    <DossierNotes dossierID={dossierData.id}/>
                 </div>
             </div>
         );
