@@ -1,0 +1,20 @@
+.dossier-notes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.notes-section-heading {
+    font-size: 36px;
+}
+
+.dossier-notes .add-note-button, .dossier-notes .add-note-button:hover {
+    background-color: #56B55A;
+    color: #FCFCFC;
+    font-size: 14px;
+    box-shadow: none;
+}
+
