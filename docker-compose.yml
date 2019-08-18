@@ -56,11 +56,10 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   data-science-service:
-    container_name: data-science-interface
-    build:
-      context: services/data-science-service
+    image: ugroup/data-science-service
+    container_name: data-science-service
     ports:
-      - "8083:8080"
+      - "8083:8000"
     environment:
       - CONTRACT_TEST=false
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
