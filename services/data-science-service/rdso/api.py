@@ -13,7 +13,6 @@ doc2vec_model = None
 movies_df = None
 metrics = None
 
-
 @hug.startup()
 def load_movies_df(api):
     """
@@ -47,7 +46,6 @@ def load_metrics(api):
     metrics_file = models_dir / f"metrics.{latest_metrics}.json"
     with metrics_file.open("r") as infile:
         metrics = json.load(infile)
-
 
 @hug.startup()
 def load_model(api):
@@ -95,28 +93,6 @@ def most_similar_movies(imdbID: str):
 
     return most_similar_movies
 
-
-@hug.post("/make_test_plot")
-def show_test_plot(n=None):
-    """Creates test plot with anything posted
-
-    Parameters
-    ----------
-    n : int
-        Dummy parameter that should be an integer
-
-    Returns
-    -------
-    dict
-        Returns a JSON dict that contains a test plot; should be paired with
-        BokehJS library and React component on the front-end
-    """
-    if not n:
-        n = 500
-    p = plot.make_test_image(n=int(n))
-    return plot.jsonify_image(p)
-
-
 @hug.get("/all_movie_scatter_plot")
 def get_all_movie_plot():
     mdf = movies_df  # global, set at startup
@@ -132,59 +108,6 @@ def get_highlighted_plot(imdbID: hug.types.text):
     return plot.jsonify_image(p)
 
 
-def compare(primary_string, secondary_string):
-    """
-    Helper method with the scoring logic for the /similarity_score endpoint.
-    """
-    fuzz_score = fuzz.ratio(primary_string, secondary_string) / 100
-    return fuzz_score
-
-
-@hug.post("/similarity_score")
-def similarity_score(comparison_text: hug.types.text, text: hug.types.text):
-    """
-    Score the comparison_string for similarity to the others. Can be used for
-    comparing company names, sentences, etc. Scale is 0 to 1 (1 is perfect match).
-
-    Parameters
-    ----------
-    comparison_text:
-        String to compare to the other
-    text:
-        String to compare with
-
-    Returns
-    -------
-    output_score:
-        float from 0 to 1
-
-    """
-    output_score = compare(comparison_text, text)
-    return output_score
-
-
 @hug.get("/metrics")
 def metrics():
-    """
-    Endpoint to get model scores in order to track performance over time.
-
-    Currently has dummy values.
-    """
     return metrics
-
-
-if __name__ == "__main__":
-    """
-    Demonstrate use of api as a module.
-    """
-    comparison_string = "Hello World."
-    strings = [
-        {"id": 1, "body": "Hello Wrrld."},
-        {"id": 2, "body": "H3ll0 W0rld#"},
-        {"id": 3, "body": "Heck no dog."},
-    ]
-
-    print(f"Similarity to '{comparison_string}':")
-    for string in strings:
-        score = similarity_score(comparison_string, string["body"])
-        print(f"id {string['id']}, '{string['body']}': {score}")
