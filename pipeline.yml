@@ -193,7 +193,7 @@ jobs:
   #       params:
   #         terraform_source: source/config/infra-setup/scripts
   #         plan_only: true
-  #         env_name: infra  
+  #         env_name: infra
   #         env:
   #           TF_VAR_access_key: ((aws_access_key_id))
   #           TF_VAR_access_secret: ((aws_secret_access_key))
@@ -403,7 +403,7 @@ jobs:
               ls -all ../../../../data
               ls -all ../../../../data/data
               ls -all ../../../../data/data/data
-              ls -all 
+              ls -all
               touch testfile.txt
               python vectorize.py
               ls -all ../models/
@@ -498,7 +498,7 @@ jobs:
                 echo "installing sonarqube"
                 sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
                 echo "pushing results to sonarqube complete"
-                
+
                 # echo "running pa11y"
                 # npm install -g pa11y --silent
                 # pa11y source/ui
@@ -901,12 +901,7 @@ jobs:
               cd build
               cp -r ../source/services/data-science-service/rdso/* .
               cp -r ../data/data .
-              cp -r ../models .
-              ls -all ../
-              ls -all .
-              ls -all ./models
-              ls -all ./data
-
+              cp -r ../models/models .
           inputs:
             - name: source
             - name: data
