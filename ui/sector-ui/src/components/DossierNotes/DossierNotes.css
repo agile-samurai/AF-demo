@@ -1,9 +1,13 @@
 .dossier-notes {
+    margin-top: 50px;
+    width: 100%;
+}
+
+.heading-and-add-button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: 50px;
     width: 100%;
 }
 

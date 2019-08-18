@@ -1,5 +1,6 @@
 package group.u.records.web;
 
+import group.u.records.models.web.NoteDTO;
 import group.u.records.security.MasterDossierRepository;
 import group.u.records.service.MasterDossier;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class DossierController {
     }
 
     @PostMapping("/{id}/note")
-    public ResponseEntity<MasterDossier> post(@PathVariable UUID id, @RequestBody String note ){
-        masterDossierRepository.addNote(id, getContext().getAuthentication().getName(), note);
+    public ResponseEntity<MasterDossier> post(@PathVariable UUID id, @RequestBody NoteDTO note ){
+        masterDossierRepository.addNote(id, getContext().getAuthentication().getName(), note.getContent());
         return ok(masterDossierRepository.get(id));
     }
 
