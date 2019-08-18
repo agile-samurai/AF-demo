@@ -1267,28 +1267,6 @@ jobs:
             # pkill --help
             echo "done"
             exit 0
-  # - name: Execute Pa11y Security Scan
-  #   serial: false
-  #   plan:
-  #   - get: version
-  #     trigger: true
-  #     passed:
-  #       - Deploy Services To Dev
-  #   - task: Scan Environment
-  #     privileged: true
-  #     timeout: 6m
-  #     config:
-  #       platform: linux
-  #       image_resource:
-  #         type: latest-docker-image
-  #         source:
-  #           repository: ugroup/pa11y
-  #       run:
-  #         path: /bin/bash
-  #         args:
-  #         - -c
-  #         - |
-  #           echo "starting scan"
   - name: pa11y-accessibility-scan
     plan:
     - get: version
@@ -1333,7 +1311,7 @@ jobs:
             mkdir myproj2
             cd myproj2
             apt-get -y -qq update
-            apt-get -y -qq install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+            apt-get -o=Dpkg::Use-Pty=0 -y -qq install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
             # run pa11y headless
             npm install pa11y-ci --unsafe-perm=true --allow-root  --silent
             #npm install -g phantomjs
