@@ -22,6 +22,7 @@ public class MasterDossierRepository {
     }
 
     public void save(MasterDossier dossier) {
+
         dataService.save(dossier.getId(), dossierEncryptionService.encrypt(dossier) );
     }
 
