@@ -1,6 +1,8 @@
 package group.u.records.models.entity;
 
 import group.u.records.models.data.Movie;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
@@ -42,5 +44,29 @@ public class MovieTitle {
 
     public UUID getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MovieTitle that = (MovieTitle) o;
+
+        return new EqualsBuilder()
+                .append(name, that.name)
+                .append(image, that.image)
+                .append(id, that.id)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(name)
+                .append(image)
+                .append(id)
+                .toHashCode();
     }
 }

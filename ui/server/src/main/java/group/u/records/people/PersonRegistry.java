@@ -4,6 +4,7 @@ import group.u.records.models.Person;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.entity.MovieTitle;
 import group.u.records.repository.PersonRepository;
+import group.u.records.service.LevenshteinDistanceService;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -16,24 +17,44 @@ import java.util.UUID;
 public class PersonRegistry {
 
     private PersonRepository personRepository;
+    private LevenshteinDistanceService levenshteinDistanceService;
     private Map<UUID, Person> personCache;
 
-    public PersonRegistry(PersonRepository personRepository){
+    public PersonRegistry(PersonRepository personRepository,
+                          LevenshteinDistanceService levenshteinDistanceService) {
         this.personRepository = personRepository;
-        this.personCache = new HashMap();
+        this.levenshteinDistanceService = levenshteinDistanceService;
+        this.personCache = new HashMap<>();
     }
 
     public void reconcile(Person person, MovieDetail movie) {
-        Person workingPerson = person;
-        if( personCache.containsKey(person.getId()))
-            workingPerson = personCache.get(person.getId());
+        Person existingMatchOrNull = personCache.values()
+                .stream()
+                .reduce(null, (accumulatedValue, personToCheckAgainst) -> {
+                    String personName = person.getName().replace(".", "");
+                    String personToCheckAgainstName = personToCheckAgainst.getName().replace(".", "");
+                    boolean similarPersonExistsInCache = levenshteinDistanceService
+                            .areStringsSufficientlySimilar(personName, personToCheckAgainstName);
 
-        workingPerson.addTitle(MovieTitle.from(movie));
+                    if (similarPersonExistsInCache) {
+                        return personToCheckAgainst;
+                    }
+
+                    return accumulatedValue;
+                });
+
+        if(existingMatchOrNull == null) {
+            person.addTitle(MovieTitle.from(movie));
+            personCache.put(person.getId(), person);
+        } else {
+            personCache.get(existingMatchOrNull.getId()).addTitle(MovieTitle.from(movie));
+        }
+
         personRepository.save(person);
     }
 
     public void reconcile(List<MovieDetail> movieDetails) {
-        movieDetails.forEach(m-> m.getPeople().forEach(p-> {
+        movieDetails.forEach(m -> m.getPeople().forEach(p -> {
             p.addTitle(MovieTitle.from(m));
         }));
     }
