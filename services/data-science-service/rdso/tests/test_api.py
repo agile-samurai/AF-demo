@@ -25,3 +25,10 @@ from rdso import api
 def test_metrics():
     metrics = hug.test.get(api, "metrics")
     assert metrics.status == "200 OK"
+
+
+def test_get_all_available_movies():
+    mv = hug.test.get(api, "all_available_movies", params={"n": 6})
+    assert mv.status == "200 OK"
+    available_movies = mv.data
+    assert len(available_movies) == 6

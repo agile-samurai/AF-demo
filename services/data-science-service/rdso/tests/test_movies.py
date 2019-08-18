@@ -1,5 +1,5 @@
 from rdso.movies import secondary_genre, load_movietweetings_df
-from rdso.movies import translate_duration
+from ..movies import translate_duration
 import requests
 import pandas as pd
 import pytest
