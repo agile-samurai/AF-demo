@@ -71,7 +71,7 @@ public class EntertainmentDetailsService {
             }
 
             personRegistry.reconcile(movieDetails);
-            dossierBuilderService.generateDossiers(movieDetails, UUID.nameUUIDFromBytes(id.getBytes()));
+            dossierBuilderService.generateDossiers(movieDetails, id);
         }
 
     }

@@ -37,16 +37,16 @@ public class DossierBuilderService {
     }
 
 
-    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, UUID id ){
+    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, String imdbId ){
+        UUID id = UUID.nameUUIDFromBytes(imdbId.getBytes());
         MasterDossier masterDossier = new MasterDossier(movieDetails
                 .stream()
                 .map(f -> generateDossier(f))
-                .collect(toList()), id);
+                .collect(toList()), scoringProvider.getSimilarMovies(imdbId), id);
         masterDossierRepository.save(masterDossier);
 
         logger.debug("About to save dossier:  " + id.toString());
         return masterDossier;
-
     }
 
     public Dossier generateDossier(MovieDetail movieDetail) {

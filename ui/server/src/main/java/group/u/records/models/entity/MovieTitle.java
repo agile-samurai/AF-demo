@@ -1,5 +1,6 @@
 package group.u.records.models.entity;
 
+import group.u.records.ds.providers.MovieSimilarityDataPoint;
 import group.u.records.models.data.Movie;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -43,4 +44,8 @@ public class MovieTitle {
     public UUID getId() {
         return id;
     }
+
+//    public static Movie from(MovieSimilarityDataPoint dataPoint) {
+//        return new Movie(dataPoint.getName(), "fake", dataPoint.getId());
+//    }
 }

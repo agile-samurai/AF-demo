@@ -65,7 +65,7 @@ public class MovieDetail {
 
     public MovieDetail(Movie movie, Lineage lineage){
         this(movie.getId(), movie.getName(), movie.getActor(), movie.getDescription(), null,
-                movie.getContentRating(), LocalDate.now(), movie.getGenre().get(0), movie.getImage(),asList(), lineage);
+                 LocalDate.now(), movie.getGenre().get(0), movie.getImage(),asList(), lineage);
     }
 
     public UUID getId() {
@@ -77,7 +77,7 @@ public class MovieDetail {
     }
 
     public MovieDetail(UUID id, String name, List<Person> people, String summary,
-                       List<String> keywords, String contentRating, LocalDate releaseDate, String genre, String image, List<Review> reviews, Lineage lineage) {
+                       List<String> keywords, LocalDate releaseDate, String genre, String image, List<Review> reviews, Lineage lineage) {
         this.id = id;
         this.name = name;
         this.people = people;
