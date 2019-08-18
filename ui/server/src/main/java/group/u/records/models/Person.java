@@ -42,16 +42,15 @@ public class Person {
     }
 
     public Person(){
-        titles = new ArrayList();
-        aliases = new ArrayList();
+        titles = new ArrayList<>();
+        aliases = new ArrayList<>();
     }
 
-    public Person(String name) {
+    public Person(String name, List<String> aliases, List<MovieTitle> titles) {
         this.name = name;
         this.id = UUID.nameUUIDFromBytes(name.getBytes());
-        titles = new ArrayList();
-        aliases = new ArrayList();
-        aliases.add(name);
+        this.titles = titles;
+        this.aliases = aliases;
     }
 
     public UUID getId() {
@@ -72,7 +71,6 @@ public class Person {
 
     public UUID enrichModel() {
         id = UUID.nameUUIDFromBytes(url.getBytes());
-        aliases.add(this.name);
 
         return id;
     }
@@ -83,5 +81,9 @@ public class Person {
 
     public void addTitle(MovieTitle movieTitle) {
         titles.add(movieTitle);
+    }
+
+    public void addTitles(List<MovieTitle> movieTitles) {
+        movieTitles.forEach(this::addTitle);
     }
 }
