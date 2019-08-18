@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.content.Dossier;
 import group.u.records.models.Person;
 import group.u.records.models.data.Movie;
-import group.u.records.models.entity.MovieDetail;
-import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.models.entity.MovieTitle;
 import group.u.records.repository.PersonRepository;
 import org.apache.commons.io.IOUtils;
@@ -20,7 +18,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class S3DataService implements DataService {
@@ -120,19 +120,6 @@ public class S3DataService implements DataService {
         return "";
     }
 
-    private void enrichActors(Movie movie, PersonRepository personRepository) {
-
-        for (Person person : movie.getActor()) {
-            UUID id = person.enrichModel();
-            if (!actorList.containsKey(id)) actorList.put(id, person);
-
-            Person workingPerson = actorList.get(id);
-            workingPerson.addTitle(MovieTitle.from(movie));
-
-            personRepository.save(workingPerson);
-        }
-    }
-
     @Override
     public void delete(UUID dossierId) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
@@ -147,37 +134,6 @@ public class S3DataService implements DataService {
         CreateBucketRequest cbr = CreateBucketRequest.builder().bucket(dossierStorageBucket).build();
         s3Client.createBucket(cbr);
     }
-//
-//    public MovieDetail processMovie(String imdb) {
-//        ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).build();
-//
-//        s3Client.listObjectsV2(request).contents().forEach(f->logger.debug(f.key()));
-//
-//        List<Movie> extractedMovies = new ArrayList();
-//            try {
-//                String json = getFileAsString(convertId(folder, imdb));
-//                Movie movie = objectMapper.readValue(json, Movie.class);
-//                movie.enrichModel();
-//
-//                logger.debug("Processing movie:  " + movie.getId());
-//                try {
-////                    enrichActors(movie,actorRepository);
-////                     movie.getActor().forEach(actorRepository::save);
-////                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
-////                    dossierBuilderService.generateDossier(new MovieDetail(movie));
-//                    logger.debug("Saved Movie description  " + json);
-//                }catch( Exception e ){
-//                    e.printStackTrace();
-//                    logger.error("Issue while saving movie:  " + e.getMessage());
-//                }
-//
-//                return new MovieDetail(movie);
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        return null;
-//}
 
     public String getFileAsString(String key) throws IOException {
         logger.debug("Fetching file:  " + bucketName + ":  " + key );
@@ -186,7 +142,4 @@ public class S3DataService implements DataService {
         return IOUtils.toString(response.readAllBytes());
     }
 
-    private String convertId(String bucketName, String imdb) {
-        return bucketName + "/tt" + imdb + ".json";
-    }
 }
