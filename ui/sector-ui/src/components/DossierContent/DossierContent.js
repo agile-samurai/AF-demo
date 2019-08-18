@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import './DossierContent.css';
 import PerLineageDossierContent from "../PerLineageDossierContent/PerLineageDossierContent";
 import DossierNotes from "../DossierNotes/DossierNotes";
+import {Link} from "react-router-dom";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -49,7 +50,16 @@ export default class DossierContent extends React.Component {
         return (
             <div className="dossier-main-section-wrapper">
                 <div className="dossier-main-section">
-                    <div className="dossier-name">{dossiers[0].name}</div>
+                    <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
+                        <div className="image-and-name">
+                            <div>
+                                <img src={dossiers[0].image} height={80}/>
+                            </div>
+                            <div className="dossier-name-wrapper">
+                                <div className="dossier-name">{dossiers[0].name}</div>
+                            </div>
+                        </div>
+                    </Link>
                     {perLineageDossierContentList}
                     <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                   refreshData={this.loadEncryptedData.bind(this)}/>

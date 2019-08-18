@@ -10,3 +10,18 @@
 .dossier-name {
     margin-bottom: 20px;
 }
+
+a.navigation-link.dossier-name-link {
+    color: black;
+}
+
+.image-and-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.dossier-name-wrapper {
+    margin-left: 20px;
+}
