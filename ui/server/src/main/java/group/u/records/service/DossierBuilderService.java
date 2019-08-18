@@ -52,12 +52,16 @@ public class DossierBuilderService {
     }
 
     public Dossier generateDossier(MovieDetail movieDetail) {
-        Dossier dossier = new Dossier(movieDetail.getId(), movieDetail.getName(), movieDetail.getSummary(), asList(new Genre(movieDetail.getGenre(),
+        Dossier dossier = new Dossier(movieDetail.getId(),
+                movieDetail.getName(),
+                movieDetail.getSummary(),
+                movieDetail.getCharacters(),
+                movieDetail.getReviews(),
+                movieDetail.getImage(),
+                asList(new Genre(movieDetail.getGenre(),
                 imageProvider.getJson(movieDetail.getId()))), movieDetail.getLineage());
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
-//        masterDossierRepository.save(dossier);
-
         return dossier;
     }
 }

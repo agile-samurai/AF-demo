@@ -65,6 +65,7 @@ public class PersonRegistry {
     private void mergeAliases(MovieDetail movie, Person person) {
         logger.debug("About to merge characters. " + person.getName() );
         logger.debug("Movie value:  " + movie );
+        logger.debug("Character count:  " + movie.getCharacters().size());
         movie.getCharacters().stream().forEach(m->{
             Person personFromCharacter = m.toPerson();
             person.mergeIfPossible(personFromCharacter);
