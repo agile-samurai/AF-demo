@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static group.u.records.service.Lineage.IMDB;
@@ -49,9 +50,12 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
             String json = dataService.getFileAsString(this.convertId(folder, id ));
             Movie movie = objectMapper.readValue(json, Movie.class);
             movie.enrichModel(id);
-            movieDetail = new MovieDetail(movie, this.getLineage());
-            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p, new MovieDetail(movie, this.getLineage())));
-            getCharacters(id);
+            final List<MovieCharacter> characters = getCharacters(id);
+            logger.debug("Extracting Characters:  " + characters );
+
+            movieDetail = new MovieDetail(movie, characters, this.getLineage());
+            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p, new MovieDetail(movie, characters, this.getLineage())));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,15 +67,17 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
         try {
             String json = dataService.getFileAsString(this.convertId(characterFolder, id ));
             logger.debug("Character information being processed:  " + json );
-            asList(objectMapper.readValue(json,MovieCharacter[].class));
+            return asList(objectMapper.readValue(json,MovieCharacter[].class));
         } catch (IOException e) {
             logger.error("Error while extracting characters for movie:  " + id );
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     private String convertId(String folderName, String imdb) {
-        return folderName + "/tt" + imdb + ".json";
+        String key = folderName + "/tt" + imdb + ".json";
+        logger.debug("Expected folder key:  " + key);
+        return key;
     }
 }

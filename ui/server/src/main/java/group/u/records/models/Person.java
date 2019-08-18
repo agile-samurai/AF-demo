@@ -1,24 +1,25 @@
 package group.u.records.models;
 
 import group.u.records.models.entity.MovieTitle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.InnerField;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.persistence.Transient;
+import java.util.*;
 
-import static org.springframework.data.elasticsearch.annotations.FieldType.Keyword;
-import static org.springframework.data.elasticsearch.annotations.FieldType.Nested;
-import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
+import static org.springframework.data.elasticsearch.annotations.FieldType.*;
 
 @Document(indexName = "actor", type = "actor", shards = 1, replicas = 0, refreshInterval = "-1")
 public class Person {
 
-    private List<String> aliases;
+    @Transient
+    private Logger logger = LoggerFactory.getLogger(Person.class);
+    private Set<String> aliases;
     @Id
     private UUID id;
     private String url;
@@ -33,7 +34,7 @@ public class Person {
     @Field(type = Nested)
     private List<MovieTitle> titles;
 
-    public List<String> getAliases() {
+    public Set<String> getAliases() {
         return aliases;
     }
 
@@ -43,12 +44,13 @@ public class Person {
 
     public Person(){
         titles = new ArrayList<>();
-        aliases = new ArrayList<>();
+        aliases = new HashSet<>();
     }
 
-    public Person(String name, List<String> aliases, List<MovieTitle> titles) {
+    public Person(String url, String name, Set<String> aliases, List<MovieTitle> titles) {
+        this.url = url;
         this.name = name;
-        this.id = UUID.nameUUIDFromBytes(name.getBytes());
+        this.id = UUID.nameUUIDFromBytes(url.getBytes());
         this.titles = titles;
         this.aliases = aliases;
     }
@@ -85,5 +87,14 @@ public class Person {
 
     public void addTitles(List<MovieTitle> movieTitles) {
         movieTitles.forEach(this::addTitle);
+    }
+
+    public void mergeIfPossible(Person personFromCharacter) {
+
+        if(personFromCharacter.getId() == this.getId()){
+            logger.debug("character aliases  " + personFromCharacter.getAliases());
+            aliases.addAll(personFromCharacter.getAliases());
+            logger.debug("Merging characters:  " + aliases);
+        }
     }
 }
