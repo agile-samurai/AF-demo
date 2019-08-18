@@ -85,7 +85,7 @@ resource "aws_alb_target_group" "front_end" {
     healthy_threshold = 2
     unhealthy_threshold = 10
     protocol = "HTTP"
-    path = "/actuator/health"
+    path = "/"
     interval = 32
     timeout = 30
     matcher = "${var.matcher_ports}"

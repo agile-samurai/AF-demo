@@ -88,8 +88,8 @@ resources:
   - name: data
     type: simple-s3-resource
     source:
-      access_key_id: {{aws_access_key_id}}
-      secret_access_key: {{aws_secret_access_key}}
+      access_key_id: ((aws_access_key_id))
+      secret_access_key: ((aws_secret_access_key))
       bucket: rdso-challenge2
       path: data/ci
       options: ["--quiet"]
@@ -113,10 +113,12 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Test
     - Deploy Services To Production
-    - Execute OWASP Security Scan Prod
+    #- OWASP Prod Security Scan
     - Execute main-ds-service Tests
     - Build Data Model
     - Capture data and push to s3
+    - pa11y-accessibility-scan
+    - OWASP Prod Security Scan
   - name: prepare
     jobs:
     - Create Terraform Persistence
@@ -144,7 +146,8 @@ groups:
     - Deploy Services To Dev
     - Deploy Services To Test
     - Deploy Services To Production
-    - Execute OWASP Security Scan Prod
+    - OWASP Prod Security Scan
+    - pa11y-accessibility-scan
   - name: destroy
     jobs:
       - terraform-destroy-all-envs
@@ -227,6 +230,7 @@ jobs:
     public: false
     plan:
     - put: terraform
+      attempts: 10
       get_params:
         action: destroy
       params:
@@ -265,6 +269,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
+      attempts: 10
       get_params:
         action: destroy
       params:
@@ -284,6 +289,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
+      attempts: 10
       get_params:
         action: destroy
       params:
@@ -303,6 +309,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
+      attempts: 10
       get_params:
         action: destroy
       params:
@@ -344,7 +351,7 @@ jobs:
               export MAX_TRAINING_FILES=500
               python scraper.py && python parser.py
               cd ../rdso
-              apt-get -qq update && apt-get -qq install gcc
+              apt-get -qq update && apt-get -qq -y install gcc
               # yum -y install epel-release
               # yum -y install python-pip
               pip install --quiet --upgrade pip
@@ -393,7 +400,7 @@ jobs:
               cp -R ./data/data/* source/services/data-science-service/data/.
               ls -all source/services/data-science-service/data/.
               cd source/services/data-science-service/rdso
-              apt-get -qq update && apt-get -qq install gcc
+              apt-get -qq update && apt-get -qq -y install gcc
               pip install --quiet --upgrade pip
               pip install --quiet -r requirements.txt
               python -c "import nltk;nltk.download('stopwords')"
@@ -578,8 +585,8 @@ jobs:
             - |
               cd source/ui/server
               # must compile first with java10 for sonarqube
-              mvn clean install -DskipTests -Djava.version=10
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn clean install -Djava.version=10
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -754,6 +761,7 @@ jobs:
           #- Push DS Image
         trigger: true
       - put: terraform
+        attempts: 10
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
@@ -763,6 +771,7 @@ jobs:
             TF_VAR_aws_account_id: ((aws_account_id))
             TF_VAR_bucket_name: ((tf_backend))
       - put: terraform
+        attempts: 10
         params:
           terraform_source: source/config/ecr-setup
           env_name: ecr
@@ -796,7 +805,7 @@ jobs:
               cd source/ui/sector-ui
 
               echo "building front end"
-              npm install
+              npm install  --silent
               yarn build
               echo "front end build complete"
 
@@ -929,6 +938,7 @@ jobs:
       - Push UI
       trigger: true
     - task: Write Variables and Run TF Deploy
+      attempts: 10
       params:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -964,7 +974,6 @@ jobs:
             terraform workspace list
             terraform workspace select dev
             terraform refresh
-            #export TF_LOG=debug
             terraform apply -parallelism=20 --auto-approve
 
             echo "Waiting for server to come up"
@@ -972,6 +981,9 @@ jobs:
             cd ../..
             ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
             echo "Server is up!!"
+            export WWW_DNS_NAME=`terraform output www-url`
+            ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/health" 200
+            echo "UI is up!!"
         inputs:
         - name: source
         - name: version
@@ -1004,12 +1016,14 @@ jobs:
       - Push DS Image
       - Push server Image
       - Push UI
-      # passed:
-      # - Deploy Services To Dev
+      passed:
+      - Deploy Services To Dev
     - get: version
       # passed:
-      # - Execute OWASP Security Scan Test
+      # - Execute OWASP Prod Security Scan Test
+      trigger: true
     - task:  Write Variables and Run TF Deploy
+      attempts: 10
       config:
         platform: linux
         image_resource:
@@ -1038,6 +1052,7 @@ jobs:
         outputs:
         - name: vars
     - put: terraform
+      attempts: 10
       params:
         # env:
         #   AWS_REGION: ((test_aws_region))
@@ -1055,6 +1070,7 @@ jobs:
         var_files:
         - ./vars/terraform.tfvars
     - put: terraform
+      attempts: 10
       params:
         # env:
         #   AWS_REGION: ((test_aws_region))
@@ -1114,9 +1130,11 @@ jobs:
       passed:
       - Deploy Services To Test
     - get: version
+      trigger: true
       # passed:
-      # - Execute OWASP Security Scan Test
+      # - Execute OWASP Prod Security Scan Test
     - task:  Write Variables and Run TF Deploy
+      attempts: 10
       config:
         platform: linux
         image_resource:
@@ -1145,6 +1163,7 @@ jobs:
         outputs:
         - name: vars
     - put: terraform
+      attempts: 10
       params:
         env:
           AWS_REGION: ((prod_aws_region))
@@ -1179,8 +1198,8 @@ jobs:
             - |
                 echo "name: $(cat terraform/name)"
                 echo "metadata: $(cat terraform/metadata)"
-
-  - name: Execute OWASP Security Scan Prod
+                
+  - name: OWASP Prod Security Scan
     serial: false
     plan:
     - get: version
@@ -1189,38 +1208,144 @@ jobs:
         - Deploy Services To Dev
       # passed:
       #   - Deploy Services To Production
-    - task: Scan Environment
+    - task: get-lb
+      attempts: 10
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: mesosphere/aws-cli
+        outputs:
+          - name: lb-name
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            export WWW_LB_TEST=$(AWS_DEFAULT_REGION=us-east-1 AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
+            echo "our www URL $WWW_LB_TEST"
+            echo "$WWW_LB_TEST" > lb-name/name.txt
+    - task: Execute scan
       privileged: true
-      timeout: 6m
+      timeout: 5m
       config:
         platform: linux
         image_resource:
           type: latest-docker-image
           source:
-            repository: owasp/zap2docker-stable
+            repository: owasp/zap2docker-weekly
         outputs:
             - name: scan
+        inputs:
+          - name: lb-name
         run:
           path: /bin/bash
           args:
           - -c
           - |
             echo "starting scan"
+            echo "lb name"
+            export WWW_LB_TEST=`cat lb-name/name.txt`
+            apt-get -y update
+            apt-get -y install procps
             cd  #NEED THIS
             #whoami; pwd #/home/zap
             mkdir -p /zap/wrk
             touch /zap/wrk/report_md
-            echo "-t http://google.com" > arguments.txt
-            #/zap/zap-baseline.py -h
-            /zap/zap-baseline.py -t http://google.com -T 3
+            /zap/zap-baseline.py -t http://${WWW_LB_TEST} -m 3 -i
             echo "scan successful"
-            #pwd
-            #ls -all .
-            ps -ef
-            # need to kill this process: Xvfb :1 -screen 0 1024x768x16 -ac
-            kill -15 19
-            kill -15 20
-            #kill `pidof zap`
-            ps -ef
+            ps -ef 
+            ps -ef | grep "zap" |  grep -v grep| awk '{print $2}'|xargs kill
+            #kill -9 $()
+            #kill -9 $(ps -ef | grep "screen" | awk '{print $2}')
+            #echo $result
+            #screen -list
+            #screen -X -S 0 quit 
+            # ps -ef
+            # pkill -u zap
+            # pkill --help
             echo "done"
             exit 0
+  # - name: Execute Pa11y Security Scan
+  #   serial: false
+  #   plan:
+  #   - get: version
+  #     trigger: true
+  #     passed:
+  #       - Deploy Services To Dev
+  #   - task: Scan Environment
+  #     privileged: true
+  #     timeout: 6m
+  #     config:
+  #       platform: linux
+  #       image_resource:
+  #         type: latest-docker-image
+  #         source:
+  #           repository: ugroup/pa11y
+  #       run:
+  #         path: /bin/bash
+  #         args:
+  #         - -c
+  #         - |
+  #           echo "starting scan"
+  - name: pa11y-accessibility-scan
+    plan:
+    - get: version
+    - get: source
+      trigger: true
+      passed:
+        - Deploy Services To Dev
+    - task: get-lb
+      attempts: 10
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: mesosphere/aws-cli
+        outputs:
+          - name: lb-name
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            export WWW_LB_TEST=$(AWS_DEFAULT_REGION=us-east-1 AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
+            echo "our www URL $WWW_LB_TEST"
+            echo "$WWW_LB_TEST" > lb-name/name.txt
+    - task: run-pa11y
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: node
+        inputs:
+          - name: lb-name
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            echo "lb name"
+            export WWW_LB_TEST=`cat lb-name/name.txt`
+            mkdir myproj2
+            cd myproj2
+            apt-get -y -qq update
+            apt-get -y -qq install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+            # run pa11y headless
+            npm install pa11y-ci --unsafe-perm=true --allow-root  --silent
+            #npm install -g phantomjs
+            #npm install pa11y-reporter-ci
+            cat <<EOF >> config.json
+            { "defaults": { "chromeLaunchConfig": { "args": ["--no-sandbox"], "ignoreHTTPSErrors": "false", "executablePath": "node_modules/puppeteer/.local-chromium/linux-674921/chrome-linux/chrome" }, "timeout": 20000, "wait": 2000, "ignore": [] }, "urls": [ "$WWW_LB_TEST" ] }
+            EOF
+            # finally scan
+            node -v
+            cat config.json
+            node node_modules/pa11y-ci/bin/pa11y-ci.js --json -c config.json > summary.txt
+            cat summary.txt
+        outputs:
+          - name: myproj
+

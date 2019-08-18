@@ -177,6 +177,20 @@ module "server" {
 
   access_key    = var.access_key
   access_secret = var.access_secret
+
+  /*app_business_user_password
+  app_jwt_secret= "" #randome string to use for salt
+  spacy_url=""   #http
+  app_ds_images_host=""  #http datascience url
+  app_ds_similarities_host=""  #http datascience url in container Uppercase
+    APP_DS_REDACT_HOST
+  APP_DS_IMAGES_HOST
+  APP_DS_SIMILARITIES_HOST
+
+  APP_JWT_SECRET
+  APP_BUSINESS_USER_PASSWORD
+  APP_BUSINESS_SUPERVISOR_PASSWORD
+  APP_SYSTEM_USER_PASSWORD*/
 }
 
 module "datascience" {
@@ -225,4 +239,13 @@ module "ds-spaCy-model" {
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = "${local.region}"
+}
+
+
+module "hsm"{
+  source = "./modules/hsm"
+  region = terraform.workspace
+  vpc_id             = module.network.vpc_id
+  private_subnets    = module.network.private_subnets
+  public_subnets     = module.network.public_subnets
 }
