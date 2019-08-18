@@ -73,8 +73,8 @@ def load_model(api):
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
-@hug.post("/most_similar")
-def most_similar_movies(imdbID: hug.types.text):
+@hug.get('/most_similar/{imdbID}')
+def most_similar_movies(imdbID: str):
     if not imdbID.startswith("tt"):
         imdbID = "tt" + imdbID
 
