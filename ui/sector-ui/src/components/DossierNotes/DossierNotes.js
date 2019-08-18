@@ -12,7 +12,8 @@ export default class DossierNotes extends React.Component {
         super(props);
 
         this.state = {
-            modalOpen: false
+            modalOpen: false,
+            noteInputValue: ''
         };
 
         this.handleOpen = this.handleOpen.bind(this);
@@ -24,16 +25,35 @@ export default class DossierNotes extends React.Component {
     render() {
         const {modalOpen, noteInputValue} = this.state;
 
+        const processedNotes = this.props.notes.map(noteObject => {
+            return (
+              <div className="a-note">
+                  <div className="note-section-header">Content:</div>
+                  <div>{noteObject.note}</div>
+
+                  <div className="new-note-section-start note-section-header">Timestamp:</div>
+                  <div>{noteObject.timeStamp}</div>
+
+                  <div className="new-note-section-start note-section-header">User:</div>
+                  <div>{noteObject.user}</div>
+              </div>
+            );
+        });
+
         return (
             <div className="dossier-notes">
-                <div className="notes-section-heading">Notes</div>
-                <div className="add-note-button-wrapper">
-                    <Fab variant="extended" className="add-note-button" aria-label="add" onClick={this.handleOpen}>
-                        <AddIcon/>
-                        ADD NOTE
-                    </Fab>
+                <div className="heading-and-add-button">
+                    <div className="notes-section-heading">Notes</div>
+                    <div className="add-note-button-wrapper">
+                        <Fab variant="extended" className="add-note-button" aria-label="add" onClick={this.handleOpen}>
+                            <AddIcon/>
+                            ADD NOTE
+                        </Fab>
+                    </div>
                 </div>
-
+                <div className="notes-display-section">
+                    {processedNotes}
+                </div>
                 <Modal
                     aria-labelledby="notes-entry-modal"
                     aria-describedby="a modal for entering notes about this dossier"
@@ -83,18 +103,26 @@ export default class DossierNotes extends React.Component {
     }
 
     handleAddingNote() {
-        const {dossierID} = this.props;
+        const {dossierID, refreshData} = this.props;
 
         axios.post(`/api/dossier/${dossierID}/note`,
-            this.state.noteInputValue,
+            {
+                content: this.state.noteInputValue
+            }
+            ,
             {
             auth: {  // TODO remove
                 username: 'business-user',
                 password: 'password'
             }
         })
-            .then(response => {
+        .then(() => {
+            this.setState({
+                noteInputValue: ''
+            }, () => {
+                refreshData(dossierID);
                 this.handleClose();
             });
+        });
     }
 }

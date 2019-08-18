@@ -1,9 +1,13 @@
 .dossier-notes {
+    margin-top: 50px;
+    width: 100%;
+}
+
+.heading-and-add-button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: 50px;
     width: 100%;
 }
 
@@ -40,3 +44,23 @@
     align-self: flex-end;
     margin-top: 25px;
 }
+
+.a-note {
+    box-shadow: 0 2px 4px 0 #BDBDBD;
+    padding: 32px 32px 32px 24px;
+    width: 50%;
+    border-radius: 8px;
+}
+
+.a-note {
+    margin-top: 20px;
+}
+
+.note-section-header {
+    font-weight: bold;
+}
+
+.new-note-section-start {
+    margin-top: 20px;
+}
+
