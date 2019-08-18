@@ -22,7 +22,6 @@ public class Movie {
         this.description = description;
         this.actor = actor;
         this.url = url;
-        enrichModel();
     }
 
     private String contentRating;
@@ -72,8 +71,8 @@ public class Movie {
         return url;
     }
 
-    public void enrichModel() {
+    public void enrichModel(String imdbId ) {
         getActor().forEach(Person::enrichModel);
-        this.id = UUID.nameUUIDFromBytes(url.getBytes());
+        this.id = UUID.nameUUIDFromBytes(imdbId.getBytes());
     }
 }
