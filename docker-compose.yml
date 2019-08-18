@@ -45,16 +45,6 @@ services:
       cluster.name: elasticsearch
       discovery.type: single-node
 
-  postgres:
-    image: postgres
-    container_name: postgres-container
-    restart: on-failure
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=mysecretpassword
-
   data-science-service:
     image: ugroup/data-science-service
     container_name: data-science-service

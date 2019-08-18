@@ -1,22 +1,20 @@
 package group.u.records.models;
 
-import java.time.LocalDateTime;
-
 public class Note {
-    private LocalDateTime timeStamp;
+    private String timeStamp;
     private String user;
     private String note;
 
     public Note() {
     }
 
-    public Note(LocalDateTime timeStamp, String user, String note) {
+    public Note(String timeStamp, String user, String note) {
         this.timeStamp = timeStamp;
         this.user = user;
         this.note = note;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
