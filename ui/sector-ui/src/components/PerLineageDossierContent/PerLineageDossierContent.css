@@ -1,0 +1,10 @@
+.per-lineage-dossier-content {
+    width: 100%;
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.lineage {
+    font-weight: bold;
+}
