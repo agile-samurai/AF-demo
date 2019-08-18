@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage
+      name: dossier-storage-test
   access:
     key:
       id: FAKEACCESS

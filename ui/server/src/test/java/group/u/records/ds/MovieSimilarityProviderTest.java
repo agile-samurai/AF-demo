@@ -18,7 +18,7 @@ public class MovieSimilarityProviderTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
-        MovieSimilarityProvider similarity = new MovieSimilarityProvider(new RestTemplate(), objectMapper, "http://localhost:8000");
+        MovieSimilarityProvider similarity = new MovieSimilarityProvider(new RestTemplate(), objectMapper, "http://dev-data-328021276.us-east-1.elb.amazonaws.com");
 
         try {
             List<UUID> movieTitles = similarity.getSimilarMovies("0337926");
