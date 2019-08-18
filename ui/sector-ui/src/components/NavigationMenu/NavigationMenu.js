@@ -57,7 +57,7 @@ export default class ActorSearch extends React.Component {
                             <ListItemText primary="View And Search Dossiers" />
                         </MenuItem>
                     </Link>
-                    <Link to="/actor-search" className="menu-item-link">
+                    <Link to="/celebrity-search" className="menu-item-link">
                         <MenuItem>
                             <ListItemText primary="Search Celebrity Profiles" />
                         </MenuItem>

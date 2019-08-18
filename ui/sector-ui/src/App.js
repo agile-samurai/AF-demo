@@ -86,7 +86,7 @@ export class App extends React.Component {
                         component={Login}
                     />
                     <Route
-                        path="/actor-search"
+                        path="/celebrity-search"
                         component={ActorSearch}
                     />
                     <Route
