@@ -91,7 +91,10 @@ public class Person {
 
     public void mergeIfPossible(Person personFromCharacter) {
 
-        if(personFromCharacter.getId() == this.getId()){
+        logger.debug("PersonFromCharacter:  " + personFromCharacter.getUrl());
+        logger.debug("Person:  " + this.getUrl());
+
+        if(personFromCharacter.getUrl().equals( this.getUrl())){
             logger.debug("character aliases  " + personFromCharacter.getAliases());
             aliases.addAll(personFromCharacter.getAliases());
             logger.debug("Merging characters:  " + aliases);
