@@ -1,6 +1,5 @@
 # The following imports are only needed for S3:
 import boto3
-from bucket import Bucket
 import os
 
 

@@ -85,7 +85,7 @@ def sc_plot_genre_colors(mdf):
             y=mdf.y,
             name=mdf.name,
             year=mdf.year,
-            genre=mdf.primary_genre,
+            genre=mdf.top_genre,
             color=mdf.color,
         )
     )
