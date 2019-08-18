@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static group.u.records.service.Lineage.IMDB;
+
 @Component
-public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
+public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
 
     private String bucketName;
     private String folder;
@@ -25,6 +27,7 @@ public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
                                       PersonRegistry personRegistry,
                                       ObjectMapper objectMapper,
                                       S3DataService dataService) {
+        super(IMDB);
         this.bucketName = bucketName;
         this.folder = folder;
         this.personRegistry = personRegistry;
@@ -40,9 +43,9 @@ public class ImdbMovieDetailsDataSource implements MovieDetailsDataSource {
             String json = dataService.getFileAsString(this.convertId(folder, id ));
             Movie movie = objectMapper.readValue(json, Movie.class);
             movie.enrichModel();
-            movieDetail = new MovieDetail(movie);
+            movieDetail = new MovieDetail(movie, this.getLineage());
 
-            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p,new MovieDetail(movie)));
+            movieDetail.getPeople().forEach(p->personRegistry.reconcile(p, new MovieDetail(movie, this.getLineage())));
         } catch (IOException e) {
             e.printStackTrace();
         }

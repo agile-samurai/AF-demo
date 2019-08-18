@@ -108,7 +108,9 @@ public class S3DataService implements DataService {
 
         //Todo: Make this more reusable.
         try {
-            return IOUtils.toString(response.readAllBytes());
+            String rawDoc = IOUtils.toString(response.readAllBytes());
+            logger.debug("About to retrieve dossier:  " + rawDoc );
+            return rawDoc;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,37 +147,37 @@ public class S3DataService implements DataService {
         CreateBucketRequest cbr = CreateBucketRequest.builder().bucket(dossierStorageBucket).build();
         s3Client.createBucket(cbr);
     }
-
-    public MovieDetail processMovie(String imdb) {
-        ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).build();
-
-        s3Client.listObjectsV2(request).contents().forEach(f->logger.debug(f.key()));
-
-        List<Movie> extractedMovies = new ArrayList();
-            try {
-                String json = getFileAsString(convertId(folder, imdb));
-                Movie movie = objectMapper.readValue(json, Movie.class);
-                movie.enrichModel();
-
-                logger.debug("Processing movie:  " + movie.getId());
-                try {
-//                    enrichActors(movie,actorRepository);
-//                     movie.getActor().forEach(actorRepository::save);
-//                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
-//                    dossierBuilderService.generateDossier(new MovieDetail(movie));
-                    logger.debug("Saved Movie description  " + json);
-                }catch( Exception e ){
-                    e.printStackTrace();
-                    logger.error("Issue while saving movie:  " + e.getMessage());
-                }
-
-                return new MovieDetail(movie);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        return null;
-}
+//
+//    public MovieDetail processMovie(String imdb) {
+//        ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName).build();
+//
+//        s3Client.listObjectsV2(request).contents().forEach(f->logger.debug(f.key()));
+//
+//        List<Movie> extractedMovies = new ArrayList();
+//            try {
+//                String json = getFileAsString(convertId(folder, imdb));
+//                Movie movie = objectMapper.readValue(json, Movie.class);
+//                movie.enrichModel();
+//
+//                logger.debug("Processing movie:  " + movie.getId());
+//                try {
+////                    enrichActors(movie,actorRepository);
+////                     movie.getActor().forEach(actorRepository::save);
+////                    moviePublicSummaryRepository.save(new MoviePublicSummary(movie));
+////                    dossierBuilderService.generateDossier(new MovieDetail(movie));
+//                    logger.debug("Saved Movie description  " + json);
+//                }catch( Exception e ){
+//                    e.printStackTrace();
+//                    logger.error("Issue while saving movie:  " + e.getMessage());
+//                }
+//
+//                return new MovieDetail(movie);
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        return null;
+//}
 
     public String getFileAsString(String key) throws IOException {
         logger.debug("Fetching file:  " + bucketName + ":  " + key );
