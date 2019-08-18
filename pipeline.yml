@@ -99,7 +99,7 @@ groups:
   - name: all
     jobs:
     - Create Terraform Persistence
-    - Create Infra
+    #- Create Infra
     - Initialize
     - Build UI
     - Build server and SonarQube
@@ -120,7 +120,7 @@ groups:
   - name: prepare
     jobs:
     - Create Terraform Persistence
-    - Create Infra
+    #- Create Infra
     - Initialize
   - name: model building
     jobs:
@@ -155,6 +155,7 @@ groups:
 jobs:
   - name: Create Terraform Persistence
     public: true
+    serial: true
     plan:
       - get: source
         trigger: false
@@ -181,38 +182,39 @@ jobs:
                 aws s3api create-bucket --bucket ((tf_backend)) --region us-east-1
           outputs:
             - name: vars
-  - name: Create Infra
-    public: true
-    serial: true
-    plan:
-      - get: source
-        passed: [Initialize]
-      - put: terraform
-        params:
-          terraform_source: source/config/infra-setup/scripts
-          plan_only: true
-          env_name: infra  #workspace
-          env:
-            TF_VAR_access_key: ((aws_access_key_id))
-            TF_VAR_access_secret: ((aws_secret_access_key))
-            TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_aws_infra_region: ((aws_infra_region))
-            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
-            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
-            TF_VAR_project: ((project))
-      - put: terraform
-        params:
-          terraform_source: source/config/infra-setup/scripts
-          env_name: infra
-          plan_run: true
-          env:
-            TF_VAR_access_key: ((aws_access_key_id))
-            TF_VAR_access_secret: ((aws_secret_access_key))
-            TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_aws_infra_region: ((aws_infra_region))
-            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
-            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
-            TF_VAR_project: ((project))
+  # TODO: test this
+  # - name: Create Infra
+  #   public: true
+  #   serial: true
+  #   plan:
+  #     - get: source
+  #       passed: [Initialize]
+  #     - put: terraform
+  #       params:
+  #         terraform_source: source/config/infra-setup/scripts
+  #         plan_only: true
+  #         env_name: infra  
+  #         env:
+  #           TF_VAR_access_key: ((aws_access_key_id))
+  #           TF_VAR_access_secret: ((aws_secret_access_key))
+  #           TF_VAR_aws_account_id: ((aws_account_id))
+  #           TF_VAR_aws_infra_region: ((aws_infra_region))
+  #           TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+  #           TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+  #           TF_VAR_project: ((project))
+  #     - put: terraform
+  #       params:
+  #         terraform_source: source/config/infra-setup/scripts
+  #         env_name: infra
+  #         plan_run: true
+  #         env:
+  #           TF_VAR_access_key: ((aws_access_key_id))
+  #           TF_VAR_access_secret: ((aws_secret_access_key))
+  #           TF_VAR_aws_account_id: ((aws_account_id))
+  #           TF_VAR_aws_infra_region: ((aws_infra_region))
+  #           TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+  #           TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+  #           TF_VAR_project: ((project))
 
   - name: Initialize
     public: true
@@ -316,6 +318,7 @@ jobs:
           TF_VAR_infra_version: "noop"
   - name: Capture data and push to s3
     public: true
+    serial: true
     plan:
       - get: source
         passed: [Initialize]
@@ -338,7 +341,7 @@ jobs:
               cd source/services/data-science-service/imdb-scraper
               pip install --quiet -r requirements.txt
               export TESTING=true
-              export MAX_TRAINING_FILES=250
+              export MAX_TRAINING_FILES=500
               python scraper.py && python parser.py
               cd ../rdso
               apt-get -qq update && apt-get -qq install gcc
@@ -359,6 +362,7 @@ jobs:
       - put: data
   - name: Build Data Model
     public: true
+    serial: true
     plan:
       - get: source
       # - get: version
@@ -485,15 +489,20 @@ jobs:
                 echo "begin build front end script"
                 cd source/ui/sector-ui
                 echo "building front end"
-                npm install 
+                npm install --silent
                 yarn build
                 echo "front end build complete"
                 echo "installing sonarqube"
-                npm install -g sonarqube-scanner
+                npm install -g sonarqube-scanner --silent
                 sonar-scanner -h
                 echo "installing sonarqube"
                 sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
                 echo "pushing results to sonarqube complete"
+                
+                # echo "running pa11y"
+                # npm install -g pa11y --silent
+                # pa11y source/ui
+
                 echo "preparing files for container build"
                 cp ./container/Dockerfile ../../../docker/.
                 cp ./container/start-nginx.sh ../../../docker/.
@@ -542,6 +551,7 @@ jobs:
             - path: maven
 
   - name: Build server and SonarQube
+    serial: true
     public: true
     plan:
       - get: source
@@ -860,6 +870,7 @@ jobs:
   #          # -
   - name: Push DS Image
     public: true
+    serial: true
     plan:
       - get: source
         trigger: true
@@ -892,6 +903,9 @@ jobs:
               cp -r ../data/data .
               cp -r ../models .
               ls -all ../
+              ls -all .
+              ls -all ./models
+              ls -all ./data
 
           inputs:
             - name: source
@@ -992,7 +1006,11 @@ jobs:
     plan:
     - get: source
       passed:
-      - Deploy Services To Dev
+      - Push DS Image
+      - Push server Image
+      - Push UI
+      # passed:
+      # - Deploy Services To Dev
     - get: version
       # passed:
       # - Execute OWASP Security Scan Test
@@ -1028,6 +1046,14 @@ jobs:
       params:
         # env:
         #   AWS_REGION: ((test_aws_region))
+        # env:
+        #   TF_VAR_access_key: ((aws_access_key_id))
+        #   TF_VAR_access_secret: ((aws_secret_access_key))
+        #   TF_VAR_aws_account_id: ((aws_account_id))
+        #   TF_VAR_aws_infra_region: ((aws_infra_region))
+        #   TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+        #   TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+        #   TF_VAR_project: ((project))
         env_name: test #terraform workspace
         plan_only: true
         terraform_source: source/config/service-setup
