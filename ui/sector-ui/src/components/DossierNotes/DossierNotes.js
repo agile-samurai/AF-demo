@@ -27,8 +27,15 @@ export default class DossierNotes extends React.Component {
 
         const processedNotes = this.props.notes.map(noteObject => {
             return (
-              <div>
-                  {noteObject.note} - {noteObject.timeStamp} = {noteObject.user}
+              <div className="a-note">
+                  <div className="note-section-header">Content:</div>
+                  <div>{noteObject.note}</div>
+
+                  <div className="new-note-section-start note-section-header">Timestamp:</div>
+                  <div>{noteObject.timeStamp}</div>
+
+                  <div className="new-note-section-start note-section-header">User:</div>
+                  <div>{noteObject.user}</div>
               </div>
             );
         });
