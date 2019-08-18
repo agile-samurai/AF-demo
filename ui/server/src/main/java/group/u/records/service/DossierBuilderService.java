@@ -38,6 +38,8 @@ public class DossierBuilderService {
 
 
     public MasterDossier generateDossiers(List<MovieDetail> movieDetails, String imdbId ){
+        logger.debug("About to write dossier with lineage count:  " + movieDetails.size());
+
         UUID id = UUID.nameUUIDFromBytes(imdbId.getBytes());
         MasterDossier masterDossier = new MasterDossier(movieDetails
                 .stream()

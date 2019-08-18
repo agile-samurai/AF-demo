@@ -59,6 +59,7 @@ public class EntertainmentDetailsService {
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
 
+                logger.debug("Retrieving from data source:  "+ dataSource.getLineage());
                 try {
                     MovieDetail movieDetail = dataSource.getMovieDetails(id);
                     if (movieDetail != null) {
@@ -66,10 +67,13 @@ public class EntertainmentDetailsService {
                         movieDetails.add(movieDetail);
                     }
                 }catch( Exception e ){
+                    logger.debug( "Exception while parsing imdb - " + e );
+                    e.printStackTrace();
                     logger.debug("Movie data was not present with provider:  " + dataSource + " - " + id );
                 }
             }
 
+            logger.debug("done loading movie:  "+id);
             personRegistry.reconcile(movieDetails);
             dossierBuilderService.generateDossiers(movieDetails, id);
         }

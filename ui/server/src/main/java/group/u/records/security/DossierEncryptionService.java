@@ -16,16 +16,16 @@ public class DossierEncryptionService {
 
     private Logger logger = LoggerFactory.getLogger(DossierEncryptionService.class);
     private ObjectMapper objectMapper;
-    private HSMGatewayClient gatewayClient;
+    private SecurityGatewayClient gatewayClient;
 
-    public DossierEncryptionService(ObjectMapper objectMapper, HSMGatewayClient gatewayClient ){
+    public DossierEncryptionService(ObjectMapper objectMapper, SecurityGatewayClient gatewayClient ){
         this.objectMapper = objectMapper;
         this.gatewayClient = gatewayClient;
     }
 
     public String encrypt(MasterDossier dossier) {
         try {
-            return gatewayClient.encrypt(objectMapper.writeValueAsString(dossier));
+            return gatewayClient.encrypt(dossier.getId(), objectMapper.writeValueAsString(dossier));
         } catch (JsonProcessingException e) {
             logger.debug("Error while serializing dossier:  " + dossier.getId());
         }
@@ -40,5 +40,9 @@ public class DossierEncryptionService {
             throw new SecurityException( "Unauthorized access to dossier" );
 
         }
+    }
+
+    public void delete(UUID dossierId) {
+        this.gatewayClient.delete(dossierId);
     }
 }

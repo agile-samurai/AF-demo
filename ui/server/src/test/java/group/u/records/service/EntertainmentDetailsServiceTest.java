@@ -6,7 +6,7 @@ public class EntertainmentDetailsServiceTest {
 
     @Test
     public void shouldGenerateADossierForAGivenMovie(){
-//        EntertainmentDetailsService detailsService = new EntertainmentDetailsService(mock(ActorRepository.class), mock(S3DataService.class), mock(DossierBuilderService.class));
+//        EntertainmentDetailsService detailsService = new EntertainmentDetailsService(mock(ActorRepository.class), dataService, new DossierBuilderService());
     }
 
 }

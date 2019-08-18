@@ -5,6 +5,8 @@ import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.entity.MovieTitle;
 import group.u.records.repository.PersonRepository;
 import group.u.records.service.LevenshteinDistanceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -19,6 +21,7 @@ public class PersonRegistry {
     private PersonRepository personRepository;
     private LevenshteinDistanceService levenshteinDistanceService;
     private Map<UUID, Person> personCache;
+    private Logger logger = LoggerFactory.getLogger(PersonRegistry.class);
 
     public PersonRegistry(PersonRepository personRepository,
                           LevenshteinDistanceService levenshteinDistanceService) {
@@ -46,11 +49,26 @@ public class PersonRegistry {
         if(existingMatchOrNull == null) {
             person.addTitle(MovieTitle.from(movie));
             personCache.put(person.getId(), person);
+            mergeAliases(movie, person);
+            logger.debug("Saving existing person:  " + person );
+            personRepository.save(person);
         } else {
-            personCache.get(existingMatchOrNull.getId()).addTitle(MovieTitle.from(movie));
-        }
+            Person person1 = personCache.get(existingMatchOrNull.getId());
+            person1.addTitle(MovieTitle.from(movie));
 
-        personRepository.save(person);
+            mergeAliases(movie, person1);
+            logger.debug("Saving updated person:  " + person );
+            personRepository.save(person1);
+        }
+    }
+
+    private void mergeAliases(MovieDetail movie, Person person) {
+        logger.debug("About to merge characters. " + person.getName() );
+        logger.debug("Movie value:  " + movie );
+        movie.getCharacters().stream().forEach(m->{
+            Person personFromCharacter = m.toPerson();
+            person.mergeIfPossible(personFromCharacter);
+        });
     }
 
     public void reconcile(List<MovieDetail> movieDetails) {

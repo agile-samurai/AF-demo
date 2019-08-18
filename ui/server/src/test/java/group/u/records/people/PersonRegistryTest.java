@@ -8,6 +8,7 @@ import group.u.records.service.LevenshteinDistanceService;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,13 +21,13 @@ public class PersonRegistryTest {
     public void shouldMergeActorsWithSimilarNames(){
         PersonRepository personRepository = mock(PersonRepository.class);
         PersonRegistry pr = new PersonRegistry(personRepository, new LevenshteinDistanceService());
-        Person realCarlyle = new Person("Kevin Hart", new ArrayList<>(), new ArrayList<>());
+        Person realCarlyle = new Person("/name/nm4360085/", "Kevin Hart", new HashSet<>(), new ArrayList<>());
         MovieDetail movie1 = mock(MovieDetail.class);
         when(movie1.getName()).thenReturn("Movie 1");
         MovieDetail movie2 = mock(MovieDetail.class);
         when(movie2.getName()).thenReturn("Movie 2");
         pr.reconcile(realCarlyle, movie1);
-        pr.reconcile( new Person("Kevin D. Hart", new ArrayList<>(), new ArrayList<>()), movie2);
+        pr.reconcile( new Person("/name/nm4360085/", "Kevin D. Hart", new HashSet<>(), new ArrayList<>()), movie2);
 
         MovieTitle expectedMovie1 = MovieTitle.from(movie1);
         MovieTitle expectedMovie2 = MovieTitle.from(movie2);
@@ -34,5 +35,15 @@ public class PersonRegistryTest {
         assertEquals(2, realCarlyle.getTitles().size());
         assertEquals(expectedMovie1.getName(), realCarlyle.getTitles().get(0).getName());
         assertEquals(expectedMovie2.getName(), realCarlyle.getTitles().get(1).getName());
+    }
+
+    @Test
+    public void shouldMergeAliasesFromMovieCharacters(){
+
+    }
+
+    @Test
+    public void shouldNotMergeAliasesFromMovieCharacgters(){
+
     }
 }
