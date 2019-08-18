@@ -45,7 +45,7 @@ resources:
     type: git
     source: &repo-source
       uri: ((git_source_url))
-      branch: ur-6-austinbrian-pipeline-data ## CHANGE BACK TO MASTER
+      branch: master
       private_key: ((git_private_key))
 #      ignore_paths: [services/scoring-service, notebooks]
   - name: version
@@ -185,10 +185,8 @@ jobs:
     public: true
     serial: true
     plan:
-      - get: version
       - get: source
-        passed:
-          - Create Terraform Persistence
+        passed: [Initialize]
       - put: terraform
         params:
           terraform_source: source/config/infra-setup/scripts
@@ -198,9 +196,10 @@ jobs:
             TF_VAR_access_key: ((aws_access_key_id))
             TF_VAR_access_secret: ((aws_secret_access_key))
             TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_aws_infra_region: ((bucket_aws_region))
+            TF_VAR_aws_infra_region: ((aws_infra_region))
             TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
             TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
       - put: terraform
         params:
           terraform_source: source/config/infra-setup/scripts
@@ -210,7 +209,7 @@ jobs:
             TF_VAR_access_key: ((aws_access_key_id))
             TF_VAR_access_secret: ((aws_secret_access_key))
             TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_aws_infra_region: ((bucket_aws_region))
+            TF_VAR_aws_infra_region: ((aws_infra_region))
             TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
             TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
             TF_VAR_project: ((project))
