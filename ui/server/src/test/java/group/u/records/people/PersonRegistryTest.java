@@ -28,8 +28,11 @@ public class PersonRegistryTest {
         pr.reconcile(realCarlyle, movie1);
         pr.reconcile( new Person("Kevin D. Hart", new ArrayList<>(), new ArrayList<>()), movie2);
 
-        List<MovieTitle> expected = List.of(MovieTitle.from(movie1), MovieTitle.from(movie2));
+        MovieTitle expectedMovie1 = MovieTitle.from(movie1);
+        MovieTitle expectedMovie2 = MovieTitle.from(movie2);
 
-        assertEquals(expected, realCarlyle.getTitles());
+        assertEquals(2, realCarlyle.getTitles().size());
+        assertEquals(expectedMovie1.getName(), realCarlyle.getTitles().get(0).getName());
+        assertEquals(expectedMovie2.getName(), realCarlyle.getTitles().get(1).getName());
     }
 }

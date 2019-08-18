@@ -45,28 +45,4 @@ public class MovieTitle {
     public UUID getId() {
         return id;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MovieTitle that = (MovieTitle) o;
-
-        return new EqualsBuilder()
-                .append(name, that.name)
-                .append(image, that.image)
-                .append(id, that.id)
-                .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(name)
-                .append(image)
-                .append(id)
-                .toHashCode();
-    }
 }
