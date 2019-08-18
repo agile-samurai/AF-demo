@@ -1,10 +1,8 @@
 import React from 'react';
-import Chip from '@material-ui/core/Chip';
-import Switch from '@material-ui/core/Switch';
-import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 import axios from "axios/index";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './DossierContent.css';
+import PerLineageDossierContent from "../PerLineageDossierContent/PerLineageDossierContent";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -16,7 +14,6 @@ export default class DossierContent extends React.Component {
             loaded: false
         };
         this.DOSSIER_ENDPOINT = '/api/dossier';
-        this.handleToggleRedaction = this.handleToggleRedaction.bind(this);
     }
 
     componentDidMount() {
@@ -42,41 +39,19 @@ export default class DossierContent extends React.Component {
             }
         }
 
-        const {name, genres, summary, entityClassifications} = dossierData;
-        const {redactionEnabled} = this.state;
+        const {dossiers} = dossierData;
 
-        const processedGenres = genres.map(genreInformation => {
-            return <Chip label={genreInformation.genre} className="genre-chip" key={genreInformation.genre}/>
-        });
+        const perLineageDossierContentList = dossiers.map(perLineageDossier => <PerLineageDossierContent
+            dossierData={perLineageDossier}/>);
 
         return (
             <div className="dossier-main-section-wrapper">
                 <div className="dossier-main-section">
-                    <div className="dossier-name">{name}</div>
-                    <div className="genres-and-auto-redaction">
-                        <div className="genres">{processedGenres}</div>
-                        <div className="auto-redaction-toggle">
-                            <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO
-                                REDACTION
-                            </div>
-                            <Switch
-                                checked={redactionEnabled}
-                                onChange={this.handleToggleRedaction}
-                                inputProps={{'aria-label': 'secondary checkbox'}}/>
-                        </div>
-                    </div>
-                    <DossierPlotSummary summary={summary}
-                                        entityClassifications={entityClassifications}
-                                        redactionEnabled={redactionEnabled}/>
+                    <div className="dossier-name">{dossiers[0].name}</div>
+                    {perLineageDossierContentList}
                 </div>
             </div>
         );
-    }
-
-    handleToggleRedaction() {
-        this.setState({
-            redactionEnabled: !this.state.redactionEnabled
-        })
     }
 
     loadEncryptedData(dossierID) {
@@ -86,11 +61,11 @@ export default class DossierContent extends React.Component {
                 password: 'password'
             }
         })
-        .then(response => {
-            this.setState({
-                dossierData: response.data,
-                loaded: true
+            .then(response => {
+                this.setState({
+                    dossierData: response.data,
+                    loaded: true
+                });
             });
-        });
     }
 }
