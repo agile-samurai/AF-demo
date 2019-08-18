@@ -17,6 +17,8 @@ public class MoviePublicSummary {
     private UUID id;
 
     private List<Person> people;
+
+    @Field(type = Text, fielddata = true)
     private String name;
 
     public UUID getId() {
