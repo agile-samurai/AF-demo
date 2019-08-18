@@ -1,10 +1,23 @@
 package group.u.records.models.entity;
 
+import group.u.records.models.Person;
+
+import java.util.ArrayList;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+
 public class MovieCharacter {
 
-    String name;
-    String character;
-    String photo_img;
+    private String name;
+    private String character;
+    private String photo_img;
+
+    public String getActor_id() {
+        return actor_id;
+    }
+
+    private String actor_id;
 
     public String getName() {
         return name;
@@ -16,5 +29,9 @@ public class MovieCharacter {
 
     public String getPhoto_img() {
         return photo_img;
+    }
+
+    public Person toPerson(){
+        return new Person(actor_id, name, Set.of(character), new ArrayList<>());
     }
 }

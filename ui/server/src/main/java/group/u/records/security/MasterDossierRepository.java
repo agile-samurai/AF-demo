@@ -21,10 +21,14 @@ public class MasterDossierRepository {
     }
 
     public void save(MasterDossier dossier) {
+
         dataService.save(dossier.getId(), dossierEncryptionService.encrypt(dossier) );
     }
 
-    public void delete(UUID dossierId){}
+    public void delete(UUID dossierId){
+        dataService.delete(dossierId);
+        this.dossierEncryptionService.delete(dossierId);
+    }
 
     public MasterDossier get(UUID id) {
         return dossierEncryptionService.decrypt(id, dataService.get(id));

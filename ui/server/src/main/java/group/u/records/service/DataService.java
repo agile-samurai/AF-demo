@@ -1,7 +1,5 @@
 package group.u.records.service;
 
-import group.u.records.content.Dossier;
-
 import java.util.UUID;
 
 public interface DataService {

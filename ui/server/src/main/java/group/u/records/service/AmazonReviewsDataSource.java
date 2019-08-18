@@ -33,6 +33,7 @@ public class AmazonReviewsDataSource extends MovieDetailsDataSource {
         return new MovieDetail(UUID.nameUUIDFromBytes(id.getBytes()),
                 "Fake Name",
                 people,
+                asList(),
                 Faker.instance().lorem().paragraph(),
                 Faker.instance().lorem().words(3),
                 LocalDate.now(),

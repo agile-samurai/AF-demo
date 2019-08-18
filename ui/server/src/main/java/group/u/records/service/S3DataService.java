@@ -92,6 +92,7 @@ public class S3DataService implements DataService {
 
     @Override
     public void save(UUID dossierId, String dossierEncryptedContent) {
+        logger.debug("Saving dossier:  " + dossierId );
         createBucket(s3Client);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(dossierStorageBucket)
