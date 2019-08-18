@@ -63,7 +63,7 @@ public class EntertainmentDetailsService {
                 try {
                     MovieDetail movieDetail = dataSource.getMovieDetails(id);
                     if (movieDetail != null) {
-                        moviePublicSummaryRepository.save(new MoviePublicSummary());
+                        moviePublicSummaryRepository.save(new MoviePublicSummary(movieDetail));
                         movieDetails.add(movieDetail);
                     }
                 }catch( Exception e ){

@@ -12,6 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface PersonRepository extends ElasticsearchRepository<Person, UUID> {
-    @Query("{\"bool\": {\"should\": [{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"aliases\"], \"fuzziness\": \"1\"}}, {\"nested\": {\"path\": \"titles\", \"query\": {\"match\": {\"titles.name\": {\"query\": \"?0\", \"fuzziness\": \"1\"}}}}}]}}")
+    @Query("{\"bool\": {\"should\": [{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"aliases\", \"name\"], \"fuzziness\": \"1\"}}, {\"nested\": {\"path\": \"titles\", \"query\": {\"match\": {\"titles.name\": {\"query\": \"?0\", \"fuzziness\": \"1\"}}}}}]}}")
     Page<Person> findByActorNameOrActorAliasOrTitleName(String term, Pageable pageable);
 }
