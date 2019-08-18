@@ -180,8 +180,8 @@ module "server" {
 
 
   ds_redact_host="http://${module.ds-spaCy-model.dns_name}"   #spaCy url add http://
-  ds_images_host=var.ds_images_host
-  ds_similarities_host=var.ds_similarities_host
+  ds_images_host="http://${module.datascience.dns_name}"
+  ds_similarities_host="http://${module.datascience.dns_name}"
   jwt_secret=var.jwt_secret
   business_user_password=var.business_user_password
   business_supervisor_password=var.business_supervisor_password
