@@ -152,24 +152,22 @@ def process_movie_list_to_df(data):
         )
     except TypeError:
         pass
-    # movies_df["director_id"] = movies_df.director.apply(lambda x: x["url"].strip("/name/nm"))
-    # movies_df["num_directors"] = movies_df.director.apply(lambda x: len(x["name"]))
     return movies_df
 
 
-# def merged_movie_data(n):
-#     imdf = imdb_df(get_json_files(n))
-#     mv = movie_df()
-#     mdf = imdb.merge(mv, how="left", on="imdb_id")
-#     return mdf
+def merged_movie_data(data):
+    movies_processed = process_movie_list_to_df(data)
+    mv = load_movietweetings_df()
+    mdf = movies_processed.merge(mv, how="left", on="imdb_id")
+    return mdf
 
 
 if __name__ == "__main__":
     # Read all movie JSON files
     movies_json_list = load_json_files()
     print(f"Loaded {len(movies_json_list)} JSON files")
-    # Convert list of JSON data to cleaned DataFrame
-    movies_dataframe = process_movie_list_to_df(movies_json_list)
+    # Convert list of JSON data and MovieTweetings to cleaned DataFrame
+    movies_dataframe = merged_movie_data(movies_json_list)
 
     # Save movies_df to local .pkl file
     cwd = pathlib.Path(".").resolve()
