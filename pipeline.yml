@@ -92,6 +92,15 @@ resources:
       path: data/ci
       options: ["--quiet"]
       region: us-east-1
+  - name: movies_json
+    type: simple-s3-resource
+    source:
+      access_key_id: ((aws_access_key_id))
+      secret_access_key: ((aws_secret_access_key))
+      bucket: rdso-challenge2
+      path: data/movies_json
+      options: ["--quiet"]
+      region: us-east-1
 
 groups:
   - name: all
@@ -100,6 +109,7 @@ groups:
     - Deploy HSM
     #- Create Infra
     - Initialize
+    - Consildate Data
     - Build UI
     - Build server and SonarQube
     - Execute server Functional Tests
@@ -113,7 +123,7 @@ groups:
     - Deploy Services To Test
     - Deploy Services To Production
     - Execute main-ds-service Tests
-    - Build Data Model
+    - Train Models
     - Capture data and push to s3
     - pa11y-accessibility-scan
     - OWASP Prod Security Scan
@@ -128,7 +138,7 @@ groups:
   - name: model building
     jobs:
     - Capture data and push to s3
-    - Build Data Model
+    - Train Models
     #- Push Data Service
   - name: build-and-test
     jobs:
@@ -277,7 +287,7 @@ jobs:
                 cd source/config/hsm-setup/
                 ./create-hsm.sh
           inputs:
-                - name: source  
+                - name: source
   - name: terraform-destroy-all-envs
     public: false
     plan:
@@ -435,7 +445,53 @@ jobs:
           outputs:
             - name: data
       - put: data
-  - name: Build Data Model
+  - name: Consildate Data
+    public: true
+    serial: true
+    plan:
+      - get: source
+      - get: version
+        trigger: true
+        passed: [Initialize]
+      - get: movies_json
+        trigger: true
+      - task: Gather Data
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: us-east-1
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: carlomazzaferro/concourse-python-minimal
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              mkdir -p source/services/data-science-service/data
+              cp -r movies_json source/services/data-science-service/data/
+              cd source/services/data-science-service/imdb-scraper
+              pip install --quiet -r requirements.txt
+              cd ../rdso
+              apt-get -qq update && apt-get -qq -y install gcc
+              # yum -y install epel-release
+              # yum -y install python-pip
+              pip install --quiet --upgrade pip
+              pip install --quiet -r requirements.txt
+              python -m nltk.downloader stopwords
+              python movies.py
+              cd ../../../../
+              cp -R source/services/data-science-service/data/ .
+          inputs:
+            - name: source
+            - name: movies_json
+          outputs:
+            - name: data
+      - put: data
+  - name: Train Models
     public: true
     serial: true
     plan:
@@ -444,7 +500,7 @@ jobs:
       #   passed: [Initialize]
       - get: data
         trigger: true
-        passed: [Capture data and push to s3]
+        passed: [Capture data and push to s3, Consildate Data]
       - task: Train model
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
@@ -503,10 +559,10 @@ jobs:
   #       trigger: false
   #     - get: data
   #       trigger: true
-  #       passed: [Build Data Model]
+  #       passed: [Train Models]
   #     - get: models
   #       trigger: true
-  #       passed: [Build Data Model]
+  #       passed: [Train Models]
   #     - task: Package API
   #       params:
   #         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
@@ -749,8 +805,9 @@ jobs:
         passed: [Initialize]
       - get: models
         trigger: true
-        ##add me back passed: [Build Data Model]
+        passed: [Train Models]
       - get: version
+        trigger: true
         passed: [Initialize]
       - task: Execute Test
         privileged: true
@@ -949,8 +1006,8 @@ jobs:
         trigger: true
         passed: [ Provision ECR Repositories]
       - get: version
-        trigger: false
-        passed: [ Provision ECR Repositories]
+        trigger: true
+        passed: [ Provision ECR Repositories, Execute main-ds-service Tests]
       - get: models
         trigger: true
         passed: [Execute main-ds-service Tests]
@@ -1331,13 +1388,13 @@ jobs:
             touch /zap/wrk/report_md
             /zap/zap-baseline.py -t https://${WWW_LB_TEST} -m 3 -i
             echo "scan successful"
-            ps -ef 
+            ps -ef
             ps -ef | grep "zap" |  grep -v grep| awk '{print $2}'|xargs kill
             #kill -9 $()
             #kill -9 $(ps -ef | grep "screen" | awk '{print $2}')
             #echo $result
             #screen -list
-            #screen -X -S 0 quit 
+            #screen -X -S 0 quit
             # ps -ef
             # pkill -u zap
             # pkill --help
@@ -1402,4 +1459,3 @@ jobs:
             cat summary.txt
         outputs:
           - name: myproj
-

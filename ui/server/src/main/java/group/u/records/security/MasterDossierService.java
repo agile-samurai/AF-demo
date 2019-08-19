@@ -5,7 +5,9 @@ import group.u.records.service.MasterDossier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -48,11 +50,11 @@ public class MasterDossierService {
         save(dossier);
     }
 
-    public DossierFileInfo saveFile(UUID dossierId, byte[] bytes) {
-        String fileEncrypted = dossierEncryptionService.encryptFile(dossierId, encodeBase64String(bytes));
+    public DossierFileInfo saveFile(UUID dossierId, MultipartFile file ) throws IOException {
+        String fileEncrypted = dossierEncryptionService.encryptFile(dossierId, encodeBase64String(file.getBytes()));
         UUID fileId = UUID.randomUUID();
         dataService.saveFile(fileId, fileEncrypted);
-        DossierFileInfo dossierFileInfo = new DossierFileInfo(fileId);
+        DossierFileInfo dossierFileInfo = new DossierFileInfo(fileId, file.getName() );
 
         updateFileInfos(dossierId, dossierFileInfo);
         return dossierFileInfo;
