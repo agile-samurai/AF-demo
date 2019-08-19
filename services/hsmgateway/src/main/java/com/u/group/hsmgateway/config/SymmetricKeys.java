@@ -1,0 +1,52 @@
+/*
+ * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+package com.u.group.hsmgateway.config;
+
+import com.cavium.key.parameter.CaviumAESKeyGenParameterSpec;
+import com.cavium.key.parameter.CaviumDESKeyGenParameterSpec;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+
+/**
+ * Symmetric key generation examples.
+ */
+public class SymmetricKeys {
+    /**
+     * Generate an AES key.
+     * In this example method, the key is never persistent and is never extractable.
+     *
+     * @param keySizeInBits Size of the key.
+     * @param keyLabel      Label to associate with the key.
+     * @return Key object
+     */
+    static Key generateAESKey(int keySizeInBits, String keyLabel)
+            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES", "Cavium");
+
+        CaviumAESKeyGenParameterSpec aesSpec = new CaviumAESKeyGenParameterSpec(keySizeInBits, keyLabel, true, true);
+        keyGen.init(aesSpec);
+
+        return keyGen.generateKey();
+    }
+
+}

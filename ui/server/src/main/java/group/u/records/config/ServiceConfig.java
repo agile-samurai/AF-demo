@@ -4,9 +4,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.datasource.ImdbMovieDetailsDataSource;
 import group.u.records.datasource.OmdbMovieDetailsDataSource;
+import group.u.records.security.AWSCloudHSMSecurityGatewayClient;
+import group.u.records.security.InMemorySecurityClient;
+import group.u.records.security.SecurityGatewayClient;
 import group.u.records.service.AmazonReviewsDataSource;
 import group.u.records.service.MovieDetailsDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +26,7 @@ import static java.util.Arrays.asList;
 @Configuration
 public class ServiceConfig {
 
+    private Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
 
     @Bean
     public S3Client s3Client(@Value("${aws.access.key.id}") String accessKeyId,
@@ -46,11 +53,26 @@ public class ServiceConfig {
         return new RestTemplate();
     }
 
+//    @Bean
+//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "true", matchIfMissing = true)
+//    public SecurityGatewayClient securityGatewayClient(RestTemplate restTemplate,
+//                                                       @Value("${app.content.security.host}") String host){
+//        logger.debug("Initializing in HSM Gateway client." );
+//        return new AWSCloudHSMSecurityGatewayClient(restTemplate, host );
+//    }
+
+    @Bean
+//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "false")
+    public SecurityGatewayClient inMemorySecurityGatewayClient(){
+        logger.debug("Initializing in memory security client." );
+        return new InMemorySecurityClient();
+    }
+
     @Bean
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
                                                            OmdbMovieDetailsDataSource omdb,
                                                            AmazonReviewsDataSource amazon ){
-        return new MovieDetailsDataSourceManager(asList(imdb));
+        return new MovieDetailsDataSourceManager(asList(imdb, amazon));
     }
 
 }

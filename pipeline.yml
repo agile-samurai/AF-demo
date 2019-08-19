@@ -35,8 +35,6 @@ resources:
         region: ((bucket_aws_region))
         access_key: ((aws_access_key_id))
         secret_key: ((aws_secret_access_key))
-      vars:
-        tag_name: concourse
       env:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -99,6 +97,7 @@ groups:
   - name: all
     jobs:
     - Create Terraform Persistence
+    - Deploy HSM
     #- Create Infra
     - Initialize
     - Build UI
@@ -118,11 +117,14 @@ groups:
     - Capture data and push to s3
     - pa11y-accessibility-scan
     - OWASP Prod Security Scan
+    #- create lb ss cert
   - name: prepare
     jobs:
     - Create Terraform Persistence
     #- Create Infra
+    - Deploy HSM
     - Initialize
+    #- create lb ss cert
   - name: model building
     jobs:
     - Capture data and push to s3
@@ -225,6 +227,56 @@ jobs:
         trigger: true
       - put: version
         params: {bump: minor}
+  # - name: create lb ss cert
+  #   public: false
+  #   plan:
+  #   - task: noop
+  #     attempts: 10
+  #     config:
+  #       platform: linux
+  #       image_resource:
+  #         type: docker-image
+  #         source:
+  #           repository: mesosphere/aws-cli
+  #       run:
+  #         path: sh
+  #         args:
+  #         - -exc
+  #         - |
+  #           echo "noop"
+
+  - name: Deploy HSM
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+      - task: Deploy HSM
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: ((hsm_region))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          params:
+              HSM_REGION: ((hsm_region))
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel -y
+                export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+                echo "host is [${HOST_IP}]"
+                echo "HSM_REGION is [${HSM_REGION}]"
+                cd source/config/hsm-setup/
+                ./create-hsm.sh
+          inputs:
+                - name: source  
   - name: terraform-destroy-all-envs
     public: false
     plan:
@@ -240,6 +292,10 @@ jobs:
           TF_VAR_aws_region: ((bucket_aws_region))
           TF_VAR_aws_account_id: ((aws_account_id))
           TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_business_supervisor_password": "noop"
+          TF_VAR_business_user_password: "noop"
+          TF_VAR_jwt_secret: "noop"
+          TF_VAR_system_user_password: "noop"
   #   - get: source
   #   - put: terraform
   #     get_params:
@@ -282,6 +338,10 @@ jobs:
           TF_VAR_bucket_name: ((tf_backend))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
+          TF_VAR_business_supervisor_password": "noop"
+          TF_VAR_business_user_password: "noop"
+          TF_VAR_jwt_secret: "noop"
+          TF_VAR_system_user_password: "noop"
   - name: terraform-destroy-test-service
     public: false
     serial: true
@@ -302,6 +362,10 @@ jobs:
           TF_VAR_bucket_name: ((tf_backend))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
+          TF_VAR_business_supervisor_password": "noop"
+          TF_VAR_business_user_password: "noop"
+          TF_VAR_jwt_secret: "noop"
+          TF_VAR_system_user_password: "noop"
   - name: terraform-destroy-prod-service
     public: false
     serial: true
@@ -322,6 +386,10 @@ jobs:
           TF_VAR_bucket_name: ((tf_backend))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
+          TF_VAR_business_supervisor_password": "noop"
+          TF_VAR_business_user_password: "noop"
+          TF_VAR_jwt_secret: "noop"
+          TF_VAR_system_user_password: "noop"
   - name: Capture data and push to s3
     public: true
     serial: true
@@ -1046,6 +1114,10 @@ jobs:
             echo db_user = \"dbusername1\" >> vars/terraform.tfvars
             echo infra_version = \"useless\" >> vars/terraform.tfvars
             echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo business_user_password = \"((business_user_password))\" >> vars/terraform.tfvars
+            echo business_supervisor_password = \"((business_supervisor_password))\" >> vars/terraform.tfvars
+            echo system_user_password = \"((system_user_password))\" >> vars/terraform.tfvars
+            echo jwt_secret = \"((jwt_secret))\" >> vars/terraform.tfvars
             echo "Planning deployment to the test environment"
         inputs:
         - name: version
@@ -1128,7 +1200,7 @@ jobs:
     plan:
     - get: source
       passed:
-      - Deploy Services To Test
+      - Deploy Services To Dev
     - get: version
       trigger: true
       # passed:
@@ -1154,9 +1226,12 @@ jobs:
             echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
             echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
             echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
-            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
             echo infra_version = \"useless\" >> vars/terraform.tfvars
             echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+            echo business_user_password = \"((business_user_password))\" >> vars/terraform.tfvars
+            echo business_supervisor_password = \"((business_supervisor_password))\" >> vars/terraform.tfvars
+            echo system_user_password = \"((system_user_password))\" >> vars/terraform.tfvars
+            echo jwt_secret = \"((jwt_secret))\" >> vars/terraform.tfvars
             echo "Planning deployment to the prod environment"
         inputs:
         - name: version
@@ -1253,7 +1328,7 @@ jobs:
             #whoami; pwd #/home/zap
             mkdir -p /zap/wrk
             touch /zap/wrk/report_md
-            /zap/zap-baseline.py -t http://${WWW_LB_TEST} -m 3 -i
+            /zap/zap-baseline.py -t https://${WWW_LB_TEST} -m 3 -i
             echo "scan successful"
             ps -ef 
             ps -ef | grep "zap" |  grep -v grep| awk '{print $2}'|xargs kill
@@ -1317,7 +1392,7 @@ jobs:
             #npm install -g phantomjs
             #npm install pa11y-reporter-ci
             cat <<EOF >> config.json
-            { "defaults": { "chromeLaunchConfig": { "args": ["--no-sandbox"], "ignoreHTTPSErrors": "false", "executablePath": "node_modules/puppeteer/.local-chromium/linux-674921/chrome-linux/chrome" }, "timeout": 20000, "wait": 2000, "ignore": [] }, "urls": [ "$WWW_LB_TEST" ] }
+            { "defaults": { "chromeLaunchConfig": { "args": ["--no-sandbox"], "ignoreHTTPSErrors": "false", "executablePath": "node_modules/puppeteer/.local-chromium/linux-674921/chrome-linux/chrome" }, "timeout": 20000, "wait": 2000, "ignore": [] }, "urls": [ "https://${WWW_LB_TEST}" ] }
             EOF
             # finally scan
             node -v

@@ -2,6 +2,7 @@ locals {
   admin_password = aws_iam_user_login_profile.admin.encrypted_password
   cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
   cluster_state = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state
+  hsm_id = aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id
 }
 
 resource "local_file" "cluster_id_file" {
@@ -13,6 +14,11 @@ resource "local_file" "cluster_id_file" {
 resource "local_file" "cluster_state_file" {
   content = local.cluster_state
   filename = "${path.module}/cluster_state.txt"
+}
+
+resource "local_file" "hsm_id" {
+  content = local.hsm_id
+  filename = "${path.module}/hsm_id.txt"
 }
 
 resource "local_file" "ec2_key" {

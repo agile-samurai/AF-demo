@@ -28,7 +28,7 @@ public class GenreDistributionClient {
         if( !enabledDistributionImages ) return "";
 
         try {
-            return restTemplate.postForEntity(host + "/make_test_plot",
+            return restTemplate.postForEntity(host + "/highlighted_film_plot/" + dossierId,
                     new HttpEntity(""), String.class).getBody();
         }catch( Exception e ){
             logger.debug("Image Classification is unavailable" );
