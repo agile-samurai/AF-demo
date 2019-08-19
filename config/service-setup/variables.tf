@@ -41,26 +41,28 @@ variable "cidr_block" {
   description = "Cidr block ranges per environment"
 
   default = {
-    default  = "10.1.0.0/16",
+#    default  = "10.1.0.0/16",
     dev  = "10.1.0.0/16",
     test = "10.2.0.0/16",
     ft   = "10.3.0.0/16",
     prod = "10.4.0.0/16",
     infra = "10.5.0.0/16",
-    hsm = "10.6.0.0/16"
+    hsm = "10.6.0.0/16",
+    concourse = "10.20.0.0/16",
+    infra = "10.22.0.0/16"
   }
 }
 
 variable "aws_region" {
   type        = map(string)
-  description = "region"
+  description = "region. infra includes hsm,sonarqube,concourse"
 
   default = {
-    default = "us-east-1",
+ #   default = "us-east-1",
     dev  = "us-east-1",
     test = "us-east-2",
     prod = "us-west-1",
-    ft   = "us-west-2"
+    infra   = "us-west-2"
   }
 }
 
@@ -88,8 +90,7 @@ variable "base_domain" {
   default = "ugrouptech.com"
 }
 
-variable "aws_account_id" {
-}
+variable "aws_account_id" {}
 
 variable "postgres_username" {
   description = "Root username for postgres"
@@ -104,8 +105,6 @@ variable "postgres_password" {
 variable "access_key" {}
 
 variable "access_secret" {}
-
-
 
 
 variable "jwt_secret" {}

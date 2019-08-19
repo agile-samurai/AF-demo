@@ -30,7 +30,7 @@ resources:
     source:
       backend_type: s3
       backend_config:
-        bucket: ((tf_backend))
+        bucket: ((tf_backend_bucket))
         key: rdso.tfstate
         region: ((bucket_aws_region))
         access_key: ((aws_access_key_id))
@@ -38,21 +38,19 @@ resources:
       env:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-  #      TF_LOG: DEBUG
   - name: source
     type: git
     source: &repo-source
       uri: ((git_source_url))
       branch: master
       private_key: ((git_private_key))
-#      ignore_paths: [services/scoring-service, notebooks]
   - name: version
     type: semver
     source:
       driver: git
       uri: ((git_version_url))
       initial_version: 0.0.1
-      branch: version
+      branch: version-((aws_account_id))
       file: version
       private_key: ((git_private_key))
   ################### Resources ECR REPOS ######################
@@ -64,7 +62,7 @@ resources:
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/server
   - name: main-ds-service-docker-image
     type: latest-docker-image
-    source:
+    source: #049492283767.dkr.ecr.us-east-1.amazonaws.com
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/data-science-service
       aws_access_key_id: ((aws_access_key_id))
       aws_secret_access_key: ((aws_secret_access_key))
@@ -79,19 +77,17 @@ resources:
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: rdso-challenge2
-      path: data/ci
+      bucket: ((app_data_bucket))
       options: ["--quiet"]
-      region: us-east-1
+      region: ((bucket_aws_region))
   - name: data
     type: simple-s3-resource
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: rdso-challenge2
-      path: data/ci
+      bucket: ((app_data_bucket))
       options: ["--quiet"]
-      region: us-east-1
+      region: ((bucket_aws_region))
   - name: movies_json
     type: simple-s3-resource
     source:
@@ -105,9 +101,8 @@ resources:
 groups:
   - name: all
     jobs:
-    - Create Terraform Persistence
+
     - Deploy HSM
-    #- Create Infra
     - Initialize
     - Consildate Data
     - Build UI
@@ -130,11 +125,8 @@ groups:
     #- create lb ss cert
   - name: prepare
     jobs:
-    - Create Terraform Persistence
-    #- Create Infra
     - Deploy HSM
     - Initialize
-    #- create lb ss cert
   - name: model building
     jobs:
     - Capture data and push to s3
@@ -167,69 +159,9 @@ groups:
       - terraform-destroy-prod-service
 
 jobs:
-  - name: Create Terraform Persistence
-    public: true
-    serial: true
-    plan:
-      - get: source
-        trigger: false
-      - task: Create Buckets
-        params:
-          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
-          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: us-east-1
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: ugroup/centos-terraform-aws
-          run:
-            path: sh
-            args:
-              - -exc
-              - |
-                echo aws_region = \"((bucket_aws_region))\" >> vars/terraform.tfvars
-                echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
-                echo bucket_name = \"((tf_backend))\" >> vars/terraform.tfvars
-                echo "Creating Repository Persistence"
-                aws s3api create-bucket --bucket ((tf_backend)) --region us-east-1
-          outputs:
-            - name: vars
   # TODO: test this
-  # - name: Create Infra
-  #   public: true
-  #   serial: true
-  #   plan:
-  #     - get: source
-  #       passed: [Initialize]
-  #     - put: terraform
-  #       params:
-  #         terraform_source: source/config/infra-setup/scripts
-  #         plan_only: true
-  #         env_name: infra
-  #         env:
-  #           TF_VAR_access_key: ((aws_access_key_id))
-  #           TF_VAR_access_secret: ((aws_secret_access_key))
-  #           TF_VAR_aws_account_id: ((aws_account_id))
-  #           TF_VAR_aws_infra_region: ((aws_infra_region))
-  #           TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
-  #           TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
-  #           TF_VAR_project: ((project))
-  #     - put: terraform
-  #       params:
-  #         terraform_source: source/config/infra-setup/scripts
-  #         env_name: infra
-  #         plan_run: true
-  #         env:
-  #           TF_VAR_access_key: ((aws_access_key_id))
-  #           TF_VAR_access_secret: ((aws_secret_access_key))
-  #           TF_VAR_aws_account_id: ((aws_account_id))
-  #           TF_VAR_aws_infra_region: ((aws_infra_region))
-  #           TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
-  #           TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
-  #           TF_VAR_project: ((project))
-
+      ###NOW FLY SETPIPELINE WITH SONARQUBE URL
+      ####add output from this step
   - name: Initialize
     public: true
     plan:
@@ -265,7 +197,6 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: ((bucket_aws_region:))
         config:
           platform: linux
           image_resource:
@@ -279,13 +210,13 @@ jobs:
             args:
             - -exc
             - |
-                yum install bind-utils openssl openssl-devel -y
-                export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
-                echo "host is [${HOST_IP}]"
-                echo "HSM_REGION is [${HSM_REGION}]"
-                export TF_ENVIRONMNET=dev
-                cd source/config/hsm-setup/
-                ./create-hsm.sh
+                # yum install bind-utils openssl openssl-devel -y
+                # export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+                # echo "host is [${HOST_IP}]"
+                # echo "HSM_REGION is [${HSM_REGION}]"
+                # export TF_ENVIRONMNET=dev
+                # cd source/config/hsm-setup/
+                # ./create-hsm.sh
           inputs:
                 - name: source
   - name: terraform-destroy-all-envs
@@ -302,7 +233,7 @@ jobs:
         env:
           TF_VAR_aws_region: ((bucket_aws_region))
           TF_VAR_aws_account_id: ((aws_account_id))
-          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_bucket_name: ((tf_backend_bucket))
           TF_VAR_business_supervisor_password": "noop"
           TF_VAR_business_user_password: "noop"
           TF_VAR_jwt_secret: "noop"
@@ -346,7 +277,7 @@ jobs:
           TF_VAR_access_key: ((aws_access_key_id))
           TF_VAR_access_secret: ((aws_secret_access_key))
           TF_VAR_aws_account_id: ((aws_account_id))
-          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_bucket_name: ((tf_backend_bucket))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
           TF_VAR_business_supervisor_password": "noop"
@@ -370,7 +301,7 @@ jobs:
           TF_VAR_access_key: ((aws_access_key_id))
           TF_VAR_access_secret: ((aws_secret_access_key))
           TF_VAR_aws_account_id: ((aws_account_id))
-          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_bucket_name: ((tf_backend_bucket))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
           TF_VAR_business_supervisor_password": "noop"
@@ -394,7 +325,7 @@ jobs:
           TF_VAR_access_key: ((aws_access_key_id))
           TF_VAR_access_secret: ((aws_secret_access_key))
           TF_VAR_aws_account_id: ((aws_account_id))
-          TF_VAR_bucket_name: ((tf_backend))
+          TF_VAR_bucket_name: ((tf_backend_bucket))
           TF_VAR_images_version: "noop"
           TF_VAR_infra_version: "noop"
           TF_VAR_business_supervisor_password": "noop"
@@ -411,7 +342,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: ((bucket_aws_region))
         config:
           platform: linux
           image_resource:
@@ -426,7 +357,7 @@ jobs:
               cd source/services/data-science-service/imdb-scraper
               pip install --quiet -r requirements.txt
               export TESTING=true
-              export MAX_TRAINING_FILES=500
+              export MAX_TRAINING_FILES=10
               python scraper.py && python parser.py
               cd ../rdso
               apt-get -qq update && apt-get -qq -y install gcc
@@ -505,7 +436,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: ((bucket_aws_region))
         config:
           platform: linux
           image_resource:
@@ -533,66 +464,21 @@ jobs:
               ls -all ../../../../models
               ls -all ../../../../data
               ls -all ../../../../data/data
-              ls -all ../../../../data/data/data
               ls -all
               touch testfile.txt
               python vectorize.py
               ls -all ../models/
               cd ../../../../
               cp -R source/services/data-science-service/models/ .
-              cp -R source/services/data-science-service/data/data/* source/services/data-science-service/data/.
-              ls source/services/data-science-service/data/
-              rm -rf source/services/data-science-service/data/data
+              #cp -R source/services/data-science-service/data/* source/services/data-science-service/data/.
+              #ls source/services/data-science-service/data/
+              #rm -rf source/services/data-science-service/data/data
           inputs:
             - name: source
             - name: data
           outputs:
             - name: models
       - put: models
-  # - name: Push Data Service
-  #   public: true
-  #   plan:
-  #     - get: source
-  #       trigger: true
-  #       passed: [Provision ECR Repositories]
-  #     - get: version
-  #       trigger: false
-  #     - get: data
-  #       trigger: true
-  #       passed: [Train Models]
-  #     - get: models
-  #       trigger: true
-  #       passed: [Train Models]
-  #     - task: Package API
-  #       params:
-  #         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
-  #         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-  #         AWS_DEFAULT_REGION: us-east-1
-  #       config:
-  #         platform: linux
-  #         image_resource:
-  #           type: docker-image
-  #           source:
-  #             repository: carlomazzaferro/concourse-python-minimal
-  #         run:
-  #           path: sh
-  #           args:
-  #           - -ec
-  #           - |
-  #             cd build
-  #             cp -r ../source/services/data-science-service/rdso/* .
-  #             cp -r ../data .
-  #             cp -r ../models .
-  #         inputs:
-  #           - name: source
-  #           - name: data
-  #           - name: models
-  #         outputs:
-  #           - name: build
-  #     - put: main-ds-service-docker-image
-  #       params:
-  #         build: build
-  #         tag_file: version/number
 
 ###################### BUILD SERVICES ############################
   - name: Build UI
@@ -606,6 +492,7 @@ jobs:
       - get: version
         passed: [Initialize]
       - task: Build Front End
+        attempts: 10
         config:
           platform: linux
           image_resource:
@@ -705,7 +592,7 @@ jobs:
             - |
               cd source/ui/server
               # must compile first with java10 for sonarqube
-              mvn clean install -Djava.version=10
+              mvn clean install -Djava.version=10 -DskipTests -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
               mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
@@ -890,7 +777,7 @@ jobs:
           env:
             TF_VAR_aws_region: ((bucket_aws_region))
             TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_bucket_name: ((tf_backend))
+            TF_VAR_bucket_name: ((tf_backend_bucket))
       - put: terraform
         attempts: 10
         params:
@@ -900,7 +787,7 @@ jobs:
           env:
             TF_VAR_aws_region: ((bucket_aws_region))
             TF_VAR_aws_account_id: ((aws_account_id))
-            TF_VAR_bucket_name: ((tf_backend))
+            TF_VAR_bucket_name: ((tf_backend_bucket))
 
   - name: Push UI
     public: true
@@ -943,7 +830,9 @@ jobs:
           outputs:
             - name: docker
       - put: client-docker-image
-        params: {build: docker, tag_file: version/number}
+        params:
+          build: docker
+          tag_file: version/number
 
   - name: Push server Image
     public: true
@@ -1016,7 +905,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: ((ecr_aws_region))
         config:
           platform: linux
           image_resource:
@@ -1031,7 +920,7 @@ jobs:
               cd build
               cp -r ../source/services/data-science-service/rdso/* .
               cp -r ../data/data .
-              cp -r ../models/models .
+              cp -r ../models .
           inputs:
             - name: source
             - name: data
@@ -1064,8 +953,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
         TF_VAR_access_key: ((aws_secret_access_key))
-        TF_VAR_ecr_image_region: us-east-1
-        #TF_VAR_aws_region: us-east-1
+        TF_VAR_ecr_image_region: ((ecr_aws_region))
         TF_VAR_base_domain: ((base_domain))
         TF_VAR_access_key: ((aws_access_key_id))
         TF_VAR_access_secret: ((aws_secret_access_key))
@@ -1162,8 +1050,7 @@ jobs:
           - -ec
           - |
             echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
-            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
-            #echo region = \"us-east-1\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"((ecr_aws_region))\" >> vars/terraform.tfvars
             echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
             echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
             echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
@@ -1258,7 +1145,7 @@ jobs:
     plan:
     - get: source
       passed:
-      - Deploy Services To Dev
+      - Deploy Services To Test
     - get: version
       trigger: true
       # passed:
@@ -1277,8 +1164,7 @@ jobs:
           - -ec
           - |
             echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
-            echo ecr_image_region = \"us-east-1\" >> vars/terraform.tfvars
-            #echo region = \"us-east-1\" >> vars/terraform.tfvars
+            echo ecr_image_region = \"((ecr_aws_region))\" >> vars/terraform.tfvars
             echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
             echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
             echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
@@ -1356,7 +1242,7 @@ jobs:
           args:
           - -exc
           - |
-            export WWW_LB_TEST=$(AWS_DEFAULT_REGION=us-east-1 AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
+            export WWW_LB_TEST=$(AWS_REGION=((dev_aws_region)) AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
             echo "our www URL $WWW_LB_TEST"
             echo "$WWW_LB_TEST" > lb-name/name.txt
     - task: Execute scan
@@ -1422,7 +1308,7 @@ jobs:
           args:
           - -exc
           - |
-            export WWW_LB_TEST=$(AWS_DEFAULT_REGION=us-east-1 AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
+            export WWW_LB_TEST=$(AWS_REGION=((dev_aws_region)) AWS_ACCESS_KEY_ID=((aws_access_key_id)) AWS_SECRET_ACCESS_KEY=((aws_secret_access_key)) aws elbv2 describe-load-balancers --names "www-lb"  --query 'LoadBalancers[].DNSName' --output text)
             echo "our www URL $WWW_LB_TEST"
             echo "$WWW_LB_TEST" > lb-name/name.txt
     - task: run-pa11y
@@ -1447,15 +1333,12 @@ jobs:
             apt-get -o=Dpkg::Use-Pty=0 -y -qq install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
             # run pa11y headless
             npm install pa11y-ci --unsafe-perm=true --allow-root  --silent
-            #npm install -g phantomjs
             #npm install pa11y-reporter-ci
             cat <<EOF >> config.json
             { "defaults": { "chromeLaunchConfig": { "args": ["--no-sandbox"], "ignoreHTTPSErrors": "false", "executablePath": "node_modules/puppeteer/.local-chromium/linux-674921/chrome-linux/chrome" }, "timeout": 20000, "wait": 2000, "ignore": [] }, "urls": [ "https://${WWW_LB_TEST}" ] }
             EOF
             # finally scan
-            node -v
             cat config.json
             node node_modules/pa11y-ci/bin/pa11y-ci.js --json -c config.json > summary.txt
+            echo "*******ACCESSIBILITY TESTING RESULTS******"
             cat summary.txt
-        outputs:
-          - name: myproj

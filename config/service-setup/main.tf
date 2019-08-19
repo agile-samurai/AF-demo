@@ -136,6 +136,7 @@ module "www" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/ui:${var.images_version}"
   container_family   = "www"
+  server_container_family = module.server.container_family
 
   instance_count             = 2
   timeout                    = 80
@@ -160,6 +161,7 @@ module "server" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/server:${var.images_version}"
   container_family   = "server"
+  ds_container_family = module.datascience.container_family
   #base_domain        = aws_route53_zone.primary.name
 
   # SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
