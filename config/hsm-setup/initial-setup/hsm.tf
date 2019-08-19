@@ -48,6 +48,26 @@ resource "aws_key_pair" "hsm-key-pair" {
   public_key = tls_private_key.hsm_key.public_key_openssh
 }
 
+resource "aws_security_group" "gateway-ingress" {
+  name        = "allow_communication"
+  description = "Allow Tomcat inbound traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+}
+
 module "ec2" {
   source         = "terraform-aws-modules/ec2-instance/aws"
   version        = "~> 2.0"
@@ -57,7 +77,7 @@ module "ec2" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = "t2.medium"
   subnet_id                   = tolist(module.vpc.public_subnets)[0]
-  vpc_security_group_ids      = [module.vpc.default_security_group_id, aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.security_group_id]
+  vpc_security_group_ids      = [module.vpc.default_security_group_id, aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.security_group_id, aws_security_group.gateway-ingress.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.hsm-key-pair.key_name
 
@@ -77,7 +97,7 @@ module "ec2" {
 resource "aws_security_group_rule" "hsm_sg_rule" {
   from_port         = 22
   protocol          = "tcp"
-  cidr_blocks       = ["50.225.11.6/32", "10.0.1.0/24"]
+  cidr_blocks       = ["50.225.11.6/32", "10.0.1.0/24", "172.58.185.107/32"]
   to_port           = 22
   type              = "ingress"
   security_group_id = module.vpc.default_security_group_id
