@@ -50,7 +50,7 @@ export default class DossierContent extends React.Component {
         const {dossiers} = dossierData;
 
         const perLineageDossierContentList = dossiers
-            .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
+            .map((perLineageDossier, index) => <PerLineageDossierContent key={index}
                                                                 dossierID={dossierData.id}
                                                                 refreshData={this.loadEncryptedData.bind(this)}
                                                                 dossierData={perLineageDossier}/>);

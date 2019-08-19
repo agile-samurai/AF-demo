@@ -5,6 +5,10 @@ export default class Characters extends React.Component {
     render() {
         const {characters} = this.props;
 
+        if(characters === null) {
+            return null;
+        }
+
         const processedCharacters = characters.map(character => {
             return (
                 <div className="character" key={character.name}>

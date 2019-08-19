@@ -16,11 +16,17 @@ export default class PerLineageDossierContent extends React.Component {
     }
 
     render() {
-        const {lineage, genres, summary, entityClassifications, characters} = this.props.dossierData;
+        const {lineage, genres, summary, entityClassifications, characters, reviews} = this.props.dossierData;
+
+        if (lineage === 'AMAZON' && reviews.length === 0) { /* we use Amazon lineage for reviews. If it doesn't
+            have reviews for a given movie, don't show the Amazon lineage at all */
+            return null;
+        }
+
         const {redactionEnabled} = this.state;
 
         const processedGenres = genres.map(genreInformation => {
-            if(genreInformation.genre === '') {
+            if(genreInformation.genre === '' || genreInformation.genre === null) {
                 return null;
             }
 

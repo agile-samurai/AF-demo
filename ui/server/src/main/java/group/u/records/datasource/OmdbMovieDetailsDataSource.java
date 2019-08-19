@@ -41,7 +41,7 @@ public class OmdbMovieDetailsDataSource extends MovieDetailsDataSource {
 
             logger.debug("Data  " + json );
             OMDBMovie movie = objectMapper.readValue(json, OMDBMovie.class);
-            return new MovieDetail(id, movie);
+            return new MovieDetail(id, movie, getLineage());
         } catch (IOException e) {
             e.printStackTrace();
         }
