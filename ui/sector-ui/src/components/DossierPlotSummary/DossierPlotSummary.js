@@ -19,28 +19,34 @@ export default class DossierPlotSummary extends React.Component {
         const {redactionProcessedSummary} = this.state;
 
         return (
-            <div className={`plot-summary ${redactionEnabled ? 'redaction-enabled': ''}`}>
-                <div className="plot-summary-header">PLOT SUMMARY</div>
-                <div className="plot-summary-body">{redactionProcessedSummary}</div>
+            <div>
                 {
-                    redactionEnabled ?
-                    <div className="redaction-item-types-legend">
-                        <div className="company-entity-type entity-type-label">
-                            <div className="color-block"/>
-                            <div>&nbsp;- Company</div>
-                        </div>
-                        <div className="country-entity-type entity-type-label">
-                            <div className="color-block"/>
-                            <div>&nbsp;- Country</div>
-                        </div>
-                        <div className="person-entity-type entity-type-label">
-                            <div className="color-block"/>
-                            <div>&nbsp;- Person</div>
-                        </div>
+                    redactionProcessedSummary.length > 0 ? <div className={`plot-summary ${redactionEnabled ? 'redaction-enabled': ''}`}>
+                    <div className="plot-summary-header">PLOT SUMMARY</div>
+                    <div className="plot-summary-body">{redactionProcessedSummary}</div>
+                    {
+                        redactionEnabled ?
+                            <div className="redaction-item-types-legend">
+                                <div className="company-entity-type entity-type-label">
+                                    <div className="color-block"/>
+                                    <div>&nbsp;- Company</div>
+                                </div>
+                                <div className="country-entity-type entity-type-label">
+                                    <div className="color-block"/>
+                                    <div>&nbsp;- Country</div>
+                                </div>
+                                <div className="person-entity-type entity-type-label">
+                                    <div className="color-block"/>
+                                    <div>&nbsp;- Person</div>
+                                </div>
+                            </div>
+                            : null
+                    }
                     </div>
                     : null
                 }
             </div>
+
         );
     }
 
