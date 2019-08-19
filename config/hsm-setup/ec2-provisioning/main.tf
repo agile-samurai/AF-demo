@@ -1,10 +1,15 @@
-variable region {
-  type = "string"
-  default = "us-west-1"
+locals {
+  region = "${var.aws_region[terraform.workspace]}"
 }
+
+
+terraform {
+  required_version = "0.12.5"
+}
+
 provider "aws" {
   version = "~> 2.0"
-  region  = var.region
+  region  = local.region
 }
 
 locals {

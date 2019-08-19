@@ -116,23 +116,6 @@ resource "aws_iam_server_certificate" "test_cert" {
 
 resource "aws_alb_target_group" "front_end_https" {
   port = "${var.container_port}"
-  protocol = "HTTPS"
-  vpc_id = "${var.vpc_id}"
-  target_type = "ip"
-
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 10
-    protocol = "HTTP"
-    path = "/"
-    interval = 32
-    timeout = 30
-    matcher = "${var.matcher_ports}"
-  }
-}
-
-resource "aws_alb_target_group" "front_end_http" {
-  port = "${var.container_port}"
   protocol = "HTTP"
   vpc_id = "${var.vpc_id}"
   target_type = "ip"
@@ -147,6 +130,23 @@ resource "aws_alb_target_group" "front_end_http" {
     matcher = "${var.matcher_ports}"
   }
 }
+
+# resource "aws_alb_target_group" "front_end_http" {
+#   port = "${var.container_port}"
+#   protocol = "HTTP"
+#   vpc_id = "${var.vpc_id}"
+#   target_type = "ip"
+
+#   health_check {
+#     healthy_threshold = 2
+#     unhealthy_threshold = 10
+#     protocol = "HTTP"
+#     path = "/"
+#     interval = 32
+#     timeout = 30
+#     matcher = "${var.matcher_ports}"
+#   }
+# }
 
 resource "aws_alb_listener" "front_end_https" {
   load_balancer_arn = "${aws_alb.lb.id}"
@@ -162,16 +162,16 @@ resource "aws_alb_listener" "front_end_https" {
   depends_on = ["aws_iam_server_certificate.test_cert"]
 }
 
-resource "aws_alb_listener" "front_end_http" {
-  load_balancer_arn = "${aws_alb.lb.id}"
-  port = "${var.loadbalancer_port}"
-  protocol = "HTTP"
+# resource "aws_alb_listener" "front_end_http" {
+#   load_balancer_arn = "${aws_alb.lb.id}"
+#   port = "${var.loadbalancer_port}"
+#   protocol = "HTTP"
 
-  default_action {
-    target_group_arn = "${aws_alb_target_group.front_end_http.id}"
-    type = "forward"
-  }
-}
+#   default_action {
+#     target_group_arn = "${aws_alb_target_group.front_end_http.id}"
+#     type = "forward"
+#   }
+# }
 
 
 

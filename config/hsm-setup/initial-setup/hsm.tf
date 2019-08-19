@@ -1,3 +1,4 @@
+
 resource "aws_cloudhsm_v2_cluster" "cloudhsm_v2_cluster" {
   hsm_type   = "hsm1.medium"
   subnet_ids = module.vpc.private_subnets
@@ -11,7 +12,7 @@ variable "hsm_controller" {}
 
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
-  availability_zone = "${var.region}c"
+  availability_zone = "${local.region}c"
 }
 
 data "aws_ami" "amazon_linux" {
@@ -51,7 +52,7 @@ resource "aws_key_pair" "hsm-key-pair" {
 }
 
 resource "aws_security_group" "gateway-ingress" {
-  name        = "allow_communication"
+  name        = "allow_communication-${terraform.workspace}"
   description = "Allow Tomcat inbound traffic"
   vpc_id      = module.vpc.vpc_id
 
@@ -75,7 +76,7 @@ module "ec2" {
   version        = "~> 2.0"
   instance_count = 1
 
-  name                        = "example-normal"
+  name                        = "example-normal-${terraform.workspace}"
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = "t2.medium"
   subnet_id                   = tolist(module.vpc.public_subnets)[0]
@@ -92,14 +93,14 @@ module "ec2" {
 
   tags = {
     "Env" = "Public"
-    "Name" = "HSM Client instance"
+    "Name" = "HSM Client instance-${terraform.workspace}"
   }
 }
 
 resource "aws_security_group_rule" "hsm_sg_rule" {
   from_port         = 22
   protocol          = "tcp"
-  cidr_blocks       = ["${var.hsm_controller}/32","50.225.11.6/32", "10.0.1.0/24", "172.58.185.107/32"]
+  cidr_blocks       = ["${var.hsm_controller}/32", "10.0.1.0/24", "172.58.185.107/32"]
   to_port           = 22
   type              = "ingress"
   security_group_id = module.vpc.default_security_group_id

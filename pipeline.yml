@@ -255,7 +255,7 @@ jobs:
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
-          AWS_DEFAULT_REGION: ((hsm_region))
+          AWS_DEFAULT_REGION: ((bucket_aws_region:))
         config:
           platform: linux
           image_resource:
@@ -273,6 +273,7 @@ jobs:
                 export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
                 echo "host is [${HOST_IP}]"
                 echo "HSM_REGION is [${HSM_REGION}]"
+                export TF_ENVIRONMNET=dev
                 cd source/config/hsm-setup/
                 ./create-hsm.sh
           inputs:
