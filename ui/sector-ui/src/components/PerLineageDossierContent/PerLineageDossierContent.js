@@ -3,6 +3,7 @@ import Chip from '@material-ui/core/Chip';
 import Switch from '@material-ui/core/Switch';
 import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 import './PerLineageDossierContent.css';
+import Characters from "../Characters/Characters";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -19,7 +20,7 @@ export default class DossierContent extends React.Component {
     /*</ShowElementByRole>*/
 
     render() {
-        const {lineage, genres, summary, entityClassifications} = this.props.dossierData;
+        const {lineage, genres, summary, entityClassifications, characters} = this.props.dossierData;
         const {redactionEnabled} = this.state;
 
         const processedGenres = genres.map(genreInformation => {
@@ -44,6 +45,7 @@ export default class DossierContent extends React.Component {
                 <DossierPlotSummary summary={summary}
                                     entityClassifications={entityClassifications}
                                     redactionEnabled={redactionEnabled}/>
+                <Characters characters={characters}/>
             </div>
         );
     }
