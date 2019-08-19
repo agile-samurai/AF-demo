@@ -28,7 +28,7 @@ export default class Files extends React.Component {
                 <div className="existing-files">{processedFiles}</div>
 
                 <div className="input-label">
-                    Add a file to this dossier (valid file types are MS Word Document, text file, and PDF):
+                    Add a file to this dossier (valid file types are text file and PDF):
                 </div>
 
                 <form onSubmit={this.onFormSubmit}>
@@ -41,9 +41,8 @@ export default class Files extends React.Component {
 
     onFormSubmit(event){
         event.preventDefault();
-        this.uploadFile(this.state.file).then((response)=>{
-            console.log(response.data);
-            // TODO make call to refresh dossier
+        this.uploadFile(this.state.file).then(()=>{
+            this.props.refreshData(this.props.dossierID);
         })
     }
 
