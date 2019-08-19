@@ -69,7 +69,7 @@ public class ServiceConfig {
 
     @Bean
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
-                                                           ImdbMovieDetailsDataSource omdb,
+                                                           OmdbMovieDetailsDataSource omdb,
                                                            AmazonReviewsDataSource amazon ){
         return new MovieDetailsDataSourceManager(asList(amazon, omdb, imdb));
     }
