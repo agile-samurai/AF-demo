@@ -17,9 +17,9 @@ setup_cloudhsm_client() {
   printf "****************** ${GATEWAY_PASS}"
   printf "\n**** Setting up CloudHSM ****\n"
 
-  sudo bash -c "echo 'HSM_USER=gatewayuser' >> ~/.bashrc"
-  sudo bash -c "echo 'HSM_PASSWORD=${GATEWAY_PASS}' >> ~/.bashrc"
-  sudo bash -c "echo 'HSM_PARTITION=$(< ${HSM_ID})' >> ~/.bashrc"
+  sudo bash -c "echo 'export HSM_USER=gatewayuser' >> /etc/.bashrc"
+  sudo bash -c "echo 'export HSM_PASSWORD=${GATEWAY_PASS}' >> /etc/.bashrc"
+  sudo bash -c "echo 'export HSM_PARTITION=$(< ${HSM_ID})' >> /etc/.bashrc"
   sudo bash -c "source ~/.bashrc"
 
   printf "\n-- Fetching HSM Client\n"
