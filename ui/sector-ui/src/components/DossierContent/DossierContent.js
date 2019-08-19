@@ -56,7 +56,7 @@ export default class DossierContent extends React.Component {
         return (
             <div>
                 {
-                    this.state.deleted ? <div className="dossier-deleted-message">Dossier Deleted</div> :
+                    this.state.deleted ? <div className="dossier-deleted-message">Dossier has been deleted</div> :
                         <div className="dossier-main-section-wrapper">
                             <div className="dossier-main-section">
                                 <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
