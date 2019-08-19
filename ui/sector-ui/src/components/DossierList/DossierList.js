@@ -34,7 +34,7 @@ export default class DossierList extends React.Component {
         const {searchTerm, moviePublicSummarySearchResults} = this.state;
 
         const dossierRows = moviePublicSummarySearchResults
-            .map(dossierSearchResult => <DossierContent dossierId={dossierSearchResult.id} key={dossierSearchResult.id}/>);
+            .map(dossierSearchResult => <DossierContent dossierID={dossierSearchResult.id} key={dossierSearchResult.id}/>);
 
         return (
             <div className='dossier-search'>

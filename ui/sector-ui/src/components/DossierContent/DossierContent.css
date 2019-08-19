@@ -10,3 +10,29 @@
 .dossier-name {
     margin-bottom: 20px;
 }
+
+a.navigation-link.dossier-name-link {
+    color: black;
+}
+
+.image-and-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.dossier-name-wrapper {
+    margin-left: 20px;
+}
+
+.characters-section-heading {
+    margin-top: 50px;
+    font-size: 36px;
+}
+
+.dossier-deleted-message {
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+}

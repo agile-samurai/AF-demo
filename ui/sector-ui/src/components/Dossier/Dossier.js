@@ -24,7 +24,7 @@ class Dossier extends React.Component {
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <DossierContent dossierId={this.props.match.params.dossierID}/>
+                <DossierContent dossierID={this.props.match.params.dossierID}/>
             </div>
         );
     }

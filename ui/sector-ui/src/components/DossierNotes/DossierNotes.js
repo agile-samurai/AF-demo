@@ -45,7 +45,7 @@ export default class DossierNotes extends React.Component {
                 <div className="heading-and-add-button">
                     <div className="notes-section-heading">Notes</div>
                     <div className="add-note-button-wrapper">
-                        <Fab variant="extended" className="add-note-button" aria-label="add" onClick={this.handleOpen}>
+                        <Fab variant="extended" className="add-note-button" aria-label="add note" onClick={this.handleOpen}>
                             <AddIcon/>
                             ADD NOTE
                         </Fab>
