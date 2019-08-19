@@ -273,6 +273,7 @@ jobs:
                 export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
                 echo "host is [${HOST_IP}]"
                 echo "HSM_REGION is [${HSM_REGION}]"
+                export TF_ENVIRONMNET=dev
                 cd source/config/hsm-setup/
                 ./create-hsm.sh
           inputs:

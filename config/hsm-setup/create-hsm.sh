@@ -98,6 +98,9 @@ verify_identity() {
 
   printf "\n---  Starting identity check.\n\n--- Downloading HSM Cluster Certificates and CSR\n"
   terraform init
+  terraform workspace new "${TF_ENVIRONMNET}" || true
+  terraform workspace list
+  terraform workspace select "${TF_ENVIRONMNET}" 
   terraform apply -auto-approve
   printf "\n--- Retrieving AWS Root Certificate\n"
   if curl -o aws_root.zip https://docs.aws.amazon.com/cloudhsm/latest/userguide/samples/AWS_CloudHSM_Root-G1.zip; then
