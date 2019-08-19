@@ -12,13 +12,16 @@ export default class DossierContent extends React.Component {
         this.state = {
             redactionEnabled: false,
             dossierData: null,
-            loaded: false
+            loaded: false,
+            deleted: false
         };
         this.DOSSIER_ENDPOINT = '/api/dossier';
+
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     componentDidMount() {
-        this.loadEncryptedData(this.props.dossierId);
+        this.loadEncryptedData(this.props.dossierID);
     }
 
     // TODO use to conditionally allow Dossier deletion
@@ -28,7 +31,7 @@ export default class DossierContent extends React.Component {
 
     render() {
         let dossierData;
-        if (this.props.dossierId) {
+        if (this.props.dossierID) {
             dossierData = this.state.dossierData;
 
             if (!this.state.loaded) {
@@ -45,25 +48,33 @@ export default class DossierContent extends React.Component {
 
         const perLineageDossierContentList = dossiers
             .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
+                                                                dossierID={dossierData.id}
+                                                                handleDelete={this.handleDelete}
+                                                                refreshData={this.loadEncryptedData.bind(this)}
                                                                 dossierData={perLineageDossier}/>);
 
         return (
-            <div className="dossier-main-section-wrapper">
-                <div className="dossier-main-section">
-                    <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
-                        <div className="image-and-name">
-                            <div>
-                                <img src={dossiers[0].image} height={80}/>
-                            </div>
-                            <div className="dossier-name-wrapper">
-                                <div className="dossier-name">{dossiers[0].name}</div>
+            <div>
+                {
+                    this.state.deleted ? <div className="dossier-deleted-message">Dossier Deleted</div> :
+                        <div className="dossier-main-section-wrapper">
+                            <div className="dossier-main-section">
+                                <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
+                                    <div className="image-and-name">
+                                        <div>
+                                            <img src={dossiers[0].image} height={80}/>
+                                        </div>
+                                        <div className="dossier-name-wrapper">
+                                            <div className="dossier-name">{dossiers[0].name}</div>
+                                        </div>
+                                    </div>
+                                </Link>
+                                {perLineageDossierContentList}
+                                <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
+                                              refreshData={this.loadEncryptedData.bind(this)}/>
                             </div>
                         </div>
-                    </Link>
-                    {perLineageDossierContentList}
-                    <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
-                                  refreshData={this.loadEncryptedData.bind(this)}/>
-                </div>
+                }
             </div>
         );
     }
@@ -85,5 +96,27 @@ export default class DossierContent extends React.Component {
                     });
                 });
         });
+    }
+
+
+    handleDelete() {
+        const {dossierID} = this.props;
+
+        axios.delete(`/api/dossier/${dossierID}`
+            ,
+            {
+                auth: {  // TODO remove
+                    username: 'business-supervisor',
+                    password: 'password'
+                }
+            })
+            .then(() => {
+                this.setState({
+                    deleted: true
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 }
