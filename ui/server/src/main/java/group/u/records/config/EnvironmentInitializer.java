@@ -27,6 +27,7 @@ public class EnvironmentInitializer {
                 eds.loadMovieDetails();
             }catch( Exception e ){
                 logger.error( "Exception while loading:  ", e );
+                System.exit(1);
             }
         });
     }
