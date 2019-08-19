@@ -36,7 +36,7 @@ public class FileController {
     public ResponseEntity upload(@RequestParam("file") MultipartFile file,
                                  @PathVariable UUID dossierId) throws IOException {
 
-        dossierService.saveFile(dossierId, file.getBytes());
+        dossierService.saveFile(dossierId, file);
         logger.debug("File Uploaded." );
         return ok().build();
     }
