@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.people.PersonRegistry;
+import group.u.records.service.MovieIdentifier;
 import group.u.records.service.S3DataService;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class OmdbMovieDetailsDataSourceTest {
         PersonRegistry personRegistry = mock(PersonRegistry.class);
         OmdbMovieDetailsDataSource ds = new OmdbMovieDetailsDataSource(dataService,personRegistry, objectMapper);
         String id = "1156466";
-        MovieDetail detail = ds.getMovieDetails(id);
+        MovieDetail detail = ds.getMovieDetails(new MovieIdentifier(id, "Undisputed 3: Redemption"));
 
         assertThat(detail.getName()).isEqualTo("Undisputed 3: Redemption");
         assertThat(detail.getId().toString()).isEqualTo("a9a494b1-0bf5-309a-ae7a-36659b509138");

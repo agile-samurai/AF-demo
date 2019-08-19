@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.datasource.ImdbMovieDetailsDataSource;
 import group.u.records.datasource.OmdbMovieDetailsDataSource;
+import group.u.records.ds.providers.WikipediaMoveDataSource;
 import group.u.records.security.AWSCloudHSMSecurityGatewayClient;
 import group.u.records.security.InMemorySecurityClient;
 import group.u.records.security.SecurityGatewayClient;
@@ -71,7 +72,8 @@ public class ServiceConfig {
     @Bean
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
                                                            OmdbMovieDetailsDataSource omdb,
+                                                           WikipediaMoveDataSource wiki,
                                                            AmazonReviewsDataSource amazon ){
-        return new MovieDetailsDataSourceManager(asList(amazon, omdb, imdb));
+        return new MovieDetailsDataSourceManager(asList(amazon, omdb, wiki, imdb));
     }
 }

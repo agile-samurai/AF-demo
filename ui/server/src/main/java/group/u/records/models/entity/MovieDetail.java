@@ -16,12 +16,18 @@ public class MovieDetail {
 
     private List<MovieCharacter> characters;
 
-    public MovieDetail(String id, OMDBMovie movie, Lineage lineage) {
-        this.id = UUID.nameUUIDFromBytes(id.getBytes());
+    public MovieDetail(UUID id, OMDBMovie movie, Lineage lineage) {
+        this.id = id;
         this.name = movie.getTitle();
         this.summary = movie.getPlot();
         this.people = getActors(movie);
         this.lineage = lineage;
+    }
+
+    public MovieDetail(UUID id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.summary = description;
     }
 
     public String getSummary() {

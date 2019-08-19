@@ -12,5 +12,5 @@ public abstract class MovieDetailsDataSource {
     public MovieDetailsDataSource(Lineage lineage){
         this.lineage = lineage;
     }
-    public abstract MovieDetail getMovieDetails(String id);
+    public abstract MovieDetail getMovieDetails(MovieIdentifier identifier);
 }

@@ -6,6 +6,7 @@ import group.u.records.models.entity.MovieCharacter;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.people.PersonRegistry;
 import group.u.records.service.MovieDetailsDataSource;
+import group.u.records.service.MovieIdentifier;
 import group.u.records.service.S3DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,14 +44,14 @@ public class ImdbMovieDetailsDataSource extends MovieDetailsDataSource {
     }
 
     @Override
-    public MovieDetail getMovieDetails(String id) {
+    public MovieDetail getMovieDetails(MovieIdentifier id) {
         MovieDetail movieDetail = null;
 
         try {
-            String json = dataService.getFileAsString(this.convertId(folder, id ));
+            String json = dataService.getFileAsString(this.convertId(folder, id.getImdbId() ));
             Movie movie = objectMapper.readValue(json, Movie.class);
-            movie.enrichModel(id);
-            final List<MovieCharacter> characters = getCharacters(id);
+            movie.enrichModel(id.getImdbId());
+            final List<MovieCharacter> characters = getCharacters(id.getImdbId());
             logger.debug("Extracting Characters:  " + characters );
 
             movieDetail = new MovieDetail(movie, characters, this.getLineage());

@@ -30,7 +30,7 @@ public class AmazonReviewsDataSourceTest {
         S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage", "sample", client, objectMapper);
         AmazonReviewsDataSource reviews = new AmazonReviewsDataSource(dataService,objectMapper);
 
-        reviews.getMovieDetails("0477080");
+        reviews.getMovieDetails(new MovieIdentifier("0477080", "Fake" ));
     }
 
 }
