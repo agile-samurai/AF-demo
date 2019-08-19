@@ -7,7 +7,7 @@ export default class Characters extends React.Component {
 
         const processedCharacters = characters.map(character => {
             return (
-                <div className="character">
+                <div className="character" key={character.name}>
                     <div><img src={character.photo_img}/></div>
                     <div>Character: {character.character}</div>
                     <div>Played by: {character.name}</div>

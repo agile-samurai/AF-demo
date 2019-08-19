@@ -31,3 +31,8 @@ a.navigation-link.dossier-name-link {
     font-size: 36px;
 }
 
+.dossier-deleted-message {
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+}

@@ -9,3 +9,17 @@
 .lineage {
     font-weight: bold;
 }
+
+.lineage-and-delete-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lineage-and-delete-button .delete-dossier-button, .lineage-and-delete-button .delete-dossier-button:hover {
+    background-color: #FB5342;
+    color: #FCFCFC;
+    font-size: 14px;
+    box-shadow: none;
+}
