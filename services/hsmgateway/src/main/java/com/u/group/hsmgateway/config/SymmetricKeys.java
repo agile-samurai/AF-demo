@@ -38,40 +38,15 @@ public class SymmetricKeys {
      * @param keyLabel      Label to associate with the key.
      * @return Key object
      */
-    public static Key generateAESKey(int keySizeInBits, String keyLabel)
+    static Key generateAESKey(int keySizeInBits, String keyLabel)
             throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        boolean isExtractable = false;
-        boolean isPersistent = false;
 
         KeyGenerator keyGen = KeyGenerator.getInstance("AES", "Cavium");
 
-        CaviumAESKeyGenParameterSpec aesSpec = new CaviumAESKeyGenParameterSpec(keySizeInBits, keyLabel, isExtractable, isPersistent);
+        CaviumAESKeyGenParameterSpec aesSpec = new CaviumAESKeyGenParameterSpec(keySizeInBits, keyLabel, true, true);
         keyGen.init(aesSpec);
-        SecretKey aesKey = keyGen.generateKey();
 
-        return aesKey;
+        return keyGen.generateKey();
     }
 
-    /**
-     * Generate a DES key.
-     * In this example method, the key is never persistent and is never extractable.
-     *
-     * @param keyLabel
-     * @return Key object
-     * @throws InvalidAlgorithmParameterException
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchProviderException
-     */
-    public static Key generateDESKey(String keyLabel)
-            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        boolean isExtractable = false;
-        boolean isPersistent = false;
-
-        KeyGenerator keyGen = KeyGenerator.getInstance("DESede", "Cavium");
-
-        CaviumDESKeyGenParameterSpec desSpec = new CaviumDESKeyGenParameterSpec(192, keyLabel, isExtractable, isPersistent);
-        keyGen.init(desSpec);
-        SecretKey des3Key = keyGen.generateKey();
-        return des3Key;
-    }
 }

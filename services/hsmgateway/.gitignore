@@ -19,8 +19,6 @@ target/
 *.iml
 *.ipr
 **/*/.DS_Store
-*.rpm
-**/opt/
 
 ### VS Code ###
 .vscode/
