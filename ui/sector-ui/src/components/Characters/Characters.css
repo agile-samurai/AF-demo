@@ -1,0 +1,11 @@
+.characters {
+    margin-top: 40px;
+}
+
+.character:not(:first-child) {
+    margin-top: 20px;
+}
+
+.character-heading {
+    font-weight: bold;
+}
