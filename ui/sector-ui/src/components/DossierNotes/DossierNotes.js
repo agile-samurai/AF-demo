@@ -27,7 +27,7 @@ export default class DossierNotes extends React.Component {
 
         const processedNotes = this.props.notes.map(noteObject => {
             return (
-              <div className="a-note">
+              <div className="a-note" key={noteObject.timeStamp}>
                   <div className="note-section-header">Content:</div>
                   <div>{noteObject.note}</div>
 
@@ -51,7 +51,7 @@ export default class DossierNotes extends React.Component {
                         </Fab>
                     </div>
                 </div>
-                <div className="notes-display-section">
+                <div>
                     {processedNotes}
                 </div>
                 <Modal

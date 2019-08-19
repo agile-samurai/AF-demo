@@ -4,6 +4,7 @@ import Switch from '@material-ui/core/Switch';
 import DossierPlotSummary from "../DossierPlotSummary/DossierPlotSummary";
 import './PerLineageDossierContent.css';
 import Characters from "../Characters/Characters";
+import Reviews from "../Reviews/Reviews";
 
 export default class PerLineageDossierContent extends React.Component {
     constructor(props) {
@@ -58,6 +59,7 @@ export default class PerLineageDossierContent extends React.Component {
                                             redactionEnabled={redactionEnabled}/> : null
                     }
                     <Characters characters={characters}/>
+                    <Reviews reviews={reviews}/>
                 </div>
         );
     }
