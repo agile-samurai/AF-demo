@@ -1,5 +1,7 @@
 package group.u.records.security;
 
+import group.u.records.models.entity.MoviePublicSummary;
+import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.service.DataService;
 import group.u.records.service.MasterDossier;
 import org.slf4j.Logger;
@@ -19,11 +21,15 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 @Component
 public class MasterDossierService {
     private DossierEncryptionService dossierEncryptionService;
+    private MoviePublicSummaryRepository publicSummaryRepository;
     private DataService dataService;
     private Logger logger = LoggerFactory.getLogger(MasterDossierService.class);
 
-    public MasterDossierService(DossierEncryptionService dossierEncryptionService, DataService dataService) {
+    public MasterDossierService(DossierEncryptionService dossierEncryptionService,
+                                MoviePublicSummaryRepository publicSummaryRepository,
+                                DataService dataService) {
         this.dossierEncryptionService = dossierEncryptionService;
+        this.publicSummaryRepository = publicSummaryRepository;
         this.dataService = dataService;
     }
 
@@ -33,10 +39,16 @@ public class MasterDossierService {
 
     public void delete(UUID dossierId){
         MasterDossier masterDossier = get(dossierId);
-        List<UUID> fileIds = masterDossier.getDossierFileInfos().stream().map(f->f.getFileId()).collect(Collectors.toList());
-
+        List<UUID> fileIds = masterDossier.getDossierFileInfos().stream().map(DossierFileInfo::getFileId).collect(Collectors.toList());
+        updateDeletePublicSummary(dossierId);
         dataService.delete(dossierId, fileIds);
         this.dossierEncryptionService.delete(dossierId);
+    }
+
+    private void updateDeletePublicSummary(UUID dossierId) {
+        MoviePublicSummary moviePublicSummary = publicSummaryRepository.findById(dossierId).get();
+        moviePublicSummary.setDossierAvailable(true);
+        publicSummaryRepository.save(moviePublicSummary);
     }
 
     public MasterDossier get(UUID id) {

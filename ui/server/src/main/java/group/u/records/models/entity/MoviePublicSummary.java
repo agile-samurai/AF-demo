@@ -13,6 +13,10 @@ import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "moviepublicsummary", type = "moviepublicsummary", shards = 1, replicas = 0, refreshInterval = "-1")
 public class MoviePublicSummary {
+    public void setDossierAvailable(boolean dossierAvailable) {
+        this.dossierAvailable = dossierAvailable;
+    }
+
     private boolean dossierAvailable;
     @Id
     private UUID id;

@@ -1,5 +1,6 @@
 package group.u.records.web;
 
+import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.models.entity.MovieTitle;
 import group.u.records.models.web.NoteDTO;
 import group.u.records.repository.MoviePublicSummaryRepository;
@@ -10,6 +11,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
