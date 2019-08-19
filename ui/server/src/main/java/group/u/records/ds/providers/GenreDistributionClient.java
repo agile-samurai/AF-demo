@@ -29,7 +29,6 @@ public class GenreDistributionClient {
 
         try {
             String graph = restTemplate.getForEntity(host + "/highlighted_film_plot/" + imdbId, String.class).getBody();
-            logger.debug("Graph:  " + graph );
             return graph;
         }catch( Exception e ){
             logger.debug("Image Classification is unavailable" );
