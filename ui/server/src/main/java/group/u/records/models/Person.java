@@ -32,22 +32,22 @@ public class Person {
     private String name;
 
     @Field(type = Nested)
-    private List<MovieTitle> titles;
+    private Set<MovieTitle> titles;
 
     public Set<String> getAliases() {
         return aliases;
     }
 
-    public List<MovieTitle> getTitles() {
+    public Set<MovieTitle> getTitles() {
         return titles;
     }
 
     public Person(){
-        titles = new ArrayList<>();
+        titles = new HashSet<>();
         aliases = new HashSet<>();
     }
 
-    public Person(String url, String name, Set<String> aliases, List<MovieTitle> titles) {
+    public Person(String url, String name, Set<String> aliases, Set<MovieTitle> titles) {
         this.url = url;
         this.name = name;
         this.id = UUID.nameUUIDFromBytes(url.getBytes());
@@ -85,7 +85,7 @@ public class Person {
         titles.add(movieTitle);
     }
 
-    public void addTitles(List<MovieTitle> movieTitles) {
+    public void addTitles(Set<MovieTitle> movieTitles) {
         movieTitles.forEach(this::addTitle);
     }
 
