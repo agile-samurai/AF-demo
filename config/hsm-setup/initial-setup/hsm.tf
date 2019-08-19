@@ -7,6 +7,8 @@ resource "aws_cloudhsm_v2_cluster" "cloudhsm_v2_cluster" {
   }
 }
 
+variable "hsm_controller" {}
+
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
   availability_zone = "${var.region}c"
@@ -97,7 +99,7 @@ module "ec2" {
 resource "aws_security_group_rule" "hsm_sg_rule" {
   from_port         = 22
   protocol          = "tcp"
-  cidr_blocks       = ["50.225.11.6/32", "10.0.1.0/24", "172.58.185.107/32"]
+  cidr_blocks       = ["${var.hsm_controller}/32","50.225.11.6/32", "10.0.1.0/24", "172.58.185.107/32"]
   to_port           = 22
   type              = "ingress"
   security_group_id = module.vpc.default_security_group_id

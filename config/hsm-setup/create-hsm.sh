@@ -13,7 +13,7 @@ init() {
 
 initiate_hsm_setup() {
   printf "\n*** Provisioning HSM infrastructure ***\n"
-  if terraform plan -out plan; then
+  if terraform plan -out plan -var="hsm_controller=${HOST_IP}" -var="region=${HSM_REGION}"; then
     printf "\n--- Terraform plan succeeded\n--- Applying plan\n"
 
     if terraform apply plan; then
