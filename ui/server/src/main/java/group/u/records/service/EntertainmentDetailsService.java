@@ -54,14 +54,14 @@ public class EntertainmentDetailsService {
         personRepository.deleteAll();
         moviePublicSummaryRepository.deleteAll();
 
-        for(String id : identifierProvider.getIMDBIdentifiers() ){
+        for(MovieIdentifier id : identifierProvider.getMovieIdentifiers() ){
             logger.debug("Parsing movie: " + id );
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
 
                 logger.debug("Retrieving from data source:  "+ dataSource.getLineage());
                 try {
-                    MovieDetail movieDetail = dataSource.getMovieDetails(id);
+                    MovieDetail movieDetail = dataSource.getMovieDetails(id.getImdbId());
                     if (movieDetail != null) {
                         moviePublicSummaryRepository.save(new MoviePublicSummary(movieDetail));
                         movieDetails.add(movieDetail);
