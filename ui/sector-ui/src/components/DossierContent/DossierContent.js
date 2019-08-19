@@ -50,7 +50,7 @@ export default class DossierContent extends React.Component {
         const {dossiers} = dossierData;
 
         const perLineageDossierContentList = dossiers
-            .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
+            .map((perLineageDossier, index) => <PerLineageDossierContent key={index}
                                                                 dossierID={dossierData.id}
                                                                 refreshData={this.loadEncryptedData.bind(this)}
                                                                 dossierData={perLineageDossier}/>);
@@ -67,7 +67,7 @@ export default class DossierContent extends React.Component {
                                             <img src={dossiers[0].image} height={80}/>
                                         </div>
                                         <div className="dossier-name-wrapper">
-                                            <div className="dossier-name">{dossiers[0].name}</div>
+                                            <div className="dossier-name">{dossierData.name}</div>
                                         </div>
                                     </div>
                                 </Link>
