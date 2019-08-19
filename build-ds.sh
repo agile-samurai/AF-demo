@@ -9,6 +9,6 @@ aws s3 cp s3://rdso-challenge2/models/movies_doc2vec.0.0.0.model .
 aws s3 cp s3://rdso-challenge2/models/ . --recursive
 
 cd ../data
-aws s3 cp s3://rdso-challenge2/data/ci/data/data/data/movies_df.pkl .
+aws s3 cp s3://rdso-challenge2/data/ci/data/movies_df.pkl .
 cd ..
 docker build . -t ugroup/data-science-service
