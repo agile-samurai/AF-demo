@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-public class ImdbMovieDetailsLineageTest {
+public class ImdbMovieDetailsDataSourceTest {
 
     @Test
     @Ignore
