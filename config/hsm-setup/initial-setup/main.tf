@@ -1,33 +1,28 @@
-# variable region {
-#   type = "string"
-#   default = "${var.hsm_region}"
-# }
+variable region {
+  type    = "string"
+  default = "us-west-1"
+}
+
+//terraform {
+//  backend "s3" {
+//    bucket = "rdso-challenge2"
+//    key    = "hsm.tfstate"
+//  }
+//}
 
 terraform {
-  backend "s3" {
-    bucket = "rdso-challenge2"
-    key    = "hsm.tfstate"
-    region = "us-east-1"
+  backend "local" {
+    path = "./terraform.tfstate"
   }
 }
 
-terraform {
-  required_version = "0.12.5"
-}
-
-//variable region {}
+//variable hsm_region {}
 
 provider "aws" {
   version = "~> 2.0"
-  region  = "${local.region}"
+  region  = "us-west-1"
+  //  region  = "${var.hsm_region}"
 }
-
-//provider "tls" {}
-
-locals {
-  region = "${var.aws_region[terraform.workspace]}"
-}
-
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
@@ -36,7 +31,7 @@ module "vpc" {
   cidr = "10.6.0.0/16"
 
   azs = [
-  "${local.region}c"]
+  "us-west-1c"]
   private_subnets = [
   "10.6.1.0/24"]
   public_subnets = [

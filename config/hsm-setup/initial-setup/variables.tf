@@ -1,0 +1,1 @@
+variable "hsm_controller" {}
