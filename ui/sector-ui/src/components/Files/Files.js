@@ -72,7 +72,6 @@ export default class Files extends React.Component {
                 'File-Action': 'download'
             }
         }).then(response => {
-            console.log(response);
             this.openFileDialog(response.data, fileName, contentType);
         });
     }
