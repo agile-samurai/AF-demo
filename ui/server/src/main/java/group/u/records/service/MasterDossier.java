@@ -2,6 +2,7 @@ package group.u.records.service;
 
 import group.u.records.content.Dossier;
 import group.u.records.models.Note;
+import group.u.records.models.entity.MovieTitle;
 import group.u.records.security.DossierFileInfo;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class MasterDossier {
     private List<UUID> similarMovies;
     private UUID id;
     private List<Note> notes;
+    private List<MovieTitle> similarMovieTitles;
 
     public List<Dossier> getDossiers() {
         return dossiers;
@@ -32,6 +34,10 @@ public class MasterDossier {
 
     public List<Note> getNotes() {
         return notes;
+    }
+
+    public List<MovieTitle> getSimilarMovieTitles() {
+        return similarMovieTitles;
     }
 
     public MasterDossier(List<Dossier> dossiers, List<UUID> similarMovies, UUID id) {
@@ -52,5 +58,9 @@ public class MasterDossier {
 
     public List<DossierFileInfo> getDossierFileInfos() {
         return dossierFileInfos;
+    }
+
+    public void setSimilarMovieTitles(List<MovieTitle> similarMovieTitles) {
+        this.similarMovieTitles = similarMovieTitles;
     }
 }
