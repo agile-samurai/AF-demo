@@ -3,7 +3,7 @@ package group.u.records.service;
 import group.u.records.ds.providers.MovieSimilarityProvider;
 import group.u.records.ds.providers.GenreDistributionImageProvider;
 import group.u.records.ds.providers.PredictiveAutoRedactProvider;
-import group.u.records.security.MasterDossierRepository;
+import group.u.records.security.MasterDossierService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class DossierBuilderServiceTest {
     public void shouldGenerateADossierGivenAMovieDetail() {
         DossierBuilderService builderService =
                 new DossierBuilderService(autoRedactProvider, scoringProvider,
-                imageProvider, mock(MasterDossierRepository.class));
+                imageProvider, mock(MasterDossierService.class));
     }
 
 }

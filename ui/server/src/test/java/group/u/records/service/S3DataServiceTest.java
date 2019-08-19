@@ -2,10 +2,9 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.entity.MovieDetail;
 import group.u.records.models.data.Movie;
-import group.u.records.repository.PersonRepository;
 import group.u.records.repository.MoviePublicSummaryRepository;
+import group.u.records.repository.PersonRepository;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,11 +18,9 @@ import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,6 +32,7 @@ public class S3DataServiceTest {
     private static final String FOLDER = "folder";
     private static final String REGION_AS_STRING = "regionAsString";
     public static final String DOSSIER_STORAGE = "dossier-storage";
+    public static final String DOSSIER_FILE_FOLDER = "test-files";
     private PersonRepository personRepository;
     private MoviePublicSummaryRepository movieRepository;
     private DossierBuilderService dossierBuilderService;
@@ -53,7 +51,7 @@ public class S3DataServiceTest {
     public void shouldRetrievalAllMoviesListedInS3WithNoObjectsInTheFolder() {
         S3Client client = mock(S3Client.class);
 
-        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE, client, mock(ObjectMapper.class));
+        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE, DOSSIER_FILE_FOLDER, client, mock(ObjectMapper.class));
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         TestSDKIterable<S3Object> iterable = new TestSDKIterable<>(new ArrayList());
@@ -77,7 +75,7 @@ public class S3DataServiceTest {
 
         when(client.getObject(any(GetObjectRequest.class))).thenReturn(response);
 
-        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE, client, new ObjectMapper());
+        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,DOSSIER_FILE_FOLDER, client, new ObjectMapper());
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         ArrayList testList = new ArrayList();

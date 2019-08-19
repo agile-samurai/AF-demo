@@ -6,7 +6,7 @@ import group.u.records.ds.providers.GenreDistributionImageProvider;
 import group.u.records.ds.providers.MovieSimilarityProvider;
 import group.u.records.ds.providers.PredictiveAutoRedactProvider;
 import group.u.records.models.entity.MovieDetail;
-import group.u.records.security.MasterDossierRepository;
+import group.u.records.security.MasterDossierService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,16 @@ public class DossierBuilderService {
     private PredictiveAutoRedactProvider autoRedactProvider;
     private final MovieSimilarityProvider scoringProvider;
     private final GenreDistributionImageProvider imageProvider;
-    private MasterDossierRepository masterDossierRepository;
+    private MasterDossierService masterDossierService;
 
     public DossierBuilderService(PredictiveAutoRedactProvider autoRedactProvider,
                                  MovieSimilarityProvider scoringProvider,
                                  GenreDistributionImageProvider imageProvider,
-                                 MasterDossierRepository masterDossierRepository) {
+                                 MasterDossierService masterDossierService) {
         this.autoRedactProvider = autoRedactProvider;
         this.scoringProvider = scoringProvider;
         this.imageProvider = imageProvider;
-        this.masterDossierRepository = masterDossierRepository;
+        this.masterDossierService = masterDossierService;
     }
 
 
@@ -45,7 +45,7 @@ public class DossierBuilderService {
                 .stream()
                 .map(f -> generateDossier(f))
                 .collect(toList()), scoringProvider.getSimilarMovies(imdbId), id);
-        masterDossierRepository.save(masterDossier);
+        masterDossierService.save(masterDossier);
 
         logger.debug("About to save dossier:  " + id.toString());
         return masterDossier;
