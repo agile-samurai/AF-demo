@@ -37,7 +37,7 @@ public class PersonRegistryTest {
 
         assertEquals(2, realCarlyle.getTitles().size());
         assertEquals(expectedMovie1.getName(), realCarlyle.getTitles().toArray(new MovieTitle[0])[0].getName());
-        assertEquals(expectedMovie2.getName(), realCarlyle.getTitles().toArray(new MovieTitle[1])[1].getName());
+        assertEquals(expectedMovie2.getName(), realCarlyle.getTitles().toArray(new MovieTitle[0])[1].getName());
     }
 
     @Test
