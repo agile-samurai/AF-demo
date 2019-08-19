@@ -203,12 +203,13 @@ echo "pid is $$"
 init
 initiate_hsm_setup
 sleep 2s
+cd -
 if grep -Fxq "ACTIVE" ${STATE_FILE}; then
   exit 0
 elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
   provision_client
 else
-  verify_identity
+  cd post-setup
   sign_csr
 
   if initialize_hsm; then
