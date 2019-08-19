@@ -66,7 +66,7 @@ public class MasterDossierService {
         String fileEncrypted = dossierEncryptionService.encryptFile(dossierId, encodeBase64String(file.getBytes()));
         UUID fileId = UUID.randomUUID();
         dataService.saveFile(fileId, fileEncrypted);
-        DossierFileInfo dossierFileInfo = new DossierFileInfo(fileId, file.getName() );
+        DossierFileInfo dossierFileInfo = new DossierFileInfo(fileId, file.getOriginalFilename(), file.getContentType());
 
         updateFileInfos(dossierId, dossierFileInfo);
         return dossierFileInfo;
