@@ -17,9 +17,10 @@ setup_cloudhsm_client() {
   printf "****************** ${GATEWAY_PASS}"
   printf "\n**** Setting up CloudHSM ****\n"
 
-  sudo bash -c "echo 'HSM_USER=gatewayuser' > ~/.bashrc"
-  sudo bash -c "echo 'HSM_PASSWORD=${GATEWAY_PASS}' > ~/.bashrc"
-  sudo bash -c "echo 'HSM_PARTITION=$(< ${HSM_ID})' > ~/.bashrc"
+  sudo bash -c "echo 'HSM_USER=gatewayuser' >> ~/.bashrc"
+  sudo bash -c "echo 'HSM_PASSWORD=${GATEWAY_PASS}' >> ~/.bashrc"
+  sudo bash -c "echo 'HSM_PARTITION=$(< ${HSM_ID})' >> ~/.bashrc"
+  sudo bash -c "source ~/.bashrc"
 
   printf "\n-- Fetching HSM Client\n"
   sudo bash -c "wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL6/cloudhsm-client-latest.el6.x86_64.rpm"
