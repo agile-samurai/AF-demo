@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-delete-test-1
+      name: dossier-storage-delete-brad-1
       files: files
   access:
     key:
@@ -19,7 +19,7 @@ app:
       enabled: false
   feature:
     enableAutoRedact: true
-    enableDistributionImages: false
+    enableDistributionImages: true
   content:
     security:
       host: http://184.169.235.7:8080
@@ -27,7 +27,7 @@ app:
     redact:
       host: http://spacy
     images:
-      host: http://localhost:8000
+      host: http://data-science-service:8000
     similarities:
       host: http://data-science-service:8000
   jwt:

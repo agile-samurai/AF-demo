@@ -13,7 +13,7 @@ public class GenreDistributionImageProvider {
         this.client = client;
     }
 
-    public String getJson(UUID dossierId) {
-        return client.getImageStructure(dossierId);
+    public String getJson(String imdbId) {
+        return client.getImageStructure(imdbId);
     }
 }

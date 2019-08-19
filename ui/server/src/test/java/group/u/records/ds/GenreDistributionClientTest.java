@@ -14,8 +14,8 @@ public class GenreDistributionClientTest {
     @Test
     public void shouldProvideJsonImagesFromTheGenreService() {
         GenreDistributionClient client = new GenreDistributionClient(new RestTemplate(),
-                "http://localhost:8000", false );
-        String text = client.getImageStructure(UUID.randomUUID());
+                "http://localhost:8000", true );
+        String text = client.getImageStructure("3481000");
         assertThat(text).isNotNull();
 
         System.out.println(text);

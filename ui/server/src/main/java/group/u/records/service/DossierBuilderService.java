@@ -43,7 +43,7 @@ public class DossierBuilderService {
         UUID id = UUID.nameUUIDFromBytes(movieId.getImdbId().getBytes());
         MasterDossier masterDossier = new MasterDossier(movieDetails
                 .stream()
-                .map(f -> generateDossier(f))
+                .map(f -> generateDossier(f, movieId))
                 .collect(toList()), scoringProvider.getSimilarMovies(movieId.getImdbId()), movieId);
         masterDossierService.save(masterDossier);
 
@@ -51,7 +51,7 @@ public class DossierBuilderService {
         return masterDossier;
     }
 
-    public Dossier generateDossier(MovieDetail movieDetail) {
+    public Dossier generateDossier(MovieDetail movieDetail, MovieIdentifier movieId ) {
         Dossier dossier = new Dossier(movieDetail.getId(),
                 movieDetail.getName(),
                 movieDetail.getSummary(),
@@ -59,7 +59,7 @@ public class DossierBuilderService {
                 movieDetail.getReviews(),
                 movieDetail.getImage(),
                 asList(new Genre(movieDetail.getGenre(),
-                imageProvider.getJson(movieDetail.getId()))), movieDetail.getLineage());
+                imageProvider.getJson(movieId.getImdbId()))), movieDetail.getLineage());
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
         logger.debug("Generating dossier for:  "  + movieDetail);
         return dossier;
