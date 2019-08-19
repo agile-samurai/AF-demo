@@ -120,7 +120,7 @@ public class S3DataService implements DataService {
     }
 
     private String dossierFilePath(UUID fileId) {
-        return dossierFileFolder + fileId.toString();
+        return dossierFileFolder + "-" + fileId.toString();
     }
 
     @Override

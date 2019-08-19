@@ -17,19 +17,20 @@ public class GenreDistributionClient {
     private boolean enabledDistributionImages;
 
     public GenreDistributionClient(RestTemplate restTemplate,
-                                   @Value("$app.ds.images.host}") String host,
+                                   @Value("${app.ds.images.host}") String host,
                                    @Value("${app.feature.enableDistributionImages}") boolean enabledDistributionImages ){
         this.restTemplate = restTemplate;
         this.host = host;
         this.enabledDistributionImages = enabledDistributionImages;
     }
 
-    public String getImageStructure(UUID dossierId){
+    public String getImageStructure(String imdbId ){
         if( !enabledDistributionImages ) return "";
 
         try {
-            return restTemplate.postForEntity(host + "/highlighted_film_plot/" + dossierId,
-                    new HttpEntity(""), String.class).getBody();
+            String graph = restTemplate.getForEntity(host + "/highlighted_film_plot/" + imdbId, String.class).getBody();
+            logger.debug("Graph:  " + graph );
+            return graph;
         }catch( Exception e ){
             logger.debug("Image Classification is unavailable" );
         }
