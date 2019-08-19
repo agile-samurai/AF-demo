@@ -20,7 +20,7 @@ locals {
 data "aws_instance" "hsm-agent-instance" {
   filter {
     name = "tag:Name"
-    values = ["HSM Client instance"]
+    values = ["HSM Client instance-${terraform.workspace}"]
   }
 }
 
