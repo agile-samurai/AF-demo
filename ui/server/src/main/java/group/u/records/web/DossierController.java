@@ -1,7 +1,7 @@
 package group.u.records.web;
 
 import group.u.records.models.web.NoteDTO;
-import group.u.records.security.MasterDossierRepository;
+import group.u.records.security.MasterDossierService;
 import group.u.records.service.MasterDossier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -15,27 +15,27 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 @RestController
 @RequestMapping("/dossier")
 public class DossierController {
-    private MasterDossierRepository masterDossierRepository;
+    private MasterDossierService masterDossierService;
 
-    public DossierController(MasterDossierRepository masterDossierRepository) {
-        this.masterDossierRepository = masterDossierRepository;
+    public DossierController(MasterDossierService masterDossierService) {
+        this.masterDossierService = masterDossierService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MasterDossier> get(@PathVariable UUID id ){
-        return ok(masterDossierRepository.get(id));
+        return ok(masterDossierService.get(id));
     }
 
     @PostMapping("/{id}/note")
     public ResponseEntity<MasterDossier> post(@PathVariable UUID id, @RequestBody NoteDTO note ){
-        masterDossierRepository.addNote(id, getContext().getAuthentication().getName(), note.getContent());
-        return ok(masterDossierRepository.get(id));
+        masterDossierService.addNote(id, getContext().getAuthentication().getName(), note.getContent());
+        return ok(masterDossierService.get(id));
     }
 
     @DeleteMapping("/{id}")
     @Secured("ROLE_SUPERVISOR")
     public ResponseEntity delete(@PathVariable UUID id){
-        masterDossierRepository.delete(id);
+        masterDossierService.delete(id);
         return ok().build();
     }
 }

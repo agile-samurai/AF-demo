@@ -13,6 +13,7 @@ import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
 
 @Document(indexName = "moviepublicsummary", type = "moviepublicsummary", shards = 1, replicas = 0, refreshInterval = "-1")
 public class MoviePublicSummary {
+    private boolean dossierAvailable;
     @Id
     private UUID id;
 
@@ -45,5 +46,6 @@ public class MoviePublicSummary {
         this.id = movie.getId();
         this.people = movie.getPeople();
         this.name = movie.getName();
+        this.dossierAvailable = true;
     }
 }

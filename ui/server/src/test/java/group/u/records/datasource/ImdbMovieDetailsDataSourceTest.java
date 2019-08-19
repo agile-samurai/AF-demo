@@ -35,7 +35,7 @@ public class ImdbMovieDetailsDataSourceTest {
                                 secretAccessKey))).build();
 
 
-        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",client, objectMapper);
+        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage","files",client, objectMapper);
         PersonRegistry personRegistry = mock(PersonRegistry.class);
         ImdbMovieDetailsDataSource ds = new ImdbMovieDetailsDataSource( "data/movies_json", "data/characters_json", personRegistry,objectMapper,dataService);
         MovieDetail detail = ds.getMovieDetails("1156466");

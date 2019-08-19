@@ -1,7 +1,8 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-clear
+      name: dossier-storage-delete-test
+      files: files
   access:
     key:
       id: FAKEACCESS

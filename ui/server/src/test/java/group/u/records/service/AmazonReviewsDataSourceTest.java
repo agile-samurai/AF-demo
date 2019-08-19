@@ -27,7 +27,7 @@ public class AmazonReviewsDataSourceTest {
                                 secretAccessKey))).build();
 
 
-        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",client, objectMapper);
+        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage", "sample", client, objectMapper);
         AmazonReviewsDataSource reviews = new AmazonReviewsDataSource(dataService,objectMapper);
 
         reviews.getMovieDetails("0477080");

@@ -45,4 +45,17 @@ public class DossierEncryptionService {
     public void delete(UUID dossierId) {
         this.gatewayClient.delete(dossierId);
     }
+
+    public String encryptFile(UUID id, String encodeBase64String) {
+        try {
+            return gatewayClient.encrypt(id, encodeBase64String);
+        }catch( Exception e ){
+            logger.debug("Error while serializing dossier file:  " + id);
+        }
+        return "";
+    }
+
+    public String decryptFile(UUID id, String content) {
+        return gatewayClient.decrypt(id, content);
+    }
 }
