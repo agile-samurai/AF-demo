@@ -1,19 +1,27 @@
 package group.u.records.models.entity;
 
+import group.u.records.datasource.OMDBMovie;
 import group.u.records.models.Person;
 import group.u.records.models.data.Movie;
 import group.u.records.service.Lineage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static java.util.Arrays.asList;
+import java.util.stream.Collectors;
 
 public class MovieDetail {
 
-    private final List<MovieCharacter> characters;
+    private List<MovieCharacter> characters;
+
+    public MovieDetail(String id, OMDBMovie movie) {
+        this.id = UUID.nameUUIDFromBytes(id.getBytes());
+        this.name = movie.getTitle();
+        this.summary = movie.getPlot();
+        this.people = getActors(movie);
+    }
 
     public String getSummary() {
         return summary;
@@ -81,6 +89,11 @@ public class MovieDetail {
 
     public List<MovieCharacter> getCharacters() {
         return characters;
+    }
+
+    private List<Person> getActors(OMDBMovie movie) {
+        String characterString = movie.getActors() == null ? "" : movie.getActors();
+        return Arrays.stream(characterString.split(",")).map(Person::new).collect(Collectors.toList());
     }
 
     public MovieDetail(UUID id, String name, List<Person> people, List<MovieCharacter> characters, String summary,

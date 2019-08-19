@@ -25,6 +25,9 @@ import org.sweble.wikitext.parser.utils.WtRtDataPrinter;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 public class WikipediaMoveDataSource extends MovieDetailsDataSource {
     private String folder;
@@ -106,10 +109,20 @@ public class WikipediaMoveDataSource extends MovieDetailsDataSource {
 
         logger.debug("Node name:  " + cp.getPage());
         logger.debug("Node count:  " + cp.getPropertyCount());
-        logger.debug("Character Property:  " + cp.getPage().getProperty("Characters"));
-        for( String str :  cp.getPage().getChildNames()){
+        logger.debug( "Child names:  " + cp.getChildNames());
+//        logger.debug("Character Property:  " + cp.getPage().getProperty("Characters"));
+        for( String str :  cp .getChildNames()){
             logger.debug("name:  " + str );
         }
+
+        StreamSupport.stream(Spliterators.spliteratorUnknownSize(cp.getPage().listIterator(), Spliterator.ORDERED),
+                false ).forEach( i-> {
+                    logger.debug( "Val:  " + i.toString());
+                    i.stream().forEach(a->{
+                        logger.debug("child:  " + a.toString());
+
+                    });
+                });
 
         // Retrieve a page
 //        PageTitle pageTitle = PageTitle.make(config, fileTitle);
