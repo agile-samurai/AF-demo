@@ -75,6 +75,7 @@ initiate_hsm_setup() {
           verify_identity
         elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
           printf "\n--- HSM resource already initialized!\n"
+          cp ${STATE_FILE} ../
           cd -
         else
           printf "\n--- HSM resource already active!\n"
