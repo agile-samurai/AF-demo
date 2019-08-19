@@ -42,9 +42,6 @@ public class S3DataService implements DataService {
         this.dossierStorageBucket = dossierStorageBucket;
         this.dossierFileFolder = dossierFileFolder;
         this.objectMapper = objectMapper;
-        logger.debug("Bucket Name:  " + bucketName);
-        logger.debug("Folder:  " + folder);
-        logger.debug("Region:  " + regionAsString);
 
         this.bucketName = bucketName;
         this.region = Region.of(regionAsString);
@@ -57,13 +54,17 @@ public class S3DataService implements DataService {
     @Override
     public void save(UUID dossierId, String dossierEncryptedContent) {
         logger.debug("Saving dossier:  " + dossierId );
-        createBucket(s3Client);
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(dossierStorageBucket)
-                .key(dossierId.toString())
-                .build();
+        try {
+            createBucket(s3Client);
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(dossierStorageBucket)
+                    .key(dossierId.toString())
+                    .build();
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromString(dossierEncryptedContent));
+            s3Client.putObject(putObjectRequest, RequestBody.fromString(dossierEncryptedContent));
+        } catch (Exception exception) {
+            logger.debug("Encountered exception while saving to S3: " + exception.getMessage());
+        }
     }
 
     @Override
