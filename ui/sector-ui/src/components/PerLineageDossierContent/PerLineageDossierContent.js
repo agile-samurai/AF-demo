@@ -20,6 +20,10 @@ export default class PerLineageDossierContent extends React.Component {
         const {redactionEnabled} = this.state;
 
         const processedGenres = genres.map(genreInformation => {
+            if(genreInformation.genre === '') {
+                return null;
+            }
+
             return <Chip label={genreInformation.genre} className="genre-chip" key={genreInformation.genre}/>
         });
 
@@ -28,19 +32,25 @@ export default class PerLineageDossierContent extends React.Component {
                     <div className="lineage">Lineage: {lineage}</div>
                     <div className="genres-and-auto-redaction">
                         <div className="genres">{processedGenres}</div>
-                        <div className="auto-redaction-toggle">
-                            <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO
-                                REDACTION
+                        {summary.length > 0 ?
+                            <div className="auto-redaction-toggle">
+                                <div className="auto-redaction-toggle-label">TURN {redactionEnabled ? 'OFF' : 'ON'} AUTO
+                                    REDACTION
+                                </div>
+                                <Switch
+                                    checked={redactionEnabled}
+                                    onChange={this.handleToggleRedaction}
+                                    inputProps={{'aria-label': 'secondary checkbox'}}/>
                             </div>
-                            <Switch
-                                checked={redactionEnabled}
-                                onChange={this.handleToggleRedaction}
-                                inputProps={{'aria-label': 'secondary checkbox'}}/>
-                        </div>
+                            :
+                            null
+                        }
                     </div>
-                    <DossierPlotSummary summary={summary}
-                                        entityClassifications={entityClassifications}
-                                        redactionEnabled={redactionEnabled}/>
+                    {
+                        summary.length > 0 ? <DossierPlotSummary summary={summary}
+                                            entityClassifications={entityClassifications}
+                                            redactionEnabled={redactionEnabled}/> : null
+                    }
                     <Characters characters={characters}/>
                 </div>
         );

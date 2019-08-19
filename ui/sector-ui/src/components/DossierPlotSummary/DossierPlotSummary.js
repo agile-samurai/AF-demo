@@ -19,31 +19,27 @@ export default class DossierPlotSummary extends React.Component {
         const {redactionProcessedSummary} = this.state;
 
         return (
-            <div>
+            <div className={`plot-summary ${redactionEnabled ? 'redaction-enabled' : ''}`}>
+                <div className="plot-summary-header">PLOT SUMMARY</div>
+                <div className="plot-summary-body">{redactionProcessedSummary}</div>
                 {
-                    redactionProcessedSummary.length > 0 ? <div className={`plot-summary ${redactionEnabled ? 'redaction-enabled': ''}`}>
-                    <div className="plot-summary-header">PLOT SUMMARY</div>
-                    <div className="plot-summary-body">{redactionProcessedSummary}</div>
-                    {
-                        redactionEnabled ?
-                            <div className="redaction-item-types-legend">
-                                <div className="company-entity-type entity-type-label">
-                                    <div className="color-block"/>
-                                    <div>&nbsp;- Company</div>
-                                </div>
-                                <div className="country-entity-type entity-type-label">
-                                    <div className="color-block"/>
-                                    <div>&nbsp;- Country</div>
-                                </div>
-                                <div className="person-entity-type entity-type-label">
-                                    <div className="color-block"/>
-                                    <div>&nbsp;- Person</div>
-                                </div>
+                    redactionEnabled ?
+                        <div className="redaction-item-types-legend">
+                            <div className="company-entity-type entity-type-label">
+                                <div className="color-block"/>
+                                <div>&nbsp;- Company</div>
                             </div>
-                            : null
-                    }
-                    </div>
-                    : null
+                            <div className="country-entity-type entity-type-label">
+                                <div className="color-block"/>
+                                <div>&nbsp;- Country</div>
+                            </div>
+                            <div className="person-entity-type entity-type-label">
+                                <div className="color-block"/>
+                                <div>&nbsp;- Person</div>
+                            </div>
+                        </div>
+                        :
+                        null
                 }
             </div>
 
@@ -58,13 +54,14 @@ export default class DossierPlotSummary extends React.Component {
         summary.split('')
             .forEach((character, index) => {
                 const characterWasEntityClassified = entityClassifications.reduce((accumulator, entityClassification, entityClassificationIndex) => {
-                    if(index > entityClassification.end) { /* if we've moved past the end of this entity classification,
+                    if (index > entityClassification.end) { /* if we've moved past the end of this entity classification,
                         remove this entity classification as an optimization */
                         entityClassifications.splice(entityClassificationIndex, 1);
                     }
 
-                    if((index >= entityClassification.start) && (index < entityClassification.end)) {
-                        redactionProcessedSummary.push(<span key={index} className={`${entityClassification.classification}`}>{character}</span>);
+                    if ((index >= entityClassification.start) && (index < entityClassification.end)) {
+                        redactionProcessedSummary.push(<span key={index}
+                                                             className={`${entityClassification.classification}`}>{character}</span>);
 
                         return true;
                     }
@@ -72,7 +69,7 @@ export default class DossierPlotSummary extends React.Component {
                     return accumulator;
                 }, false);
 
-                if(!characterWasEntityClassified) {
+                if (!characterWasEntityClassified) {
                     redactionProcessedSummary.push(<span key={index}>{character}</span>);
                 }
             });

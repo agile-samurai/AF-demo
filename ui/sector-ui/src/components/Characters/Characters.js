@@ -16,9 +16,13 @@ export default class Characters extends React.Component {
         });
 
         return (
-            <div className="characters">
-                <div className="character-heading">Characters:</div>
-                {processedCharacters}
+            <div>
+                {
+                    processedCharacters.length > 0 ? <div className="characters">
+                        <div className="character-heading">Characters:</div>
+                        {processedCharacters}
+                    </div> : null
+                }
             </div>
         );
     }
