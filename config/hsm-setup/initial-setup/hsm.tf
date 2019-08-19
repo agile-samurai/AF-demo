@@ -49,8 +49,8 @@ resource "aws_key_pair" "hsm-key-pair" {
 }
 
 resource "aws_security_group" "gateway-ingress" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+  name        = "allow_communication"
+  description = "Allow Tomcat inbound traffic"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -61,9 +61,9 @@ resource "aws_security_group" "gateway-ingress" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
     cidr_blocks     = ["0.0.0.0/0"]
   }
 }

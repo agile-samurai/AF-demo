@@ -9,7 +9,7 @@ provider "aws" {
 
 locals {
   hsm_ip = file("${path.module}/hsmip.txt")
-  password = file("${path.module}/pass.txt")
+  password = substr(file("${path.module}/pass.txt"), 0, 31)
   hsm_user_password = file("${path.module}/hsm_user_pass.txt")
 }
 
@@ -39,8 +39,13 @@ resource "null_resource" "provisioner" {
   }
 
   provisioner "file" {
-    source = "hsmgateway-0.0.1-SNAPSHOT.jar"
-    destination = "/tmp/hsmgateway.jar"
+    source = "hsm_id.txt"
+    destination = "/tmp/hsm_id.txt"
+  }
+
+  provisioner "file" {
+    source = "pass.txt"
+    destination = "/tmp/pass.txt"
   }
 
   provisioner "file" {
@@ -57,7 +62,7 @@ resource "null_resource" "provisioner" {
     inline = [
       "chmod +x /tmp/setup_ec2.sh",
       "chmod +x /tmp/expect_script.sh",
-      "bash -c '/tmp/setup_ec2.sh ${substr(local.password, 0, 31)} ${local.hsm_user_password}'",
+      "bash -c '/tmp/setup_ec2.sh'",
     ]
   }
 }

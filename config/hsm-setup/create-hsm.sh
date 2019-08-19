@@ -1,37 +1,14 @@
 #!/usr/bin/env bash
 
-HSM_USER_PASS=$(dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 -b 0 | rev | cut -b 2- | rev)
+#HSM_USER_PASS=$(dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 -b 0 | rev | cut -b 2- | rev)
 
 PASS_FILE=pass.txt
+STATE_FILE=cluster_state.txt
 
 init() {
   printf "\n*** Initializing Terraform ***\n"
   cd initial-setup
   terraform init
-}
-
-build_microservice() {
-  printf "\n*** HSMGateway Microservice ***\n"
-
-  cd ../../services/hsmgateway
-  printf "\n*** Installing CloudHSM Java Library ***\n"
-  ./mvnw install:install-file -Dfile=opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.amazonaws -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
-
-  ./mvnw install:install-file -Dfile=opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.amazonaws -DartifactId=cloudhsm-test -Dversion=2.0.3 -Dpackaging=jar
-
-  touch hsm_user_pass.txt && echo ${HSM_USER_PASS} >> hsm_user_pass.txt
-  echo "gateway.password=${HSM_USER_PASS}" >> src/main/resources/application.properties
-
-  printf "\n*** Building microservice ***\n"
-  if ./mvnw clean install -U; then
-    printf "\n--- Moving microservice JAR file\n"
-    mv target/hsmgateway-*-SNAPSHOT.jar ../../config/hsm-setup/ec2-provisioning
-    mv hsm_user_pass.txt ../../config/hsm-setup/ec2-provisioning
-    cd ../../config/hsm-setup
-  else
-    printf "\n*** Building microservice failed ***\n"
-    exit 1
-  fi
 }
 
 initiate_hsm_setup() {
@@ -43,18 +20,14 @@ initiate_hsm_setup() {
       printf "\n--- Terraform applied successfully\n\n--- Copying files\n"
 
       ID_FILE=cluster_id.txt
+      HSM_ID_FILE=hsm_id.txt
       KEY_FILE=key.pem
       IP_FILE=ec2ip.txt
-#      PASS_FILE=pass.txt
       HSM_IP_FILE=hsmip.txt
-      STATE_FILE=cluster_state.txt
 
       if [[ -f "$STATE_FILE" ]]; then
-        if ! grep -Fxq "UNINITIALIZED" ${STATE_FILE}; then
-          printf "\n--- HSM resource already initialized!\n"
-          cd -
-        else
-          if [[ -f "$ID_FILE" ]]; then
+        if grep -Fxq "UNINITIALIZED" ${STATE_FILE}; then
+           if [[ -f "$ID_FILE" ]]; then
             mv -f ${ID_FILE} ../post-setup
           else
             printf "\n--- HSM Cluster ID file could not be found\n"
@@ -90,9 +63,22 @@ initiate_hsm_setup() {
             exit 1
           fi
 
+          if [[ -f "$HSM_ID_FILE" ]]; then
+            mv -f ${HSM_ID_FILE} ../ec2-provisioning
+          else
+            printf "\n--- HSM ID file could not be found\n"
+            exit 1
+          fi
+
           printf "\n--- Files copied successful"
           cd -
           verify_identity
+        elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
+          printf "\n--- HSM resource already initialized!\n"
+          cd -
+        else
+          printf "\n--- HSM resource already active!\n"
+          exit 0
         fi
       fi
     else
@@ -175,7 +161,6 @@ sign_csr() {
   organization=U.Group
   organizationalunit=Technology
   email=odwayne.irving@u.group
-  printf "\n*** Password is ${password} ***\n"
 
   printf "\n--- Generating private key\n"
   if ! openssl genrsa -aes256 -passout pass:${password} -out customerCA.key 2048; then
@@ -205,20 +190,30 @@ initialize_hsm() {
   fi
 }
 
-trap "exit" INT
-echo "pid is $$"
-
-build_microservice
-init
-initiate_hsm_setup
-sleep 2s
-verify_identity
-sign_csr
-if initialize_hsm; then
+provision_client() {
   cd ec2-provisioning
   terraform init
   terraform plan -out plan
   terraform apply plan
+}
+
+trap "exit" INT
+echo "pid is $$"
+
+init
+initiate_hsm_setup
+sleep 2s
+if grep -Fxq "ACTIVE" ${STATE_FILE}; then
+  exit 0
+elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
+  provision_client
+else
+  verify_identity
+  sign_csr
+
+  if initialize_hsm; then
+    provision_client
+  fi
 fi
 
 printf "\n\n********* Done *********\n"

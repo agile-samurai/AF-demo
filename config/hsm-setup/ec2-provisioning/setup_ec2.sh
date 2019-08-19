@@ -9,50 +9,43 @@ install_java() {
   which java
 }
 
-
 setup_cloudhsm_client() {
   HSM_IP=/tmp/hsmip.txt
+  HSM_ID=/tmp/hsm_id.txt
+  PASS=/tmp/pass.txt
+  GATEWAY_PASS="$(echo "$(< ${PASS})" |  cut -c1-30)"
+  printf "****************** ${GATEWAY_PASS}"
   printf "\n**** Setting up CloudHSM ****\n"
+
+  sudo bash -c "echo 'HSM_USER=gatewayuser' > ~/.bashrc"
+  sudo bash -c "echo 'HSM_PASSWORD=${GATEWAY_PASS}' > ~/.bashrc"
+  sudo bash -c "echo 'HSM_PARTITION=$(< ${HSM_ID})' > ~/.bashrc"
 
   printf "\n-- Fetching HSM Client\n"
   sudo bash -c "wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL6/cloudhsm-client-latest.el6.x86_64.rpm"
-
   printf "\n-- Installing Client\n"
   sudo bash -c "yum install -y ./cloudhsm-client-latest.el6.x86_64.rpm"
+
+  printf "\n-- Fetching HSM Java Client\n"
+  sudo bash -c "wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL6/cloudhsm-client-jce-latest.el6.x86_64.rpm"
+  printf "\n-- Installing Java Client\n"
+  sudo bash -c "yum install -y ./cloudhsm-client-jce-latest.el6.x86_64.rpm"
+
+  printf "\n-- Installing expect\n"
   sudo bash -c "yes | yum install expect"
+
+  printf "\n-- Updating configuration files CloudHSM client and command line tools\n"
   sudo bash -c "cp /tmp/customerCA.crt /opt/cloudhsm/etc/customerCA.crt"
   sleep 1s
-  printf "\n-- Updating configuration files CloudHSM client and command line tools\n"
   sudo bash -c "/opt/cloudhsm/bin/configure -a '$(< ${HSM_IP})'"
-  /tmp/expect_script.sh $1 $2
-}
+  /tmp/expect_script.sh "${GATEWAY_PASS}"
 
-setup_microservice() {
-  printf "\n**** Setting up hsmgateway microservice ****\n"
-  if sudo bash -c "service --status-all | grep -Fq 'hsmgateway'"; then
-    printf "\n**** hsmgateway microservice already installed ****\n"
-  else
-    if [[ ! -d "/var/app" ]]; then
-      sudo bash -c "mkdir /var/app"
-    fi
-    printf "\n-- Moving jar\n"
-    sudo bash -c "mv /tmp/hsmgateway.jar /var/app/"
-    printf "\n-- Setting permissions"
-    chmod 500 /var/app/hsmgateway.jar
+  printf "\n-- Starting CloudHSM Client\n"
+  sudo bash -c "start cloudhsm-client"
 
-    printf "\n-- Setting immutability\n"
-    sudo bash -c "chattr +i /var/app/hsmgateway.jar"
-
-    printf "\n-- Linking\n"
-    sudo bash -c "ln -s /var/app/hsmgateway.jar /etc/init.d/hsmgateway"
-
-    printf "\n-- Starting hsmgateway microservice\n"
-    java -version
-    sudo service hsmgateway start
-    printf "\n**** Done setting up hsm microservice ****\n"
-  fi
+  printf "**** CloudHSM Ready for work! ****"
 }
 
 install_java
 setup_cloudhsm_client
-setup_microservice
+#setup_microservice
