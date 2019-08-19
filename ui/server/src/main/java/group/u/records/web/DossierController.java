@@ -41,26 +41,23 @@ public class DossierController {
         return ok(masterDossierService.get(id));
     }
 
-
-        private MasterDossier enrichWithSimilarities(@PathVariable UUID id) {
-            MasterDossier masterDossier = masterDossierService.get(id);
-            List<MovieTitle> movieTitles = masterDossier.getSimilarMovies()
-                    .stream()
-                    .map(s -> (publicSummaryRepository.findById(s)))
-                    .filter( s -> s.isPresent() )
-                    .map(s->MovieTitle.from(s.get()))
-                    .collect(Collectors.toList());
-
-            masterDossier.setSimilarMovieTitles(movieTitles);
-            return masterDossier;
-        }
-
-
-
     @DeleteMapping("/{id}")
     @Secured("ROLE_SUPERVISOR")
     public ResponseEntity delete(@PathVariable UUID id){
         masterDossierService.delete(id);
         return ok().build();
+    }
+
+    private MasterDossier enrichWithSimilarities(@PathVariable UUID id) {
+        MasterDossier masterDossier = masterDossierService.get(id);
+        List<MovieTitle> movieTitles = masterDossier.getSimilarMovies()
+                .stream()
+                .map(s -> (publicSummaryRepository.findById(s)))
+                .filter( s -> s.isPresent() )
+                .map(s->MovieTitle.from(s.get()))
+                .collect(Collectors.toList());
+
+        masterDossier.setSimilarMovieTitles(movieTitles);
+        return masterDossier;
     }
 }

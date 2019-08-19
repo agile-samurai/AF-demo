@@ -7,5 +7,18 @@
 }
 
 .input-label {
-    margin-top: 20px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.a-file {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #00f;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.a-file:first-child {
+    margin-top: 30px;
 }

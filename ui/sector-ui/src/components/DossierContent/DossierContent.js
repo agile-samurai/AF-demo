@@ -84,7 +84,7 @@ export default class DossierContent extends React.Component {
                                 {perLineageDossierContentList}
                                 <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                               refreshData={this.loadEncryptedData.bind(this)}/>
-                                <Files/>
+                                <Files dossierID={dossierData.id} files={dossierData.dossierFileInfos}/>
                                 <div className="end-of-dossier-indicator"/>
                             </div>
                         </div>

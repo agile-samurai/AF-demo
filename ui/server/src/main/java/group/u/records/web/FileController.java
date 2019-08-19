@@ -50,7 +50,4 @@ public class FileController {
         IOUtils.write(file, response.getOutputStream());
         response.getOutputStream().flush();
     }
-
-
-
 }
