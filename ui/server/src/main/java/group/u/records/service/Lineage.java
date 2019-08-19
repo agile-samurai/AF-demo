@@ -4,5 +4,7 @@ public enum Lineage {
     IMDB,
     AMAZON,
     OMDB,
-    WIKIPEDIA, TWITTER, CSV
+    WIKIPEDIA,
+    TWITTER,
+    CSV
 }

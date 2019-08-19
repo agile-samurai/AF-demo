@@ -37,14 +37,14 @@ public class DossierBuilderService {
     }
 
 
-    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, String imdbId ){
+    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, MovieIdentifier movieId ){
         logger.debug("About to write dossier with lineage count:  " + movieDetails.size());
 
-        UUID id = UUID.nameUUIDFromBytes(imdbId.getBytes());
+        UUID id = UUID.nameUUIDFromBytes(movieId.getImdbId().getBytes());
         MasterDossier masterDossier = new MasterDossier(movieDetails
                 .stream()
                 .map(f -> generateDossier(f))
-                .collect(toList()), scoringProvider.getSimilarMovies(imdbId), id);
+                .collect(toList()), scoringProvider.getSimilarMovies(movieId.getImdbId()), movieId);
         masterDossierService.save(masterDossier);
 
         logger.debug("About to save dossier:  " + id.toString());
