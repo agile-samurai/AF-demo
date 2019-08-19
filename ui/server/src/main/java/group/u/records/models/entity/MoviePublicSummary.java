@@ -22,6 +22,7 @@ public class MoviePublicSummary {
     @Field(type = Text, fielddata = true)
     private String name;
 
+    private String image;
     public UUID getId() {
         return id;
     }
@@ -36,16 +37,28 @@ public class MoviePublicSummary {
 
     public MoviePublicSummary(){}
 
+    public boolean isDossierAvailable() {
+        return dossierAvailable;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
     public MoviePublicSummary(Movie movie) {
         this.id = movie.getId();
         this.people = movie.getActor();
         this.name = movie.getName();
+        this.image = movie.getImage();
+        this.dossierAvailable = true;
     }
 
     public MoviePublicSummary(MovieDetail movie) {
         this.id = movie.getId();
         this.people = movie.getPeople();
         this.name = movie.getName();
+
+        this.image = movie.getImage();
         this.dossierAvailable = true;
     }
 }

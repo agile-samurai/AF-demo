@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
@@ -31,6 +32,19 @@ public class MovieTitle {
         return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MovieTitle that = (MovieTitle) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public static MovieTitle from(MovieDetail movie) {
         return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
     }
@@ -46,8 +60,4 @@ public class MovieTitle {
     public UUID getId() {
         return id;
     }
-
-//    public static Movie from(MovieSimilarityDataPoint dataPoint) {
-//        return new Movie(dataPoint.getName(), "fake", dataPoint.getId());
-//    }
 }
