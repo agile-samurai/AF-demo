@@ -1,22 +1,26 @@
-variable region {
-  type = "string"
-  default = "us-west-1"
+locals {
+  region = "${var.aws_region[terraform.workspace]}"
 }
+
+
+terraform {
+  required_version = "0.12.5"
+}
+
 provider "aws" {
   version = "~> 2.0"
-  region  = var.region
+  region  = local.region
 }
 
 locals {
   hsm_ip = file("${path.module}/hsmip.txt")
   password = substr(file("${path.module}/pass.txt"), 0, 31)
-  hsm_user_password = file("${path.module}/hsm_user_pass.txt")
 }
 
 data "aws_instance" "hsm-agent-instance" {
   filter {
     name = "tag:Name"
-    values = ["HSM Client instance"]
+    values = ["HSM Client instance-${terraform.workspace}"]
   }
 }
 

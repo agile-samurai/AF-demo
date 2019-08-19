@@ -7,15 +7,27 @@ terraform {
   backend "s3" {
     bucket = "rdso-challenge2"
     key    = "hsm.tfstate"
+    region = "us-east-1"
   }
 }
 
-variable hsm_region {}
+terraform {
+  required_version = "0.12.5"
+}
+
+//variable region {}
 
 provider "aws" {
   version = "~> 2.0"
-  region  = "${var.hsm_region}"
+  region  = "${local.region}"
 }
+
+//provider "tls" {}
+
+locals {
+  region = "${var.aws_region[terraform.workspace]}"
+}
+
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
@@ -24,7 +36,7 @@ module "vpc" {
   cidr = "10.6.0.0/16"
 
   azs = [
-  "us-west-1c"]
+  "${local.region}c"]
   private_subnets = [
   "10.6.1.0/24"]
   public_subnets = [

@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-delete-test
+      name: dossier-storage-delete-test-1
       files: files
   access:
     key:

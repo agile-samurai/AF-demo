@@ -49,6 +49,10 @@ public class MovieTitle {
         return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
     }
 
+    public static MovieTitle from(MoviePublicSummary movie) {
+        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
+    }
+
     public String getName() {
         return name;
     }

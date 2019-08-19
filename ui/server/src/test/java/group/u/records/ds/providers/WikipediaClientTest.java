@@ -47,12 +47,13 @@ public class WikipediaClientTest {
     @Ignore
     public void shouldFindFilmWithFilmTag() {
         Article movie = new MediaWikiBot("https://en.wikipedia.org/w/").getArticle("And I Love You So  " + "(film)");
+//        movie.
         System.out.println(movie.getText());
     }
 
     private void save(MovieIdentifier t, String text) throws IOException {
         PrintWriter writer = new PrintWriter(new File(
-                "/Users/carlyledavis/Desktop/wiki-movies/" + t.getImdbId() + ".wiki"));
+                "/Users/carlyledavis/Desktop/wiki-movies1/" + t.getImdbId() + ".wiki"));
         try {
             IOUtils.write(text, writer);
         } finally {

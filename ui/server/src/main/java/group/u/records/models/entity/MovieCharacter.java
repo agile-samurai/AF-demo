@@ -2,11 +2,8 @@ package group.u.records.models.entity;
 
 import group.u.records.models.Person;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 public class MovieCharacter {
 

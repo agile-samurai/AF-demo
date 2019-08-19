@@ -43,8 +43,15 @@ public class Person {
     }
 
     public Person(){
-        titles = new HashSet<>();
         aliases = new HashSet<>();
+        titles = new HashSet<>();
+    }
+
+    public Person(String name ){
+        this.name = name;
+
+        aliases = new HashSet<>();
+        titles = new HashSet<>();
     }
 
     public Person(String url, String name, Set<String> aliases, Set<MovieTitle> titles) {

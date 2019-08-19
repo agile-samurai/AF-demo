@@ -125,9 +125,13 @@ public class S3DataService implements DataService {
 
     @Override
     public String getFile(UUID fileId) {
+        return getFile(dossierStorageBucket, dossierFilePath(fileId));
+    }
+
+    public String getFile(String bucket, String key ){
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(
-                GetObjectRequest.builder().bucket(dossierStorageBucket)
-                        .key(dossierFilePath(fileId))
+                GetObjectRequest.builder().bucket(bucket)
+                        .key(key)
                         .build());
         try {
             String rawDoc = IOUtils.toString(response.readAllBytes());
@@ -139,6 +143,7 @@ public class S3DataService implements DataService {
         }
         return "";
     }
+
 
     private void createBucket(S3Client s3Client) {
         CreateBucketRequest cbr = CreateBucketRequest.builder().bucket(dossierStorageBucket).build();

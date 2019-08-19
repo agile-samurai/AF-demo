@@ -41,6 +41,7 @@ variable "cidr_block" {
   description = "Cidr block ranges per environment"
 
   default = {
+    default  = "10.1.0.0/16",
     dev  = "10.1.0.0/16",
     test = "10.2.0.0/16",
     ft   = "10.3.0.0/16",
@@ -55,7 +56,7 @@ variable "aws_region" {
   description = "region"
 
   default = {
-    default = "us-eat-1",
+    default = "us-east-1",
     dev  = "us-east-1",
     test = "us-east-2",
     prod = "us-west-1",

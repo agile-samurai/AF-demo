@@ -57,7 +57,6 @@ public class MoviePublicSummary {
         this.id = movie.getId();
         this.people = movie.getPeople();
         this.name = movie.getName();
-
         this.image = movie.getImage();
         this.dossierAvailable = true;
     }

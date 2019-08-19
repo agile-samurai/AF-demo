@@ -1,19 +1,28 @@
 #!/usr/bin/env bash
 
+###
+# [root@0ffe5c6cf6ae hsm-setup]# export AWS_DEFAULT_REGION=us-east-1
+# [root@0ffe5c6cf6ae hsm-setup]# ./create-hsm.sh us-west-2
+###
 #HSM_USER_PASS=$(dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 -b 0 | rev | cut -b 2- | rev)
 
 PASS_FILE=pass.txt
 STATE_FILE=cluster_state.txt
+HSM_REGION=$1
 
 init() {
   printf "\n*** Initializing Terraform ***\n"
   cd initial-setup
   terraform init
+  terraform workspace new "${TF_ENVIRONMNET}" || true
+  terraform workspace list
+  terraform workspace select "${TF_ENVIRONMNET}" 
 }
 
 initiate_hsm_setup() {
+  
   printf "\n*** Provisioning HSM infrastructure ***\n"
-  if terraform plan -out plan -var="hsm_controller=${HOST_IP}" -var="region=${HSM_REGION}"; then
+  if terraform plan -out plan -var="hsm_controller=${HOST_IP}"; then
     printf "\n--- Terraform plan succeeded\n--- Applying plan\n"
 
     if terraform apply plan; then
@@ -75,6 +84,7 @@ initiate_hsm_setup() {
           verify_identity
         elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
           printf "\n--- HSM resource already initialized!\n"
+          cp ${STATE_FILE} ../
           cd -
         else
           printf "\n--- HSM resource already active!\n"
@@ -98,6 +108,9 @@ verify_identity() {
 
   printf "\n---  Starting identity check.\n\n--- Downloading HSM Cluster Certificates and CSR\n"
   terraform init
+  terraform workspace new "${TF_ENVIRONMNET}" || true
+  terraform workspace list
+  terraform workspace select "${TF_ENVIRONMNET}" 
   terraform apply -auto-approve
   printf "\n--- Retrieving AWS Root Certificate\n"
   if curl -o aws_root.zip https://docs.aws.amazon.com/cloudhsm/latest/userguide/samples/AWS_CloudHSM_Root-G1.zip; then
@@ -181,7 +194,7 @@ sign_csr() {
 initialize_hsm() {
   printf "\n*** Initializing HSM module ***\n"
 
-  if aws cloudhsmv2 initialize-cluster --region us-west-1 --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
+  if aws cloudhsmv2 initialize-cluster --region ${HSM_REGION} --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
     mv -f customerCA.crt ../ec2-provisioning
     cd -
     return 0
@@ -193,6 +206,9 @@ initialize_hsm() {
 provision_client() {
   cd ec2-provisioning
   terraform init
+  terraform workspace new "${TF_ENVIRONMNET}" || true
+  terraform workspace list
+  terraform workspace select "${TF_ENVIRONMNET}" 
   terraform plan -out plan
   terraform apply plan
 }
@@ -203,13 +219,12 @@ echo "pid is $$"
 init
 initiate_hsm_setup
 sleep 2s
-cd -
 if grep -Fxq "ACTIVE" ${STATE_FILE}; then
   exit 0
 elif grep -Fxq "INITIALIZED" ${STATE_FILE}; then
   provision_client
 else
-  cd post-setup
+  cd ../post-setup
   sign_csr
 
   if initialize_hsm; then
