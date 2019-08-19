@@ -242,6 +242,39 @@ jobs:
   #         - -exc
   #         - |
   #           echo "noop"
+
+  - name: Deploy HSM
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+      - task: Deploy HSM
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+          AWS_DEFAULT_REGION: ((hsm_region))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+            HSM_REGION: ((hsm_region))
+            run:
+              path: /bin/bash
+              args:
+              - -exc
+              - |
+                 run yum install bind-utils -y
+                 export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+                 echo "host is [${HOST_IP}]"
+                 echo "HSM_REGION is [${HSM_REGION}]"
+                 source/config/hsm-setup/create-hsm.sh
+        inputs:
+            - name: source
+        outputs:
+          - name: data     
   - name: terraform-destroy-all-envs
     public: false
     plan:
