@@ -2,8 +2,7 @@ package group.u.records.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.content.Dossier;
-import group.u.records.service.MasterDossier;
+import group.u.records.service.dossier.MasterDossier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

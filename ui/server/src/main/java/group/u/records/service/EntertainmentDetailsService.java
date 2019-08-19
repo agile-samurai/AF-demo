@@ -1,11 +1,14 @@
 package group.u.records.service;
 
-import group.u.records.config.MovieDetailsDataSourceManager;
-import group.u.records.models.entity.MovieDetail;
+import group.u.records.datasource.MovieDetailsDataSourceManager;
+import group.u.records.models.MovieDetail;
 import group.u.records.models.entity.MoviePublicSummary;
-import group.u.records.people.PersonRegistry;
+import group.u.records.repository.people.PersonRegistry;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.repository.PersonRepository;
+import group.u.records.service.datamanagement.MovieListIdentifierProvider;
+import group.u.records.service.dossier.DossierBuilderService;
+import group.u.records.service.dossier.MovieDetailsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

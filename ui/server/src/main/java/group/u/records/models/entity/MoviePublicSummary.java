@@ -1,7 +1,7 @@
 package group.u.records.models.entity;
 
-import group.u.records.models.Person;
-import group.u.records.models.data.Movie;
+import group.u.records.models.MovieDetail;
+import group.u.records.datasource.entity.Movie;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 

@@ -1,5 +1,6 @@
 package group.u.records.service;
 
+import group.u.records.service.datamanagement.MovieListIdentifierProvider;
 import org.junit.Test;
 
 import java.util.List;

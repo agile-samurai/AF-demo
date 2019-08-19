@@ -1,7 +1,7 @@
 package group.u.records.security;
 
 import group.u.records.repository.MoviePublicSummaryRepository;
-import group.u.records.service.S3DataService;
+import group.u.records.service.datamanagement.S3DataService;
 import org.junit.Ignore;
 import org.junit.Test;
 
