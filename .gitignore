@@ -70,7 +70,7 @@ share/python-wheels/
 MANIFEST
 
 ## devops
-credentials.y*
+credentials*.y*
 rdso-accounts.txt
 
 # Data Science data and models

@@ -21,6 +21,12 @@ resource "aws_ecs_task_definition" "service" {
        "hostPort": ${var.container_port}
      }
    ],
+    "dependsOn": [
+        {
+          "containerName": "${var.ds_container_family}",
+          "condition": "HEALTHY"
+        }
+    ],
    "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {

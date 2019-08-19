@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     #bucket = "rdso-challenge2"
-    #key    = "infra.tfstate"
+    key    = "infra.tfstate"
     #region = "us-east-1"
   }
 }
@@ -9,6 +9,26 @@ terraform {
 terraform {
   required_version = "0.12.5"
 }
+
+provider "aws" {
+  region = "${local.aws_infra_region}"
+
+  # version = "~> 1.22"
+}
+
+# provider "aws" {
+#   region = "us-east-1"
+#   alias  = "provider_for_infra_bucket_region"
+
+#   # version = "~> 1.22"
+# }
+
+
+locals {
+  cidr_block = "${var.cidr_block[terraform.workspace]}"
+  aws_infra_region ="${var.aws_region[terraform.workspace]}"
+}
+
 
 # Fetch AZs in the current region
 data "aws_availability_zones" "available" {}
@@ -31,7 +51,7 @@ data "aws_ami" "ecs_ami" {
 module "network" {
   source      = "./modules/network"
   environment = "${terraform.workspace}"
-  cidr_block  = "${var.cidr_block}"
+  cidr_block  = "${local.cidr_block}"
 }
 
 module "iam" {
@@ -48,8 +68,8 @@ module "sonarqube" {
   source                      = "./modules/sonarqube"
   iam_instance_profile        = "${module.iam.iam_instance_profile}"
   vpc_id                      = "${module.network.vpc_id}"
-  vpc-cidr                    = "${var.cidr_block}"
-  region                      = "${var.aws_infra_region}"
+  vpc-cidr                    = "${local.cidr_block}"
+  region                      = "${local.aws_infra_region}"
   ecs_cluster_name            = "${module.ecs.ecs_cluster_name}"
   cluster_id                  = "${module.ecs.ecs_cluster_id}"
   sg-allow-ssh                = "${module.network.sg-allow-ssh}"
