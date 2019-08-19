@@ -33,7 +33,7 @@ public class TwitterMovieDataSource extends MovieDetailsDataSource{
 
 
     @Override
-    public MovieDetail getMovieDetails(String id) {
+    public MovieDetail getMovieDetails(MovieIdentifier identifier) {
 
         return null;
 //        return new MovieDetail();

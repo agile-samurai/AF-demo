@@ -19,7 +19,7 @@ public class WikipediaMovieDataSourceTest {
     @Ignore
     public void shouldExtractCharacters() {
         WikipediaMoveDataSource dataSource = new WikipediaMoveDataSource();
-        dataSource.getCharacters("foo", loadTestFile());
+//        dataSource.getCharacters("foo", loadTestFile());
     }
 
     private String loadTestFile() {

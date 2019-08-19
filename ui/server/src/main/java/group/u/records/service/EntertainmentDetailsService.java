@@ -49,7 +49,7 @@ public class EntertainmentDetailsService {
 
                 logger.debug("Retrieving from data source:  "+ dataSource.getLineage());
                 try {
-                    MovieDetail movieDetail = dataSource.getMovieDetails(id.getImdbId());
+                    MovieDetail movieDetail = dataSource.getMovieDetails(id);
                     if (movieDetail != null) {
                         moviePublicSummaryRepository.save(new MoviePublicSummary(movieDetail));
                         movieDetails.add(movieDetail);

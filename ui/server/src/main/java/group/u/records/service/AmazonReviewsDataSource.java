@@ -33,7 +33,7 @@ public class AmazonReviewsDataSource extends MovieDetailsDataSource {
     }
 
     @Override
-    public MovieDetail getMovieDetails(String id) {
+    public MovieDetail getMovieDetails(MovieIdentifier id) {
         List<Review> reviews = new ArrayList();
         try {
             String fileAsString = dataService.getFileAsString("data/reviews_json/tt" + id + ".json");
@@ -45,7 +45,7 @@ public class AmazonReviewsDataSource extends MovieDetailsDataSource {
         }
 
         List<Person> people = new ArrayList();
-        return new MovieDetail(UUID.nameUUIDFromBytes(id.getBytes()),
+        return new MovieDetail(id.getId(),
                 null,
                 people,
                 asList(),
