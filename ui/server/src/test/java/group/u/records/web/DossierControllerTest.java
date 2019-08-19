@@ -8,7 +8,7 @@ public class DossierControllerTest {
 
     @Test
     public void shouldLoadADossier(){
-        DossierController controller = new DossierController(null);
+        DossierController controller = new DossierController(null, null);
     }
 
 }

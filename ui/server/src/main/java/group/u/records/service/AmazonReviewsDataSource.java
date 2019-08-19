@@ -1,8 +1,6 @@
 package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-import group.u.records.datasource.ImdbMovieDetailsDataSource;
 import group.u.records.models.Person;
 import group.u.records.models.entity.AmazonReview;
 import group.u.records.models.entity.MovieDetail;
@@ -11,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +39,7 @@ public class AmazonReviewsDataSource extends MovieDetailsDataSource {
             String fileAsString = dataService.getFileAsString("data/reviews_json/tt" + id + ".json");
             logger.debug("Found reviews:  " + fileAsString);
             AmazonReview[] amazonReviews = objectMapper.readValue(fileAsString, AmazonReview[].class);
-            Arrays.stream(amazonReviews).map(r -> new Review(r.getStar_rating(), r.getReview_title(), r.getReview_text())).collect(toList());
+            reviews = Arrays.stream(amazonReviews).map(r -> new Review(r.getStar_rating(), r.getReview_title(), r.getReview_text())).collect(toList());
         } catch (Exception e) {
             e.printStackTrace();
         }
