@@ -54,19 +54,19 @@ public class ServiceConfig {
     }
 
     @Bean
-//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(value = "app.security.hsm.enabled", havingValue = "true", matchIfMissing = true)
     public SecurityGatewayClient securityGatewayClient(RestTemplate restTemplate,
                                                        @Value("${app.content.security.host}") String host){
         logger.debug("Initializing in HSM Gateway client." );
         return new AWSCloudHSMSecurityGatewayClient(restTemplate, host );
     }
 
-//    @Bean
-//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "false")
-//    public SecurityGatewayClient inMemorySecurityGatewayClient(){
-//        logger.debug("Initializing in memory security client." );
-//        return new InMemorySecurityClient();
-//    }
+    @Bean
+    @ConditionalOnProperty(value = "app.security.hsm.enabled", havingValue = "false")
+    public SecurityGatewayClient inMemorySecurityGatewayClient(){
+        logger.debug("Initializing in memory security client." );
+        return new InMemorySecurityClient();
+    }
 
     @Bean
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
@@ -74,5 +74,4 @@ public class ServiceConfig {
                                                            AmazonReviewsDataSource amazon ){
         return new MovieDetailsDataSourceManager(asList(imdb, amazon));
     }
-
 }

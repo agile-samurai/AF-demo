@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import './DossierContent.css';
 import PerLineageDossierContent from "../PerLineageDossierContent/PerLineageDossierContent";
 import DossierNotes from "../DossierNotes/DossierNotes";
+import Files from "../Files/Files";
 import {Link} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
@@ -83,6 +84,7 @@ export default class DossierContent extends React.Component {
                                 {perLineageDossierContentList}
                                 <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                               refreshData={this.loadEncryptedData.bind(this)}/>
+                                <Files/>
                                 <div className="end-of-dossier-indicator"/>
                             </div>
                         </div>
