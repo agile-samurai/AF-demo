@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.entity.MovieDetail;
 import group.u.records.people.PersonRegistry;
 import group.u.records.service.MovieDetailsDataSource;
+import group.u.records.service.MovieIdentifier;
 import group.u.records.service.S3DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +31,18 @@ public class OmdbMovieDetailsDataSource extends MovieDetailsDataSource {
     }
 
     @Override
-    public MovieDetail getMovieDetails(String id) {
+    public MovieDetail getMovieDetails(MovieIdentifier id) {
         MovieDetail movieDetail = null;
 
         try {
-            String json = dataService.getFileAsString("data/omdb_json/tt" + id + ".json");
+            String json = dataService.getFileAsString("data/omdb_json/tt" + id.getImdbId() + ".json");
             json = json.replace("\"Title\"", "\"title\"");
             json = json.replace("\"Plot\"", "\"plot\"");
             json = json.replace("\"Actors\"", "\"actors\"");
 
             logger.debug("Data  " + json );
             OMDBMovie movie = objectMapper.readValue(json, OMDBMovie.class);
-            return new MovieDetail(id, movie, getLineage());
+            return new MovieDetail(id.getId(), movie, getLineage());
         } catch (IOException e) {
             e.printStackTrace();
         }
