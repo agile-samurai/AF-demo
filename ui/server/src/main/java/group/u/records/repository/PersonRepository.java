@@ -1,7 +1,6 @@
 package group.u.records.repository;
 
-import group.u.records.models.Person;
-import group.u.records.models.entity.MoviePublicSummary;
+import group.u.records.models.entity.Person;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;

@@ -2,10 +2,10 @@ package group.u.records.datasource;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.entity.MovieDetail;
-import group.u.records.people.PersonRegistry;
+import group.u.records.models.MovieDetail;
+import group.u.records.repository.people.PersonRegistry;
 import group.u.records.service.MovieIdentifier;
-import group.u.records.service.S3DataService;
+import group.u.records.service.datamanagement.S3DataService;
 import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -13,7 +13,6 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class ImdbMovieDetailsDataSourceTest {

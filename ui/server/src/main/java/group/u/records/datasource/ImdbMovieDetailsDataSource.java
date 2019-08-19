@@ -1,13 +1,13 @@
 package group.u.records.datasource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.data.Movie;
-import group.u.records.models.entity.MovieCharacter;
-import group.u.records.models.entity.MovieDetail;
-import group.u.records.people.PersonRegistry;
-import group.u.records.service.MovieDetailsDataSource;
+import group.u.records.datasource.entity.Movie;
+import group.u.records.models.MovieCharacter;
+import group.u.records.models.MovieDetail;
+import group.u.records.repository.people.PersonRegistry;
+import group.u.records.service.dossier.MovieDetailsDataSource;
 import group.u.records.service.MovieIdentifier;
-import group.u.records.service.S3DataService;
+import group.u.records.service.datamanagement.S3DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static group.u.records.service.Lineage.IMDB;
-import static java.lang.Enum.valueOf;
+import static group.u.records.service.dossier.Lineage.IMDB;
 import static java.util.Arrays.asList;
 
 @Component
