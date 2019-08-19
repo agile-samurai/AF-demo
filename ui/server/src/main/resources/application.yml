@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-encrypt
+      name: dossier-storage-clear
   access:
     key:
       id: FAKEACCESS

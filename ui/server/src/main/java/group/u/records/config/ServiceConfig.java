@@ -53,16 +53,16 @@ public class ServiceConfig {
         return new RestTemplate();
     }
 
-    @Bean
-    @ConditionalOnProperty(value = "${app.security.hsm.enabled:true}", matchIfMissing = true)
-    public SecurityGatewayClient securityGatewayClient(RestTemplate restTemplate,
-                                                       @Value("${app.content.security.host}") String host){
-        logger.debug("Initializing in HSM Gateway client." );
-        return new AWSCloudHSMSecurityGatewayClient(restTemplate, host );
-    }
+//    @Bean
+//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "true", matchIfMissing = true)
+//    public SecurityGatewayClient securityGatewayClient(RestTemplate restTemplate,
+//                                                       @Value("${app.content.security.host}") String host){
+//        logger.debug("Initializing in HSM Gateway client." );
+//        return new AWSCloudHSMSecurityGatewayClient(restTemplate, host );
+//    }
 
     @Bean
-    @ConditionalOnProperty(value = "${app.security.hsm.enabled:false}")
+//    @ConditionalOnProperty(value = "${app.security.hsm.enabled}", havingValue = "false")
     public SecurityGatewayClient inMemorySecurityGatewayClient(){
         logger.debug("Initializing in memory security client." );
         return new InMemorySecurityClient();
@@ -72,7 +72,7 @@ public class ServiceConfig {
     public MovieDetailsDataSourceManager dataSourceManager(ImdbMovieDetailsDataSource imdb,
                                                            OmdbMovieDetailsDataSource omdb,
                                                            AmazonReviewsDataSource amazon ){
-        return new MovieDetailsDataSourceManager(asList(imdb));
+        return new MovieDetailsDataSourceManager(asList(imdb, amazon));
     }
 
 }
