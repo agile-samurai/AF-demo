@@ -15,9 +15,12 @@ provider "aws" {
   region  = "${local.region}"
 }
 
+//provider "tls" {}
+
 locals {
   region = "${var.aws_region[terraform.workspace]}"
 }
+
 
 resource "aws_cloudwatch_log_group" "container" {
   name = "logs-${terraform.workspace}"
@@ -142,6 +145,9 @@ module "www" {
   server_url                 = module.server.dns_name
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = "${local.region}"
+
+  //cert_pem = tls_self_signed_cert.example.cert_pem  #cert data in pem format
+  //private_key_pem = "${tls_private_key.example}"
 }
 
 module "server" {

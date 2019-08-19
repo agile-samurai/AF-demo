@@ -43,9 +43,9 @@ resource "aws_ecs_service" "service" {
   desired_count = "${var.instance_count}"
 
   launch_type = "FARGATE"
-  depends_on = [
-    "aws_alb_target_group.front_end",
-  "aws_alb.lb"]
+  # depends_on = [
+  #   "aws_alb_target_group.front_end_http","aws_alb_target_group.front_end_ssl",
+  # "aws_alb.lb"]
 
   # Track the latest ACTIVE revision
   task_definition = "${aws_ecs_task_definition.service.family}:${max("${aws_ecs_task_definition.service.revision}", "${aws_ecs_task_definition.service.revision}")}"
@@ -57,7 +57,7 @@ resource "aws_ecs_service" "service" {
   }
 
   load_balancer {
-    target_group_arn = "${aws_alb_target_group.front_end.id}"
+    target_group_arn = "${aws_alb_target_group.front_end_https.id}"
     container_name = "${var.container_family}"
     container_port = "${var.container_port}"
   }
@@ -75,7 +75,46 @@ resource "aws_alb" "lb" {
   }
 }
 
-resource "aws_alb_target_group" "front_end" {
+
+# generate self signed certificate for load balancer
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+}
+
+resource "tls_self_signed_cert" "example" {
+  key_algorithm   = "RSA"
+  private_key_pem = "${tls_private_key.example.private_key_pem}"
+  early_renewal_hours = 2
+
+  subject {
+    common_name  = "u.group"
+    organization = "U Group"
+  }
+
+  validity_period_hours = 12
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+   depends_on = ["tls_private_key.example"]
+
+}
+
+resource "aws_iam_server_certificate" "test_cert" {
+  name_prefix      = "example-cert"
+  certificate_body = "${tls_self_signed_cert.example.cert_pem}"
+  private_key      = "${tls_private_key.example.private_key_pem}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  depends_on = ["tls_self_signed_cert.example"]
+}
+
+
+resource "aws_alb_target_group" "front_end_https" {
   port = "${var.container_port}"
   protocol = "HTTP"
   vpc_id = "${var.vpc_id}"
@@ -92,16 +131,49 @@ resource "aws_alb_target_group" "front_end" {
   }
 }
 
-resource "aws_alb_listener" "front_end" {
+resource "aws_alb_listener" "front_end_https" {
   load_balancer_arn = "${aws_alb.lb.id}"
-  port = "${var.loadbalancer_port}"
-  protocol = "HTTP"
+  port = "${var.loadbalancer_port_https}"
+  protocol = "HTTPS"
+  ssl_policy = "ELBSecurityPolicy-2016-08"  #predefined ssl  security policy  
+  certificate_arn   = "${aws_iam_server_certificate.test_cert.arn}"
 
   default_action {
-    target_group_arn = "${aws_alb_target_group.front_end.id}"
+    target_group_arn = "${aws_alb_target_group.front_end_https.id}"
     type = "forward"
   }
+  depends_on = ["aws_iam_server_certificate.test_cert"]
 }
+
+# resource "aws_alb_target_group" "front_end_http" {
+#   port = "${var.container_port}"
+#   protocol = "HTTP"
+#   vpc_id = "${var.vpc_id}"
+#   target_type = "ip"
+
+#   health_check {
+#     healthy_threshold = 2
+#     unhealthy_threshold = 10
+#     protocol = "HTTP"
+#     path = "/"
+#     interval = 32
+#     timeout = 30
+#     matcher = "${var.matcher_ports}"
+#   }
+# }
+
+# resource "aws_alb_listener" "front_end_http" {
+#   load_balancer_arn = "${aws_alb.lb.id}"
+#   port = "${var.loadbalancer_port}"
+#   protocol = "HTTP"
+
+#   default_action {
+#     target_group_arn = "${aws_alb_target_group.front_end_http.id}"
+#     type = "forward"
+#   }
+# }
+
+
 //
 //resource "aws_alb_listener" "front_end_https" {
 //  load_balancer_arn = "${aws_alb.lb.id}"
