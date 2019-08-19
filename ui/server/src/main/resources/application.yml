@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-test
+      name: dossier-storage-clear
   access:
     key:
       id: FAKEACCESS
@@ -13,9 +13,15 @@ aws:
   folder: data/movies_json
   characterFolder: data/characters_json
 app:
+  security:
+    hsm:
+      enabled: false
   feature:
     enableAutoRedact: true
     enableDistributionImages: false
+  content:
+    security:
+      host: http://13.52.124.47:8080
   ds:
     redact:
       host: http://spacy
