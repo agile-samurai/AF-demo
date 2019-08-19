@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "service" {
 
     { "name": "APP_DS_REDACT_HOST", "value" :"${var.ds_redact_host}"},
     { "name": "APP_DS_IMAGES_HOST", "value" :"${var.ds_images_host}"},
-    { "name": "APP_DS_SIMILARITIES_HOST", "value" :"http://${var.ds_similarities_host}"},
+    { "name": "APP_DS_SIMILARITIES_HOST", "value" :"${var.ds_similarities_host}"},
     { "name": "APP_JWT_SECRET", "value" :"${var.jwt_secret}"},
     { "name": "APP_BUSINESS_USER_PASSWORD", "value" :"${var.business_user_password}"},
     { "name": "APP_BUSINESS_SUPERVISOR_PASSWORD", "value" :"${var.business_supervisor_password}"},
