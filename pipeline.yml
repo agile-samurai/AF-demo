@@ -50,7 +50,7 @@ resources:
       driver: git
       uri: ((git_version_url))
       initial_version: 0.0.1
-      branch: version-((aws_account_id))
+      branch: version
       file: version
       private_key: ((git_private_key))
   ################### Resources ECR REPOS ######################
