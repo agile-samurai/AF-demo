@@ -36,3 +36,25 @@ a.navigation-link.dossier-name-link {
     text-align: center;
     margin-top: 50px;
 }
+
+.delete-button-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.delete-button-wrapper .delete-dossier-button, .delete-button-wrapper .delete-dossier-button:hover {
+    background-color: #FB5342;
+    color: #FCFCFC;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+.end-of-dossier-indicator {
+    height: 2px;
+    background-color: #000;
+    width: 100%;
+    margin-top: 20px;
+}

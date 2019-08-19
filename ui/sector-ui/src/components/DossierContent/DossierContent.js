@@ -5,6 +5,8 @@ import './DossierContent.css';
 import PerLineageDossierContent from "../PerLineageDossierContent/PerLineageDossierContent";
 import DossierNotes from "../DossierNotes/DossierNotes";
 import {Link} from "react-router-dom";
+import DeleteIcon from '@material-ui/icons/Delete';
+import Fab from '@material-ui/core/Fab';
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -49,7 +51,6 @@ export default class DossierContent extends React.Component {
         const perLineageDossierContentList = dossiers
             .map(perLineageDossier => <PerLineageDossierContent key={perLineageDossier.id}
                                                                 dossierID={dossierData.id}
-                                                                handleDelete={this.handleDelete}
                                                                 refreshData={this.loadEncryptedData.bind(this)}
                                                                 dossierData={perLineageDossier}/>);
 
@@ -69,9 +70,20 @@ export default class DossierContent extends React.Component {
                                         </div>
                                     </div>
                                 </Link>
+                                <div className="delete-button-wrapper">
+                                    <div>
+                                        {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
+                                        <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier" onClick={this.handleDelete}>
+                                            DELETE DOSSIER
+                                            <DeleteIcon/>
+                                        </Fab>
+                                        {/*</ShowElementByRole>*/}
+                                    </div>
+                                </div>
                                 {perLineageDossierContentList}
                                 <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                               refreshData={this.loadEncryptedData.bind(this)}/>
+                                <div className="end-of-dossier-indicator"/>
                             </div>
                         </div>
                 }
