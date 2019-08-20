@@ -10,16 +10,11 @@ public class TrainingData {
 
     @Id
     private String id;
-    private Lineage lineage;
 
     public TrainingData(){}
 
     public String getId() {
         return id;
-    }
-
-    public Lineage getLineage() {
-        return lineage;
     }
 
     public TrainingData(String id) {

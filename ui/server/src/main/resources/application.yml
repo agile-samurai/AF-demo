@@ -1,7 +1,7 @@
 aws:
   dossier:
     storage:
-      name: dossier-storage-delete-brad-1
+      name: ${app.environment.tag}-dossier-storage
       files: files
   access:
     key:
