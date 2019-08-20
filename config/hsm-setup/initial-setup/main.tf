@@ -3,18 +3,18 @@ variable region {
   default = "us-west-1"
 }
 
-//terraform {
-//  backend "s3" {
-//    bucket = "rdso-challenge2"
-//    key    = "hsm.tfstate"
-//  }
-//}
-
 terraform {
-  backend "local" {
-    path = "./terraform.tfstate"
+  backend "s3" {
+    bucket = "rdso-challenge2"
+    key    = "hsm.tfstate"
   }
 }
+
+# terraform {
+#   backend "local" {
+#     path = "./terraform.tfstate"
+#   }
+# }
 
 //variable hsm_region {}
 
