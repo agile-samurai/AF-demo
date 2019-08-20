@@ -12,22 +12,32 @@ Our data science process is comprised of three primary processes:
 
 __Our AI/ML Execution and Analytical Approach__
 
-Our team used Natural Language Processing (NLP) to classify unstructured text pulled from datasources. We performed standard preprocessing by removing stop words, lemmatizing, lower-casing, removing punctuation and extra whitespace. We used SpaCy to identify key verbs in sentences and check against manually defined verbs that better indicated capabilities, before allowing sentences into our corpus. This resulted in sets of word tokens for each company that we used to define company capabilities.
+Our team used Natural Language Processing (NLP) to classify unstructured text pulled from datasources. We performed standard preprocessing by removing stop words, lemmatizing, lower-casing, removing punctuation and extra whitespace. We used the `nltk` library to identify word tokens that form the basis of our sentence embedding model.
 
 ## Algorithmic selection
 
 ### Search Execution & Enhancements
+To enable fuzzy search and find similarity between movie descriptions, we  explored multi dimensional entity comparison algorithms that would best leverage the available data.
+#### Fuzzy Search
+To validate our approach and provide feedback early, we explored the __[cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity)__ as a starting point but realized that its performance within this context was more suited to determining anagrams. We then explored other models (Jaro-Winkler, etc.) that produced varying results, some of which were aligned with our expectations. However, as we tuned out model hyper parameter and preprocessing selections, we saw issues with differentiation of string values.
 
-To enable Fuzzy search and find similarity between movie descriptions, we  explored multi dimensional entity comparison algorithms that would best leverage the available data.  To validate our approach and provide feedback early, we explored the __[cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity)__ as a starting point but realized that its performance within this context was more suited to determining anagrams. We then explored other models (Jaro Winkler etc.) that produced varying results, some of which were aligned with our expectations. However, as we tuned out model hyper parameter and preprocessing selections, we saw issues with differentiation of string values.
+We chose to implement __[Levenshtein algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance)__  as it closely matched what we needed to do and the results were within the expectations. Levenshtein distance quickly and deterministically measures the overall difference of an input query from the any entry in our data. Where cosine similarity requires a normalized dataset, the Levenshtein distance executes a fuzzy search without training or additional user input, such as labeling.
 
+#### Document Similarity
 
-Our final choice was to implement __[Levenshtein algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance)__  as it closely matched what we needed to do and the results were within the expectations. Additionally we decided this algorithm is a best match because it is not only fast and effective but also since there is no input from end user to success of search.
-Similarity Model:  To find movies which are similar and categorize them into a genre we have developed a Similarity model. This model looks at all movie plot descriptions, takes in words, generates vectors of the words used in plot summaries and then compares those vectors against another document’s vectors. This resulted in finding movies with plot summaries that are most similar to one another.
+To find movies which are similar and categorize them into a genre we have developed a Similarity model.
+This model looks at all movie plot descriptions derived from OMDB, tokenizes those sentences using the NLP preparation steps outlined above and generates vectors of the words used in plot summaries.
+and then compares those vectors against another document’s vectors.
+This resulted in finding movies with plot summaries that are most similar to one another.
 A key advantage of implementing this model is to enable an analyst to find linkages between dossiers by showing similar dossier types.  
 
 We used Doc2Vec implementation of sentence modelling using Gensim as the library for implementation. Using this implementation we determined the genre listed for each film is the one that was primarily associated with it.  This is a key indication of success factor in implementing Doc2Vec which proved that our vectors have separated movies efficiently. Our approach was to measure vector distances between the document and the central location of the genre and try to minimize the distance by adjusting the hyper parameters resulting in tighter clusters. Each vector that was created has 300 dimensions. We used all 300 dimensions and averaged the distance across all of them within a genre for grouping similar movies.
 
-Auto Predictive Redaction Model:  A core objective of this challenge is to ensure security of dossiers and the information they contain. We utilized Amazon’s CloudHSM to implement a cryptographic delete process. Taking the objective of security and privacy concerns to the next evolution, we implemented an “Auto Predictive Redaction Model” which utilizes Named Entity Recognition principles to auto highlight and redact information in dossiers. The advantage of implementing this is to enable business supervisors share redacted dossier information with other internal or external resources as needed, similar to a FOIA process implemented in various Federal agencies.
+#### Auto Predictive Redaction Model
+A core objective of this challenge is to ensure security of dossiers and the information they contain.
+We utilized Amazon’s CloudHSM to implement a cryptographic delete process.
+Taking the objective of security and privacy concerns to the next evolution, we implemented an “Auto Predictive Redaction Model” which utilizes Named Entity Recognition principles to auto highlight and redact information in dossiers.
+The advantage of implementing this is to enable business supervisors share redacted dossier information with other internal or external resources as needed, similar to a FOIA process implemented in various Federal agencies.
 
 We identified person, organization entities and used Spacy, which is trained on English Wikipedia to provide highlighted/redacted summaries in a dossier.
 Data Engineering: Our team used Natural Language Processing (NLP) to classify unstructured text pulled from data sources. We performed standard preprocessing by removing stop words, lemmatizing, lower-casing, removing punctuation and extra whitespace.
