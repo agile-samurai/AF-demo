@@ -27,6 +27,8 @@ def make_test_image(n):
 
 
 def jsonify_image(p):
+    """Converts image into json item a bokeh figure for easy passing to front-end.
+    """
     return json_item(p)
 
 
@@ -53,8 +55,8 @@ def sc_plot_genre_colors(mdf, colormap=None):
 
     # for now, this populates random values, but eventually, this should use the
     # first two principal components of the Doc2Vec model to populate the x and y vars
-    mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
-    mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
+    # mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
+    # mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
 
     # only want to use it to plot if there is a genre attached
     mdf = mdf[mdf.top_genre.notna()]
@@ -100,11 +102,12 @@ def sc_plot_genre_colors(mdf, colormap=None):
     return p
 
 
-def sc_plot_for_one(mdf, imdbID: str):
+def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
     """Creates and colorizes a scatterplot of all movies in the dataset, with
     one IMDB entry specified as the one in question. That one has a big X over it.
-    All the movies that are in the same genre as the specified film are colorized
-    but everything else is grayed out.
+
+    If gray_out is True: All the movies that are in the same genre as the
+    specified film are colorized but everything else is grayed out.
 
     Parameters
     ----------

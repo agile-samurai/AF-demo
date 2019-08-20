@@ -98,7 +98,6 @@ def most_similar_movies(imdbID: str):
         imdbID = "tt" + imdbID
 
     print("this is the id " + imdbID)
-    print(movies_df)
 
     selected_movie = movies_df[movies_df["film_id"] == imdbID]
     if len(selected_movie) == 0:
