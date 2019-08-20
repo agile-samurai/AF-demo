@@ -146,6 +146,18 @@ resource aws_instance hsm_gateway {
     destination = "/tmp/setup_ec2.sh"
   }
 
+  provisioner "file" {
+    connection {
+      type = "ssh"
+      host = aws_instance.hsm_gateway.public_ip
+      user = "ec2-user"
+      private_key = file("${path.module}/key.pem")
+    }
+
+    source      = "hsmgateway-0.0.1-SNAPSHOT.jar"
+    destination = "/tmp/hsmgateway-0.0.1-SNAPSHOT.jar"
+  }
+
   provisioner "remote-exec" {
     connection {
       type = "ssh"
@@ -174,6 +186,18 @@ resource aws_instance hsm_gateway {
       "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}"]
   }
 
+  provisioner "remote-exec" {
+    connection {
+      type = "ssh"
+      host = aws_instance.hsm_gateway.public_ip
+      user = "ec2-user"
+      private_key = file("${path.module}/key.pem")
+    }
+
+    inline = [
+      "nohup java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar "
+    ]
+  }
 
   depends_on = [aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm, aws_iam_user_login_profile.admin, aws_security_group.gateway-ingress, tls_private_key.hsm_key]
 }
