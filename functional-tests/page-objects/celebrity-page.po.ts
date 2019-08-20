@@ -1,8 +1,8 @@
-import { ElementFinder } from 'protractor';
+import { ElementFinder, browser } from 'protractor';
 import { CommonActions } from '../common/actions';
 
 export class CelebrityPage extends CommonActions  {
-    private url: string = `http://localhost:9091/celebrity-search`;
+    private url: string = `${browser.params.baseUrl}celebrity-search`;
     private logo: string = `.navigation-link`;
     private searchBar: string = `#standard-name`;
 

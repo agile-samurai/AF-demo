@@ -1,8 +1,8 @@
-import { ElementFinder } from 'protractor';
+import { browser, ElementFinder } from 'protractor';
 import { CommonActions } from '../common/actions';
 
 export class HomePage extends CommonActions  {
-    private url: string = `http://localhost:9091/`;
+    private url: string = browser.params.baseUrl;
     private logo: string = `.navigation-link`;
     private searchBar: string = `#standard-name`;
     private searchResults: string = `.search-results`;
@@ -11,7 +11,7 @@ export class HomePage extends CommonActions  {
     private addNoteButton: string = `${this.dossierMainSection} button[class*=add-note-button]`;
 
     public async waitForApplication(): Promise<void> {
-        await this.goToAndWaitForPage(this.url, /9091/);
+        await this.goToAndWaitForPage(this.url, /amazonaws/);
     }
 
     public async waitForPresenceAndGetLogo(): Promise<ElementFinder> {
