@@ -6,10 +6,6 @@
     margin-top: 10px;
 }
 
-.lineage {
-    font-weight: bold;
-}
-
 .lineage-and-delete-button {
     display: flex;
     flex-direction: row;
