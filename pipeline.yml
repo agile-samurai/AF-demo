@@ -1087,11 +1087,15 @@ jobs:
     plan:
       - get: source
         passed:
-          - Deploy Services To Dev
+        - Push DS Image
+        - Push server Image
+        - Push UI
         trigger: false
       - get: version
         passed:
-          - Deploy Services To Dev
+        - Push DS Image
+        - Push server Image
+        - Push UI
         trigger: true
       - task:  Write Variables and Run TF Deploy
         attempts: 10
