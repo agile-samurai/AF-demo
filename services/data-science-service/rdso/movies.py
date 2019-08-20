@@ -166,6 +166,28 @@ def load_imdb_tables_from_dump(folder="../data/imdb_dump"):
 def process_imdb_dump(names, titles):
     mdf = title.merge(name).replace("\\N", pd.np.nan)
     actors = mdf[(mdf.category == "actor") | (mdf.category == "actress")]
+    actors.columns = [
+        "film_id",
+        "ordering",
+        "person_id",
+        "category",
+        "job",
+        "characters",
+        "name",
+        "birthYear",
+        "deathYear",
+        "profession",
+        "other_films",
+    ]
+    actors.other_films = actors.other_films.apply(
+        lambda x: x.split(",") if isinstance(x, str) else x
+    )
+    actors["lineage"] = "imdb"
+    return actors
+
+
+def get_actor_dict(film_id, actor_df):
+    return actor_df[actor_df["film_id"] == film_id].to_dict(orient="records")
 
 
 def process_omdb_to_df():
@@ -177,8 +199,12 @@ def process_omdb_to_df():
 
 
 def merged_movie_data(data):
-    movies_processed = process_movie_list_to_df(data)
+    # movies_processed = process_movie_list_to_df(data)
+    movies_processed = process_omdb_to_df()
     mv = load_movietweetings_df()
+    names, titles = load_imdb_tables_from_dump()
+    actor_df = process_imdb_dump(names, titles)
+    mv["actors"] = mv.film_id.apply(get_actor_dict)
     omdb = process_omdb_to_df()
     mdf = movies_processed.merge(mv, how="left", on="imdb_id")
     return mdf
