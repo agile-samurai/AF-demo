@@ -13,6 +13,7 @@ aws:
   bucketName: rdso-challenge2
   folder: data/movies_json
   tweets: data/tweets/parsed
+  wikipedia: data/wikipedia
   characterFolder: data/characters_json
 app:
   environment:
