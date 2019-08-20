@@ -4,13 +4,6 @@ resource_types:
     source:
       repository: ljfranklin/terraform-resource
       tag: 0.12.5
-  - name: latest-docker-image
-    type: docker-image
-    privileged: true
-    source:
-      repository: concourse/docker-image-resource
-      tag: latest
-      registry_mirror: "https://mirror.gcr.io"
   - name: slack-notification
     type: docker-image
     source:
@@ -55,19 +48,19 @@ resources:
       private_key: ((git_private_key))
   ################### Resources ECR REPOS ######################
   - name: server-docker-image
-    type: latest-docker-image
+    type: docker-image
     source:
       aws_access_key_id: ((aws_access_key_id))
       aws_secret_access_key: ((aws_secret_access_key))
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/server
   - name: main-ds-service-docker-image
-    type: latest-docker-image
+    type: docker-image
     source: #049492283767.dkr.ecr.us-east-1.amazonaws.com
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/data-science-service
       aws_access_key_id: ((aws_access_key_id))
       aws_secret_access_key: ((aws_secret_access_key))
   - name: client-docker-image
-    type: latest-docker-image
+    type: docker-image
     source:
       repository: ((aws_account_id)).dkr.ecr.us-east-1.amazonaws.com/ui
       aws_access_key_id: ((aws_access_key_id))
@@ -86,8 +79,18 @@ resources:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
       bucket: ((app_data_bucket))
-      path: data/ci/data
+      path: /data/ci/data
+      options:
+        - "--exclude '*'"
+        - "--include '*.pkl'"
       region: ((bucket_aws_region))
+  # - name: data
+  #   type: s3
+  #   source:
+  #     bucket: ((app_data_bucket))
+  #     regexp: data/movies_df.pkl
+  #     access_key_id: ((aws_access_key_id))
+  #     secret_access_key: ((aws_secret_access_key))
   - name: raw_data
     type: simple-s3-resource
     source:
@@ -101,9 +104,8 @@ resources:
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: rdso-challenge2
-      path: data/omdb_json
-      options: ["--quiet"]
+      bucket: ugroup-rdso-challenge-data
+      path: omdb_json
       region: us-east-1
 
 groups:
@@ -113,7 +115,7 @@ groups:
     - Deploy HSM - Test
     - Deploy HSM - Prod
     - Initialize
-    - Consildate Data
+    - Consolidate Data
     - Build UI
     - Build server and SonarQube
     - Execute server Functional Tests
@@ -202,7 +204,7 @@ jobs:
     serial: true
     plan:
       - get: source
-        trigger: false
+        trigger: true
       - task: Deploy HSM
         attempts: 10
         params:
@@ -231,7 +233,7 @@ jobs:
                 cd ../../../
                 cd source/config/hsm-setup/initial-setup
 
-                terraform init
+                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new dev || true
                 terraform workspace list
                 terraform workspace select dev
@@ -247,7 +249,7 @@ jobs:
     serial: true
     plan:
       - get: source
-        trigger: false
+        trigger: true
       - task: Deploy HSM
         attempts: 10
         params:
@@ -268,7 +270,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init
+                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new test || true
                 terraform workspace list
                 terraform workspace select test
@@ -284,7 +286,7 @@ jobs:
     serial: true
     plan:
       - get: source
-        trigger: false
+        trigger: true
       - task: Deploy HSM
         attempts: 10
         params:
@@ -305,7 +307,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init
+                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new prod || true
                 terraform workspace list
                 terraform workspace select prod
@@ -473,7 +475,7 @@ jobs:
           outputs:
             - name: raw_data
       - put: raw_data
-  - name: Consildate Data
+  - name: Consolidate Data
     public: true
     serial: true
     plan:
@@ -483,7 +485,7 @@ jobs:
         passed: [Initialize]
       - get: omdb_json
         trigger: true
-      - task: Gather Data
+      - task: Create Pickle File
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -512,18 +514,22 @@ jobs:
               python -m nltk.downloader stopwords
               python movies.py
               cd ../../../../
+              cp source/services/data-science-service/data/movies_df.pkl data
               ls -al data
               rm -rf source/services/data-science-service/data/omdb_json
               rm -rf data/data/omdb_json
+              ls .
+              rm -rf data/omdb_json
+
               echo "Foo br"
-              cp source/services/data-science-service/data/movies_df.pkl data
           inputs:
             - name: source
             - name: omdb_json
           outputs:
             - name: data
       - put: data
-
+        params:
+          file: data/movies_df.pkl
   - name: Train Models
     public: true
     serial: true
@@ -533,7 +539,7 @@ jobs:
       #   passed: [Initialize]
       - get: data
         trigger: true
-        passed: [Consildate Data]
+        passed: [Consolidate Data]
       - task: Train model
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
@@ -1361,7 +1367,7 @@ jobs:
       config:
         platform: linux
         image_resource:
-          type: latest-docker-image
+          type: docker-image
           source:
             repository: owasp/zap2docker-weekly
         outputs:
