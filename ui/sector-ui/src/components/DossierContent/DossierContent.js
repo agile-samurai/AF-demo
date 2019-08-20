@@ -9,7 +9,7 @@ import {Link} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
 import Tweets from "../Tweets/Tweets";
-import ShowElementByRole from "../ShowElementByRole/ShowElementByRole";
+import Paper from '@material-ui/core/Paper';
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -57,7 +57,7 @@ export default class DossierContent extends React.Component {
                                                                          dossierData={perLineageDossier}/>);
 
         return (
-            <div>
+            <Paper className="dossier-paper-container">
                 <div className="dossier-main-section-wrapper">
                     <div className="dossier-main-section">
                         <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
@@ -73,11 +73,11 @@ export default class DossierContent extends React.Component {
                         <div className="delete-button-wrapper">
                             <div>
                                 {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
-                                    <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
-                                         onClick={this.handleDelete}>
-                                        DELETE DOSSIER
-                                        <DeleteIcon/>
-                                    </Fab>
+                                <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
+                                     onClick={this.handleDelete}>
+                                    DELETE DOSSIER
+                                    <DeleteIcon/>
+                                </Fab>
                                 {/*</ShowElementByRole>*/}
                             </div>
                         </div>
@@ -95,10 +95,9 @@ export default class DossierContent extends React.Component {
                                       refreshData={this.loadEncryptedData.bind(this)}/>
                         <Files dossierID={dossierData.id} files={dossierData.dossierFileInfos}
                                refreshData={this.loadEncryptedData.bind(this)}/>
-                        <div className="end-of-dossier-indicator"/>
                     </div>
                 </div>
-            </div>
+            </Paper>
         );
     }
 
@@ -117,14 +116,15 @@ export default class DossierContent extends React.Component {
                         dossierData: response.data,
                         loaded: true
                     }, () => {
-                        try{
+                        try {
                             window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
                                 `genreFitChart${this.state.dossierData.id}`);
 
                             this.setState({
                                 chartLoaded: true
                             })
-                        } catch (error) {}
+                        } catch (error) {
+                        }
                     });
                 })
                 .catch(() => {
