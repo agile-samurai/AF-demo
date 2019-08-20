@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public class MasterDossier {
     private String name;
+    private String distribution;
     private List<DossierFileInfo> dossierFileInfos;
     private List<Dossier> dossiers;
     private List<UUID> similarMovies;
@@ -44,11 +45,16 @@ public class MasterDossier {
         return name;
     }
 
-    public MasterDossier(List<Dossier> dossiers, List<UUID> similarMovies, MovieIdentifier id) {
+    public String getDistribution() {
+        return distribution;
+    }
+
+    public MasterDossier(List<Dossier> dossiers, List<UUID> similarMovies, MovieIdentifier id, String distribution ) {
         this.dossiers = dossiers;
         this.similarMovies = similarMovies;
         this.id = id.getId();
         this.name = id.getName();
+        this.distribution = distribution;
         this.notes = new ArrayList<>();
         this.dossierFileInfos = new ArrayList();
     }

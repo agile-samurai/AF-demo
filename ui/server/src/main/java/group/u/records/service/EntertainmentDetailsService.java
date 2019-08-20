@@ -49,7 +49,6 @@ public class EntertainmentDetailsService {
             logger.debug("Parsing movie: " + id );
             List<MovieDetail> movieDetails = new ArrayList();
             for(MovieDetailsDataSource dataSource : dataSourceManager.getDataSources()){
-
                 logger.debug("Retrieving from data source:  "+ dataSource.getLineage());
                 try {
                     MovieDetail movieDetail = dataSource.getMovieDetails(id);

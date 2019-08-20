@@ -36,31 +36,31 @@ public class DossierBuilderService {
     }
 
 
-    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, MovieIdentifier movieId ){
+    public MasterDossier generateDossiers(List<MovieDetail> movieDetails, MovieIdentifier movieId) {
         logger.debug("About to write dossier with lineage count:  " + movieDetails.size());
-
         UUID id = UUID.nameUUIDFromBytes(movieId.getImdbId().getBytes());
         MasterDossier masterDossier = new MasterDossier(movieDetails
                 .stream()
-                .map(f -> generateDossier(f, movieId))
-                .collect(toList()), scoringProvider.getSimilarMovies(movieId.getImdbId()), movieId);
-        masterDossierService.save(masterDossier);
+                .map(f -> generateDossier(f))
+                .collect(toList()), scoringProvider.getSimilarMovies(movieId.getImdbId()), movieId,
+                imageProvider.getJson(movieId.getImdbId()));
 
+        masterDossierService.save(masterDossier);
         logger.debug("About to save dossier:  " + id.toString());
         return masterDossier;
     }
 
-    public Dossier generateDossier(MovieDetail movieDetail, MovieIdentifier movieId ) {
+    public Dossier generateDossier(MovieDetail movieDetail) {
         Dossier dossier = new Dossier(movieDetail.getId(),
                 movieDetail.getName(),
                 movieDetail.getSummary(),
                 movieDetail.getCharacters(),
                 movieDetail.getReviews(),
-                movieDetail.getImage(),
-                asList(new Genre(movieDetail.getGenre(),
-                imageProvider.getJson(movieId.getImdbId()))), movieDetail.getLineage());
+                asList(new Genre(movieDetail.getGenre())),
+                movieDetail.getLineage());
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
-        logger.debug("Generating dossier for:  "  + movieDetail);
+
+        logger.debug("Generating dossier for:  " + movieDetail);
         return dossier;
     }
 }
