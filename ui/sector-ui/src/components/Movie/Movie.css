@@ -30,4 +30,21 @@
     height: 242px;
     justify-self: center;
     background: #e6e6e6;
+    cursor: pointer;
+}
+
+.dossier-not-available-outer-wrapper {
+    position: relative;
+}
+
+.dossier-not-available-inner-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: red;
+    opacity: 0.7;
+    z-index: 100;
+    width: 182px;
+    height: 306px;
+    cursor: not-allowed;
 }

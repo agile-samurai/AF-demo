@@ -11,6 +11,8 @@ import java.util.UUID;
 public class MovieTitle {
     private String name;
 
+    private boolean dossierAvailable;
+
     private String image;
 
     private UUID id;
@@ -58,5 +60,13 @@ public class MovieTitle {
 
     public UUID getId() {
         return id;
+    }
+
+    public boolean isDossierAvailable() {
+        return dossierAvailable;
+    }
+
+    public void setDossierAvailable(boolean dossierAvailable) {
+        this.dossierAvailable = dossierAvailable;
     }
 }
