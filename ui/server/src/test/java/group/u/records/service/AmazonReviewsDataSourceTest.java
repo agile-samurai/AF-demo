@@ -3,12 +3,15 @@ package group.u.records.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.datasource.AmazonReviewsDataSource;
 import group.u.records.service.datamanagement.S3DataService;
+import group.u.records.service.dossier.TrainingDataRepository;
 import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+
+import static org.mockito.Mockito.mock;
 
 public class AmazonReviewsDataSourceTest {
 
@@ -29,7 +32,8 @@ public class AmazonReviewsDataSourceTest {
                                 secretAccessKey))).build();
 
 
-        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage", "sample", client, objectMapper);
+        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",
+                "sample", mock(TrainingDataRepository.class), client, objectMapper);
         AmazonReviewsDataSource reviews = new AmazonReviewsDataSource(dataService,objectMapper);
 
         reviews.getMovieDetails(new MovieIdentifier("0477080", "Fake" ));

@@ -1,8 +1,10 @@
 package group.u.records.service.datamanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.u.records.ds.training.TrainingData;
 import group.u.records.service.dossier.Dossier;
 import group.u.records.models.entity.Person;
+import group.u.records.service.dossier.TrainingDataRepository;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ public class S3DataService implements DataService {
     private S3Client s3Client;
     private Logger logger = LoggerFactory.getLogger(S3DataService.class);
     private String dossierFileFolder;
+    private TrainingDataRepository trainingDataRepository;
     private ObjectMapper objectMapper;
     private String dossierStorageBucket;
     Map<UUID, Person> actorList;
@@ -37,10 +40,12 @@ public class S3DataService implements DataService {
                          @Value("${aws.region}") String regionAsString,
                          @Value("${aws.dossier.storage.name}") String dossierStorageBucket,
                          @Value("${aws.dossier.storage.files}") String dossierFileFolder,
+                         TrainingDataRepository trainingDataRepository,
                          S3Client s3Client,
                          ObjectMapper objectMapper) {
         this.dossierStorageBucket = dossierStorageBucket;
         this.dossierFileFolder = dossierFileFolder;
+        this.trainingDataRepository = trainingDataRepository;
         this.objectMapper = objectMapper;
 
         this.bucketName = bucketName;
@@ -152,6 +157,7 @@ public class S3DataService implements DataService {
 
     public String getFileAsString(String key) throws IOException {
         logger.debug("Fetching file:  " + bucketName + ":  " + key );
+        trainingDataRepository.save( new TrainingData(bucketName + ":  " + key));
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(key).build());
         logger.debug("Response String:  " + response.response().toString());
         return IOUtils.toString(response.readAllBytes());

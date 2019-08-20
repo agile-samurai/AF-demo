@@ -7,6 +7,7 @@ import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.repository.PersonRepository;
 import group.u.records.service.datamanagement.S3DataService;
 import group.u.records.service.dossier.DossierBuilderService;
+import group.u.records.service.dossier.TrainingDataRepository;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,7 +55,8 @@ public class S3DataServiceTest {
     public void shouldRetrievalAllMoviesListedInS3WithNoObjectsInTheFolder() {
         S3Client client = mock(S3Client.class);
 
-        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE, DOSSIER_FILE_FOLDER, client, mock(ObjectMapper.class));
+        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,
+                DOSSIER_FILE_FOLDER, mock(TrainingDataRepository.class), client, mock(ObjectMapper.class));
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         TestSDKIterable<S3Object> iterable = new TestSDKIterable<>(new ArrayList());
@@ -78,7 +80,7 @@ public class S3DataServiceTest {
 
         when(client.getObject(any(GetObjectRequest.class))).thenReturn(response);
 
-        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,DOSSIER_FILE_FOLDER, client, new ObjectMapper());
+        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,DOSSIER_FILE_FOLDER,mock(TrainingDataRepository.class), client, new ObjectMapper());
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         ArrayList testList = new ArrayList();
