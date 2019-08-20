@@ -1,16 +1,16 @@
 # Part 1 - Factor 1: Models
 
-To achieve the objectives of this challenge, our data science team has designed, engineered, and executed models using Jupyter as a platform for collaboration with integration into our delivery process through the uses of Continuous Delivery and Continuous Delivery practices.  notebooks and used CICD pipeline to train, integrate and deploy models into production environment and made them available as micro services for Visualization services.
+To achieve the objectives of this challenge, our data science team has designed, engineered, and executed models using Jupyter as a platform for collaboration with integration into our delivery process through Continuous Delivery and Continuous Delivery practices.  The team integrated our work into the CICD pipeline which trained and deployed models into a production environment, which made them available as micro-services for visualization and other front-end consumption.
 
-Our data science process is comprised of 3 primary components:
-* __Data Research & Exploration__ - Crafting a rich understanding of the data and opportunities within
-* __Data Engineering__ -  Transforming, Ingesting, Enriching and preparing the data ready for automated training and deployment
-* __Data Modeling__: To Designing and optimizing models for search, entity resolution, predictive redaction, and similarity.
+Our data science process is comprised of three primary processes:
+* __Data Research & Exploration__ - Crafting a rich understanding of the data and opportunities for insight
+* __Data Engineering__ - Transforming, ingesting, enriching and preparing the data to enable automated training and deployment
+* __Data Modeling__ - Designing and optimizing models for search, entity resolution, predictive redaction, and similarity
 
 
-(WRITE MORE HERE ABOUT HOLLISTIC APPROACH 2 to 3 paragraphs)
+(WRITE MORE HERE ABOUT HOLISTIC APPROACH 2 to 3 paragraphs)
 
-__Our AI/ML Execution and Analitical Approach__
+__Our AI/ML Execution and Analytical Approach__
 
 Our team used Natural Language Processing (NLP) to classify unstructured text pulled from datasources. We performed standard preprocessing by removing stop words, lemmatizing, lower-casing, removing punctuation and extra whitespace. We used SpaCy to identify key verbs in sentences and check against manually defined verbs that better indicated capabilities, before allowing sentences into our corpus. This resulted in sets of word tokens for each company that we used to define company capabilities.
 
