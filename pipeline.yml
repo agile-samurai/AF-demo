@@ -100,7 +100,6 @@ resources:
 groups:
   - name: all
     jobs:
-
     - Deploy HSM - Dev
     - Deploy HSM - Test
     - Deploy HSM - Prod
@@ -123,6 +122,7 @@ groups:
     - Capture data and push to s3
     - pa11y-accessibility-scan
     - OWASP Prod Security Scan
+    - Deploy and Run Functional Tests
     #- create lb ss cert
   - name: prepare
     jobs:
@@ -602,7 +602,7 @@ jobs:
                 npm install -g sonarqube-scanner --silent
                 sonar-scanner -h
                 echo "installing sonarqube"
-                sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
+                sonar-scanner -Dsonar.host.url=http://sonarqube-infra-lb-911331727.us-east-2.elb.amazonaws.com -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
                 echo "pushing results to sonarqube complete"
 
                 echo "preparing files for container build"
@@ -681,7 +681,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -Djava.version=10 -DskipTests -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=http://sonarqube-infra-lb-911331727.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
@@ -711,36 +711,7 @@ jobs:
       #       "Build failed on job 'Build-Project'. Check it out at: 'https://3.226.130.180/teams/main/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME'"
       #     silent: true
 
-###################### FUNCTIONAL TESTS############################
-  # - name: Execute main-ds-service Unit and Integration Tests
-  #   public: true
-  #   plan:
-  #     - get: source
-  #       trigger: true
-  #       passed:
-  #         - Initialize
-  #     - get: version
-  #       passed:
-  #         - Initialize
-  #     - task: Execute Test
-  #       config:
-  #         platform: linux
-  #         image_resource:
-  #           type: docker-image
-  #           source:
-  #             repository: carlomazzaferro/concourse-python-minimal
-  #         run:
-  #           path: sh
-  #           args:
-  #           - -ec
-  #           - |
-  #             cd source/services/data-science-service
-  #             mkdir -p models/s3
-  #             pip install -r requirements.txt
-  #             pytest
-  #         inputs:
-  #           - name: source
-
+  # TODO delete
   - name: Execute server Functional Tests
     public: true
     plan:
@@ -1109,6 +1080,101 @@ jobs:
 #        - ./vars/terraform.tfvars
 #        vars:
 #          environment: dev
+
+###################### Deploy and Run Functional Tests ############################
+  - name: Deploy and Run Functional Tests
+    serial: true
+    plan:
+      - get: source
+        passed:
+        - Push DS Image
+        - Push server Image
+        - Push UI
+        trigger: false
+      - get: version
+        passed:
+        - Push DS Image
+        - Push server Image
+        - Push UI
+        trigger: true
+      - task:  Write Variables and Run TF Deploy
+        attempts: 10
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          run:
+            path: sh
+            args:
+            - -ec
+            - |
+              echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
+              echo ecr_image_region = \"((ecr_aws_region))\" >> vars/terraform.tfvars
+              echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
+              echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
+              echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
+              echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
+              echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
+              echo db_user = \"dbusername1\" >> vars/terraform.tfvars
+              echo infra_version = \"useless\" >> vars/terraform.tfvars
+              echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
+              echo business_user_password = \"((business_user_password))\" >> vars/terraform.tfvars
+              echo business_supervisor_password = \"((business_supervisor_password))\" >> vars/terraform.tfvars
+              echo system_user_password = \"((system_user_password))\" >> vars/terraform.tfvars
+              echo jwt_secret = \"((jwt_secret))\" >> vars/terraform.tfvars
+              echo "Planning deployment to the test environment"
+          inputs:
+          - name: version
+          outputs:
+          - name: vars
+      - put: terraform
+        attempts: 10
+        params:
+          env_name: ft #terraform workspace
+          plan_only: true
+          terraform_source: source/config/service-setup
+          var_files:
+          - ./vars/terraform.tfvars
+      - put: terraform
+        attempts: 10
+        params:
+          env_name: ft #terraform workspace
+          plan_run: true
+          terraform_source: source/config/service-setup
+          var_files:
+          - ./vars/terraform.tfvars
+      - task: show-outputs
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: alpine
+          inputs:
+          - name: terraform
+          - name: source
+          run:
+            path: /bin/sh
+            args:
+              - -c
+              - |
+                  echo "name: $(cat terraform/name)"
+                  echo "metadata: $(cat terraform/metadata)"
+                  # source/wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+                  # echo "Server is up!!"
+      - task: Run Tests
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-node10-selenium-chrome
+          run:
+            path: source/pipeline/test-running/run-functional-tests/run-functional-tests.sh
+          inputs:
+            - name: source
 
   - name: Deploy Services To Test
     serial: true
