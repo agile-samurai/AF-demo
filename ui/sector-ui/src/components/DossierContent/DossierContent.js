@@ -80,13 +80,15 @@ export default class DossierContent extends React.Component {
                                 {/*</ShowElementByRole>*/}
                             </div>
                         </div>
-                        {
-                            this.state.chartLoaded && (<div className="chart">
-                                <div id={`genreFitChart${dossierData.id}`}/>
-                                <div className="lineage">Lineage: multiple sources</div>
-                            </div>)
-                        }
-                        <Tweets tweets={tweets}/>
+                        <div className="chart-and-tweets">
+                            {
+                                this.state.chartLoaded && (<div className="chart">
+                                    <div id={`genreFitChart${dossierData.id}`}/>
+                                    <div className="lineage">Lineage: multiple sources</div>
+                                </div>)
+                            }
+                            <Tweets tweets={tweets}/>
+                        </div>
                         {perLineageDossierContentList}
                         <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                       refreshData={this.loadEncryptedData.bind(this)}/>

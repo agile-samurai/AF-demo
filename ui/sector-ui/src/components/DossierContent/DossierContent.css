@@ -62,3 +62,11 @@ a.navigation-link.dossier-name-link {
 .chart {
     margin-bottom: 30px;
 }
+
+.chart-and-tweets {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
