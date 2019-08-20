@@ -196,26 +196,30 @@ def process_omdb_to_df():
     omdb.rename(columns={"Plot": "description"}, inplace=True)
     omdb["top_genre"] = omdb["Genre"].apply(lambda x: x.split(",")[0])
     omdb["imdb_id"] = omdb["imdbID"].apply(lambda x: x[2:])
+    omdb["movie_tokens"] = omdb["description"].apply(nlp_clean)
+    # omdb.dropna(subset=["description", "genre"], inplace=True)
     return omdb
 
 
-def merged_movie_data(data):
+def merged_movie_data(data=None):
     # movies_processed = process_movie_list_to_df(data)
     movies_processed = process_omdb_to_df()
     mv = load_movietweetings_df()
-    names, titles = load_imdb_tables_from_dump()
-    actor_df = process_imdb_dump(names, titles)
-    mv["actors"] = mv.film_id.apply(lambda x: get_actor_dict(x, actor_df))
+    # names, titles = load_imdb_tables_from_dump()
+    # actor_df = process_imdb_dump(names, titles)
+    # mv["actors"] = mv.film_id.apply(lambda x: get_actor_dict(x, actor_df))
     mdf = movies_processed.merge(mv, how="left", on="imdb_id")
+    mdf = mdf[mdf.film_id.notnull()]
     return mdf
 
 
 if __name__ == "__main__":
     # Read all movie JSON files
-    movies_json_list = load_json_files()
-    print(f"Loaded {len(movies_json_list)} JSON files")
+    # movies_json_list = load_json_files()
+    # print(f"Loaded {len(movies_json_list)} JSON files")
     # Convert list of JSON data and MovieTweetings to cleaned DataFrame
-    movies_dataframe = merged_movie_data(movies_json_list)
+    # movies_dataframe = merged_movie_data(movies_json_list)
+    movies_dataframe = merged_movie_data()
 
     # Save movies_df to local .pkl file
     cwd = pathlib.Path(".").resolve()
