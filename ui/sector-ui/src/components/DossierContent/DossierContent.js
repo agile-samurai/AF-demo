@@ -8,6 +8,7 @@ import Files from "../Files/Files";
 import {Link} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
+import * as Bokeh from "bokehjs"
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -72,6 +73,7 @@ export default class DossierContent extends React.Component {
                                 </div>
                             </div>
                         </Link>
+                        <div id={`genreFitChart${dossierData.id}`}/>
                         <div className="delete-button-wrapper">
                             <div>
                                 {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
@@ -109,11 +111,18 @@ export default class DossierContent extends React.Component {
                     this.setState({
                         dossierData: response.data,
                         loaded: true
+                    }, () => {
+                        window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
+                            `genreFitChart${this.state.dossierData.id}`);
+                    });
+                })
+                .catch(() => {
+                    this.setState({
+                        deleted: true
                     });
                 });
         });
     }
-
 
     handleDelete() {
         const {dossierID} = this.props;
