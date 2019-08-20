@@ -92,8 +92,8 @@ def cli(version):
 
     # Load movies_df from .pkl file
     cwd = pathlib.Path(".").resolve()
-    data_dir = cwd.parents[0] / "data"
-    models_dir = cwd.parents[0] / "models"
+    data_dir = cwd / "data"
+    models_dir = cwd / "models"
     movies_df_file = data_dir / "movies_df.pkl"
     movies_df = pd.read_pickle(str(movies_df_file))
     print(f"Loaded {len(movies_df)} movies")
@@ -112,7 +112,6 @@ def cli(version):
     d2v_model.save(str(models_dir / model_filename))
 
     # For testing, loading d2v model from memory
-    # d2v_model = Doc2Vec.load(str(models_dir / model_filename))
 
     # Find genre centroids and use them to compute distance metrics for model performance
     genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
@@ -120,33 +119,6 @@ def cli(version):
     metrics_file = models_dir / f"metrics.{version}.json"
     with metrics_file.open("w") as outfile:
         json.dump(genre_metrics, outfile, indent=2)
-
-
-# S3 file handling to be pushed off to the pipeline --------------------------
-# Push model to S3
-# if push:
-#     bucket_name = 'rdso-challenge2'
-#     try:
-#         profile = os.environ['AWS_PROFILE']
-#         session = boto3.Session(profile_name=profile)
-#         s3 = session.client('s3')
-#     except KeyError:
-#         try:
-#             s3 = boto3.client(
-#                 "s3",
-#                 aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-#                 aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-#             )
-#         except KeyError:
-#             raise ValueError("No AWS credentials found")
-#
-#     for model_f in models_dir.iterdir():
-#         if model_filename in str(model_f):
-#             with open(str(model_f), 'rb') as outfile:
-#                 s3.upload_fileobj(outfile, bucket_name,
-#                                   'models/' + str(model_f.stem) + str(model_f.suffix))
-#     print(f'Pushed model version {version} to S3')
-
 
 if __name__ == "__main__":
     cli()
