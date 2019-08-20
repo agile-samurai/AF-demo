@@ -27,17 +27,3 @@ body {
     align-items: flex-start;
     width: 100%;
 }
-
-.star-power-text {
-    height: 28px;
-    width: 71px;
-    font-size: 24px;
-    letter-spacing: -1.65px;
-    line-height: 28px;
-    font-weight: normal;
-    margin-left: 120px;
-}
-
-.star-text {
-    font-weight: bold;
-}
