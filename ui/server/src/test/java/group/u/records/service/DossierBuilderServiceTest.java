@@ -1,9 +1,10 @@
 package group.u.records.service;
 
-import group.u.records.ds.providers.MovieSimilarityProvider;
-import group.u.records.ds.providers.GenreDistributionImageProvider;
-import group.u.records.ds.providers.PredictiveAutoRedactProvider;
+import group.u.records.datascience.providers.MovieSimilarityProvider;
+import group.u.records.datascience.providers.GenreDistributionImageProvider;
+import group.u.records.datascience.providers.PredictiveAutoRedactProvider;
 import group.u.records.security.MasterDossierService;
+import group.u.records.service.dossier.DossierBuilderService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

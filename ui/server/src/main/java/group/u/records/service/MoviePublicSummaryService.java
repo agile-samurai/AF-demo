@@ -13,14 +13,13 @@ import java.util.stream.StreamSupport;
 @Service
 public class MoviePublicSummaryService {
     private MoviePublicSummaryRepository moviePublicSummaryRepository;
-    private Sort sort = new Sort(Sort.Direction.ASC, "name");
 
     public MoviePublicSummaryService(MoviePublicSummaryRepository moviePublicSummaryRepository) {
         this.moviePublicSummaryRepository = moviePublicSummaryRepository;
     }
 
     public List<MoviePublicSummary> getMovies(String searchString, int quantity, int cursor) {
-        PageRequest pageRequest = PageRequest.of(cursor, quantity, sort);
+        PageRequest pageRequest = PageRequest.of(cursor, quantity);
 
         Iterable<MoviePublicSummary> moviePublicSummariesIterable;
         if(searchString.equals("")) {

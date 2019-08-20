@@ -1,13 +1,12 @@
 package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.u.records.service.datamanagement.S3DataService;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-
-import static org.junit.Assert.*;
 
 public class TwitterMovieDataSourceTest {
 

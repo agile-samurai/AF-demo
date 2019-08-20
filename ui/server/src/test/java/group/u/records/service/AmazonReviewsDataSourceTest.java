@@ -1,6 +1,8 @@
 package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import group.u.records.datasource.AmazonReviewsDataSource;
+import group.u.records.service.datamanagement.S3DataService;
 import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

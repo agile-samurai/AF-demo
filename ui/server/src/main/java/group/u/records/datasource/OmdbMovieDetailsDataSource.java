@@ -1,18 +1,19 @@
 package group.u.records.datasource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.entity.MovieDetail;
-import group.u.records.people.PersonRegistry;
-import group.u.records.service.MovieDetailsDataSource;
+import group.u.records.datasource.entity.OMDBMovie;
+import group.u.records.models.MovieDetail;
+import group.u.records.repository.people.PersonRegistry;
+import group.u.records.service.dossier.MovieDetailsDataSource;
 import group.u.records.service.MovieIdentifier;
-import group.u.records.service.S3DataService;
+import group.u.records.service.datamanagement.S3DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static group.u.records.service.Lineage.OMDB;
+import static group.u.records.service.dossier.Lineage.OMDB;
 
 @Component
 public class OmdbMovieDetailsDataSource extends MovieDetailsDataSource {

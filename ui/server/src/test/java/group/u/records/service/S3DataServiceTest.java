@@ -2,9 +2,11 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.models.data.Movie;
+import group.u.records.datasource.entity.Movie;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.repository.PersonRepository;
+import group.u.records.service.datamanagement.S3DataService;
+import group.u.records.service.dossier.DossierBuilderService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
