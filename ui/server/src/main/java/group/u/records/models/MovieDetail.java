@@ -77,7 +77,7 @@ public class MovieDetail {
     }
 
     private Lineage lineage;
-    private List<Person> people;
+    private List<Person> people = new ArrayList<>();
     private String summary;
     private List<String> keywords;
     private String contentRating;
