@@ -77,15 +77,14 @@ resources:
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: ((app_data_bucket))
-      options: ["--quiet"]
+      bucket: ((app_data_bucket))/data/ci/models
       region: ((bucket_aws_region))
   - name: data
     type: simple-s3-resource
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: ((app_data_bucket))
+      bucket: ((app_data_bucket))/data/ci/data
       options: ["--quiet"]
       region: ((bucket_aws_region))
   - name: movies_json
@@ -94,7 +93,7 @@ resources:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
       bucket: rdso-challenge2
-      path: data/movies_json
+      path: data/omdb_json
       options: ["--quiet"]
       region: us-east-1
 
@@ -102,7 +101,9 @@ groups:
   - name: all
     jobs:
 
-    - Deploy HSM
+    - Deploy HSM - Dev
+    - Deploy HSM - Test
+    - Deploy HSM - Prod
     - Initialize
     - Consildate Data
     - Build UI
@@ -125,7 +126,7 @@ groups:
     #- create lb ss cert
   - name: prepare
     jobs:
-    - Deploy HSM
+    - Deploy HSM - Dev
     - Initialize
   - name: model building
     jobs:
@@ -187,13 +188,14 @@ jobs:
   #         - |
   #           echo "noop"
 
-  - name: Deploy HSM
+  - name: Deploy HSM - Dev
     public: true
     serial: true
     plan:
       - get: source
         trigger: false
       - task: Deploy HSM
+        attempts: 10
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -210,15 +212,101 @@ jobs:
             args:
             - -exc
             - |
-                # yum install bind-utils openssl openssl-devel -y
-                # export HOST_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
-                # echo "host is [${HOST_IP}]"
-                # echo "HSM_REGION is [${HSM_REGION}]"
-                # export TF_ENVIRONMNET=dev
-                # cd source/config/hsm-setup/
-                # ./create-hsm.sh
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd source/config/hsm-setup/initial-setup
+
+                terraform init
+                terraform workspace new dev || true
+                terraform workspace list
+                terraform workspace select dev
+                export AWS_DEFAULT_REGION=us-east-1
+                export TF_VAR_REGION=us-east-1
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+          inputs:
+            - name: source
+
+  - name: Deploy HSM - Test
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+      - task: Deploy HSM
+        attempts: 10
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          params:
+              HSM_REGION: ((hsm_region))
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel -y
+                cd source/config/hsm-setup/initial-setup
+                terraform init
+                terraform workspace new test || true
+                terraform workspace list
+                terraform workspace select test
+                export AWS_DEFAULT_REGION=us-west-2
+                export TF_VAR_REGION=us-west-2
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
           inputs:
                 - name: source
+
+  - name: Deploy HSM - Prod
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+      - task: Deploy HSM
+        attempts: 10
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          params:
+              HSM_REGION: ((hsm_region))
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel -y
+                cd source/config/hsm-setup/initial-setup
+                terraform init
+                terraform workspace new prod || true
+                terraform workspace list
+                terraform workspace select prod
+                export AWS_DEFAULT_REGION=us-east-2
+                export TF_VAR_REGION=us-east-2
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+          inputs:
+                - name: source
+
   - name: terraform-destroy-all-envs
     public: false
     plan:
@@ -1033,7 +1121,8 @@ jobs:
       passed:
       - Deploy Services To Dev
     - get: version
-      # passed:
+      passed:
+      - Deploy Services To Dev
       # - Execute OWASP Prod Security Scan Test
       trigger: true
     - task:  Write Variables and Run TF Deploy
@@ -1148,7 +1237,8 @@ jobs:
       - Deploy Services To Test
     - get: version
       trigger: true
-      # passed:
+      passed:
+      - Deploy Services To Test
       # - Execute OWASP Prod Security Scan Test
     - task:  Write Variables and Run TF Deploy
       attempts: 10

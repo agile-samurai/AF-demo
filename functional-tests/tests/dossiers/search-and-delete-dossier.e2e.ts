@@ -2,7 +2,7 @@ import { HomePage } from '../../page-objects/dossiers-page.po';
 
 xdescribe(`Feature: Search and Delete a Dossiers`, async () => {
     let homePage: HomePage;
-    const dossierToSearchFor = `The Other Side of the Wind`;
+    const dossierToSearchFor = `Toy Story 3`;
 
     beforeAll(async () => {
         homePage = new HomePage();

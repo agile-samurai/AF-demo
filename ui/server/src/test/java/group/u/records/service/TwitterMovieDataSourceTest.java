@@ -2,19 +2,26 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.service.datamanagement.S3DataService;
+import group.u.records.service.dossier.TrainingDataRepository;
+import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import javax.persistence.Id;
+
+import static org.mockito.Mockito.mock;
+
 public class TwitterMovieDataSourceTest {
 
     @Test
+    @Ignore
     public void shouldReadTwitterJSONFromFile(){
         String regionAsString = "us-east-1";
-        String accessKeyId = "AKIAWL3TNIWMJEZOGXSG";
-        String secretAccessKey = "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";
+        String accessKeyId = "";
+        String secretAccessKey = "";
         ObjectMapper objectMapper = new ObjectMapper();
 
         S3Client client = S3Client.builder()
@@ -24,7 +31,8 @@ public class TwitterMovieDataSourceTest {
                                 secretAccessKey))).build();
 
 
-        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage", "sample", client, objectMapper);
+        S3DataService dataService = new S3DataService("rdso-challenge2", "data/movies_json", regionAsString, "dossier-storage",
+                "sample", mock(TrainingDataRepository.class), client, objectMapper);
 //        TwitterMovieDataSource dataSource = new TwitterMovieDataSource(dataService);
     }
 }

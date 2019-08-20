@@ -27,7 +27,7 @@ if ! openssl x509 -req -days 3652 -in ${CLUSTER_ID}_ClusterCSR.csr -CA customerC
 fi
 
 printf "\n--- Initializing HSM Cluster\n"
-if ! aws cloudhsmv2 initialize-cluster --region us-west-1 --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
+if ! aws cloudhsmv2 initialize-cluster --region $AWS_DEFAULT_REGION --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
   exit 1
 else
   printf "\n--- HSM Cluster Initialized\n"

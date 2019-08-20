@@ -11,7 +11,7 @@ resource "aws_cloudhsm_v2_cluster" "cloudhsm_v2_cluster" {
 
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id        = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
-  availability_zone = "${var.region}c"
+  availability_zone = "${data.aws_availability_zones.available.names[0]}"
   depends_on        = [aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
 }
 
@@ -78,7 +78,7 @@ resource "aws_security_group" "gateway-ingress" {
 }
 
 resource aws_instance hsm_gateway {
-  availability_zone           = "${var.region}c"
+  availability_zone           = "${data.aws_availability_zones.available.names[0]}"
   ami                         = data.aws_ami.amazon_linux.id
   monitoring                  = true
   instance_type               = "t2.medium"
@@ -146,6 +146,18 @@ resource aws_instance hsm_gateway {
     destination = "/tmp/setup_ec2.sh"
   }
 
+  provisioner "file" {
+    connection {
+      type = "ssh"
+      host = aws_instance.hsm_gateway.public_ip
+      user = "ec2-user"
+      private_key = file("${path.module}/key.pem")
+    }
+
+    source      = "hsmgateway-0.0.1-SNAPSHOT.jar"
+    destination = "/tmp/hsmgateway-0.0.1-SNAPSHOT.jar"
+  }
+
   provisioner "remote-exec" {
     connection {
       type = "ssh"
@@ -171,9 +183,10 @@ resource aws_instance hsm_gateway {
     inline = [
       "chmod +x /tmp/setup_ec2.sh",
       "chmod +x /tmp/expect_script.sh",
-      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}"]
+      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}",
+      "java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar"
+    ]
   }
-
 
   depends_on = [aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm, aws_iam_user_login_profile.admin, aws_security_group.gateway-ingress, tls_private_key.hsm_key]
 }

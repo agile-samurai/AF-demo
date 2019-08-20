@@ -4,7 +4,8 @@
   "scripts": {
     "lint": "tslint \"tests/**\" \"page-objects/**\"",
     "node_modules:clean": "rm -rf node_modules && npm install",
-    "protractor": "npm run lint && protractor protractor.config.js",
+    "protractor:baseUrl": "protractor protractor.config.js --params.baseUrl",
+    "protractor:local": "protractor protractor.config.js",
     "webdriver:start": "webdriver-manager start --standalone",
     "webdriver:update": "webdriver-manager update --standalone"
   },
