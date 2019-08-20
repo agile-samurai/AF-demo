@@ -157,6 +157,17 @@ def process_movie_list_to_df(data):
     return movies_df
 
 
+def load_imdb_tables_from_dump(folder="../data/imdb_dump"):
+    names = pd.read_csv(folder + "name.basics.tsv", sep="\t")
+    titles = pd.read_csv(folder + "title.principals.tsv", sep="\t")
+    return names, titles
+
+
+def process_imdb_dump(names, titles):
+    mdf = title.merge(name).replace("\\N", pd.np.nan)
+    actors = mdf[(mdf.category == "actor") | (mdf.category == "actress")]
+
+
 def process_omdb_to_df():
     list_of_dicts = load_json_files(folder="../data/omdb_json")
     omdb = pd.DataFrame(list_of_dicts)
