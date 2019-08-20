@@ -158,13 +158,13 @@ def process_movie_list_to_df(data):
 
 
 def load_imdb_tables_from_dump(folder="../data/imdb_dump"):
-    names = pd.read_csv(folder + "name.basics.tsv", sep="\t")
-    titles = pd.read_csv(folder + "title.principals.tsv", sep="\t")
+    names = pd.read_csv(folder + "/name.basics.tsv", sep="\t")
+    titles = pd.read_csv(folder + "/title.principals.tsv", sep="\t")
     return names, titles
 
 
 def process_imdb_dump(names, titles):
-    mdf = title.merge(name).replace("\\N", pd.np.nan)
+    mdf = titles.merge(names).replace("\\N", pd.np.nan)
     actors = mdf[(mdf.category == "actor") | (mdf.category == "actress")]
     actors.columns = [
         "film_id",
@@ -195,6 +195,7 @@ def process_omdb_to_df():
     omdb = pd.DataFrame(list_of_dicts)
     omdb.rename(columns={"Plot": "description"}, inplace=True)
     omdb["top_genre"] = omdb["Genre"].apply(lambda x: x.split(",")[0])
+    omdb["imdb_id"] = omdb["imdbID"].apply(lambda x: x[2:])
     return omdb
 
 
@@ -204,8 +205,7 @@ def merged_movie_data(data):
     mv = load_movietweetings_df()
     names, titles = load_imdb_tables_from_dump()
     actor_df = process_imdb_dump(names, titles)
-    mv["actors"] = mv.film_id.apply(get_actor_dict)
-    omdb = process_omdb_to_df()
+    mv["actors"] = mv.film_id.apply(lambda x: get_actor_dict(x, actor_df))
     mdf = movies_processed.merge(mv, how="left", on="imdb_id")
     return mdf
 
