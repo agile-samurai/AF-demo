@@ -25,7 +25,7 @@ variable "aws_region" {
 
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id        = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
-  availability_zone = "${var.aws_region[${terraform.workspace}]}c"
+  availability_zone = "${var.aws_region[terraform.workspace]}c"
   depends_on        = [aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
 }
 
@@ -92,7 +92,7 @@ resource "aws_security_group" "gateway-ingress" {
 }
 
 resource aws_instance hsm_gateway {
-  availability_zone           = "${var.region}c"
+  availability_zone           = "${var.aws_region[terraform.workspace]}c"
   ami                         = data.aws_ami.amazon_linux.id
   monitoring                  = true
   instance_type               = "t2.medium"
