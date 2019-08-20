@@ -3,6 +3,7 @@ package group.u.records.service.dossier;
 import group.u.records.datascience.providers.GenreDistributionImageProvider;
 import group.u.records.datascience.providers.MovieSimilarityProvider;
 import group.u.records.datascience.providers.PredictiveAutoRedactProvider;
+import group.u.records.datasource.TwitterMovieDataSource;
 import group.u.records.models.MovieDetail;
 import group.u.records.security.MasterDossierService;
 import group.u.records.service.MovieIdentifier;
@@ -23,15 +24,18 @@ public class DossierBuilderService {
     private PredictiveAutoRedactProvider autoRedactProvider;
     private final MovieSimilarityProvider scoringProvider;
     private final GenreDistributionImageProvider imageProvider;
+    private TwitterMovieDataSource twitterMovieDataSource;
     private MasterDossierService masterDossierService;
 
     public DossierBuilderService(PredictiveAutoRedactProvider autoRedactProvider,
                                  MovieSimilarityProvider scoringProvider,
                                  GenreDistributionImageProvider imageProvider,
+                                 TwitterMovieDataSource twitterMovieDataSource,
                                  MasterDossierService masterDossierService) {
         this.autoRedactProvider = autoRedactProvider;
         this.scoringProvider = scoringProvider;
         this.imageProvider = imageProvider;
+        this.twitterMovieDataSource = twitterMovieDataSource;
         this.masterDossierService = masterDossierService;
     }
 
@@ -43,7 +47,8 @@ public class DossierBuilderService {
                 .stream()
                 .map(f -> generateDossier(f))
                 .collect(toList()), scoringProvider.getSimilarMovies(movieId.getImdbId()), movieId,
-                imageProvider.getJson(movieId.getImdbId()));
+                imageProvider.getJson(movieId.getImdbId()),
+                twitterMovieDataSource.getMovieDetails(movieId));
 
         masterDossierService.save(masterDossier);
         logger.debug("About to save dossier:  " + id.toString());

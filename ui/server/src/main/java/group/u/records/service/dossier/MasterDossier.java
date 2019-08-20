@@ -12,6 +12,7 @@ import java.util.UUID;
 public class MasterDossier {
     private String name;
     private String distribution;
+    private List<String> tweets;
     private List<DossierFileInfo> dossierFileInfos;
     private List<Dossier> dossiers;
     private List<UUID> similarMovies;
@@ -49,12 +50,21 @@ public class MasterDossier {
         return distribution;
     }
 
-    public MasterDossier(List<Dossier> dossiers, List<UUID> similarMovies, MovieIdentifier id, String distribution ) {
+    public List<String> getTweets() {
+        return tweets;
+    }
+
+    public MasterDossier(List<Dossier> dossiers,
+                         List<UUID> similarMovies,
+                         MovieIdentifier id,
+                         String distribution,
+                         List<String> tweets ) {
         this.dossiers = dossiers;
         this.similarMovies = similarMovies;
         this.id = id.getId();
         this.name = id.getName();
         this.distribution = distribution;
+        this.tweets = tweets;
         this.notes = new ArrayList<>();
         this.dossierFileInfos = new ArrayList();
     }

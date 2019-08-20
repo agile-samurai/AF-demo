@@ -46,6 +46,7 @@ public class S3DataServiceTest {
         dossierBuilderService = new DossierBuilderService(null,
                 null,
                 null,
+                null,
                 null);
     }
 
