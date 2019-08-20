@@ -15,7 +15,3 @@ output "hsm_module_cluster_id" {
 output "hsm_cluster_state" {
   value = local.cluster_state
 }
-
-output "ec2_ip" {
-  value = aws_eip.this.public_ip
-}
