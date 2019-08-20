@@ -7,6 +7,7 @@ terraform {
   backend "s3" {
     bucket = "rdso-challenge2"
     key    = "hsm.tfstate"
+    region    = "us-east-1"
   }
 }
 
