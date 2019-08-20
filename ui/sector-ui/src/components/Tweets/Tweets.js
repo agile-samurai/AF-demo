@@ -1,17 +1,25 @@
 import React from 'react';
 import {TwitterTweetEmbed} from 'react-twitter-embed';
+import './Tweets.css';
 
 export default class Tweets extends React.Component {
     render() {
         const {tweets} = this.props;
 
-        const processedTweets = tweets && tweets.map(tweet => <TwitterTweetEmbed
-            tweetId={tweet}
-        />);
+        if(!tweets) {
+            return null;
+        }
+
+        const numberOfTweetsToShow = Math.min(tweets.length, 6);
+
+        const processedTweets = tweets
+            .slice(0, numberOfTweetsToShow)
+            .map(tweet => <TwitterTweetEmbed tweetId={tweet}/>);
 
         return (
-            <div>
+            <div className="tweets">
                 {processedTweets}
+                <div className="lineage">Lineage: Twitter</div>
             </div>
         );
     }

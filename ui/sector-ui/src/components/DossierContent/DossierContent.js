@@ -17,7 +17,8 @@ export default class DossierContent extends React.Component {
             redactionEnabled: false,
             dossierData: null,
             loaded: false,
-            deleted: false
+            deleted: false,
+            chartLoaded: false
         };
         this.DOSSIER_ENDPOINT = '/api/dossier';
 
@@ -68,7 +69,6 @@ export default class DossierContent extends React.Component {
                                 </div>
                             </div>
                         </Link>
-                        <div id={`genreFitChart${dossierData.id}`}/>
                         <div className="delete-button-wrapper">
                             <div>
                                 {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
@@ -80,6 +80,12 @@ export default class DossierContent extends React.Component {
                                 {/*</ShowElementByRole>*/}
                             </div>
                         </div>
+                        {
+                            this.state.chartLoaded && (<div className="chart">
+                                <div id={`genreFitChart${dossierData.id}`}/>
+                                <div className="lineage">Lineage: multiple sources</div>
+                            </div>)
+                        }
                         <Tweets tweets={tweets}/>
                         {perLineageDossierContentList}
                         <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
@@ -111,6 +117,10 @@ export default class DossierContent extends React.Component {
                         try{
                             window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
                                 `genreFitChart${this.state.dossierData.id}`);
+
+                            this.setState({
+                                chartLoaded: true
+                            })
                         } catch (error) {}
                     });
                 })

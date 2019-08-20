@@ -9,3 +9,7 @@ a.navigation-link {
     text-decoration: none;
     color: white;
 }
+
+.lineage {
+    font-weight: bold;
+}
