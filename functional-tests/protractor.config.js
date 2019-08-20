@@ -21,7 +21,8 @@ baseConfigObject = {
         browserName: 'chrome',
         chromeOptions: {
             args: ['--window-size=1340,943', '--allow-insecure-localhost', '--ignore-certificate-errors',
-                'no-sandbox', 'headless', 'disable-gpu']
+                'no-sandbox', 'headless', 'disable-gpu'
+            ]
         }
     },
 
@@ -41,6 +42,10 @@ baseConfigObject = {
         browser.manage().deleteAllCookies();
         jasmine.getEnv().addReporter(new SpecReporter({spec: {displayStacktrace: true}}));
     },
+
+    params: {
+        baseUrl: "http://localhost:9091/",
+    }
 };
 
 exports.config = baseConfigObject;
