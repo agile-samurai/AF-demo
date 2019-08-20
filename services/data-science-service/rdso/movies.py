@@ -38,7 +38,10 @@ def load_movietweetings_df():
         names=["imdb_id", "title", "genres"],
         dtype={"imdb_id": str},
     )
-    mv["year"] = mv.title.apply(lambda x: x[-5:-1])
+    mv["film_id"] = mv.imdb_id.apply(lambda x: "tt" + str(x))
+    mv["url"] = mv.film_id.apply(lambda x: "/title/" + str(x) + "/")
+    mv["year"] = mv.title.apply(lambda x: x[-5:-1]).astype(int)
+    mv = mv[mv["year"] > 2008]
     mv["parsed_title"] = mv.title.apply(lambda x: x[:-6])
     mv["primary_genre"] = mv.genres.apply(
         lambda x: x.split("|")[0] if type(x) == str else x
@@ -154,9 +157,18 @@ def process_movie_list_to_df(data):
     return movies_df
 
 
+def process_omdb_to_df():
+    list_of_dicts = load_json_files(folder="../data/omdb_json")
+    omdb = pd.DataFrame(list_of_dicts)
+    omdb.rename(columns={"Plot": "description"}, inplace=True)
+    omdb["top_genre"] = omdb["Genre"].apply(lambda x: x.split(",")[0])
+    return omdb
+
+
 def merged_movie_data(data):
     movies_processed = process_movie_list_to_df(data)
     mv = load_movietweetings_df()
+    omdb = process_omdb_to_df()
     mdf = movies_processed.merge(mv, how="left", on="imdb_id")
     return mdf
 

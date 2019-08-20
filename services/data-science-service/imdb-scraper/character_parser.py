@@ -20,7 +20,10 @@ def parse_movie(html: str):
     for row in table.find_all("tr")[1:]:
         try:
             photo, name, _, character = row.find_all("td")
-            photo_img = photo.find("img")["src"]
+            try:
+                photo_img = photo.find("img")["loadlate"]
+            except:
+                photo_img = photo.find("img")["src"]
             actor_id = photo.find("a")["href"]
             character = character.text.strip("\n ").replace("\n", "")
             name = name.text.strip("\n ")
