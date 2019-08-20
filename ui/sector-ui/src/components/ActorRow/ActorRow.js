@@ -11,7 +11,7 @@ export default class ActorSearch extends React.Component {
             return <Chip label={alias} className="alias-chip" key={alias}/>
         });
 
-        const processedMovies = actor.titles.map(movie => <Movie movie={movie}/>);
+        const processedMovies = actor.titles.map(movie => <Movie movie={movie} key={movie.id}/>);
 
         return (
             <div className="actor-card" key={actor.id}>

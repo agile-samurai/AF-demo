@@ -1,24 +1,56 @@
 import React from 'react';
 import './Movie.css';
-import {Link} from "react-router-dom";
+import {withRouter} from "react-router";
 
-export default class Movie extends React.Component {
+class Movie extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.navigateToDossier = this.navigateToDossier.bind(this);
+    }
+
     render() {
         const { movie } = this.props;
 
-        return (
-            <Link to={`/dossier/${movie.id}`} key={movie.id} className="navigation-link">
-                <div className="movie-card">
-                    <div className="image-wrapper">
-                        <img src={movie.image} height={174}/>
-                    </div>
-                    <div className="movie-title-wrapper">
-                        <div className="movie-title">
-                            {movie.name}
-                        </div>
+        const movieCardContent = (
+            <div className="movie-card"
+                 onClick={this.navigateToDossier}
+                 key={movie.id}>
+                <div className="image-wrapper">
+                    <img src={movie.image} height={174}/>
+                </div>
+                <div className="movie-title-wrapper">
+                    <div className="movie-title">
+                        {movie.name}
                     </div>
                 </div>
-            </Link>
+            </div>
+        );
+
+        const processedCard = movie.dossierAvailable ?
+            movieCardContent
+            :
+            (
+            <div title="This has been deleted" className="dossier-not-available-outer-wrapper">
+                <div className="dossier-not-available-inner-wrapper"/>
+                {movieCardContent}
+            </div>
+        );
+
+        return (
+            <div>
+                {processedCard}
+            </div>
         );
     }
+
+    navigateToDossier() {
+        const { movie, history } = this.props;
+
+        if (movie.dossierAvailable) {
+            history.push(`/dossier/${movie.id}`);
+        }
+    }
 }
+
+export default withRouter(Movie);
