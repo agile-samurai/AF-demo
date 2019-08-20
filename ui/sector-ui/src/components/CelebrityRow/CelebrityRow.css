@@ -1,8 +1,8 @@
-.actor-card:not(:first-child) {
+.celebrity-card:not(:first-child) {
     margin-top: 180px;
 }
 
-.actor-name {
+.celebrity-name {
     font-size: 60px;
 }
 

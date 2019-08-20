@@ -6,7 +6,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import {Link} from "react-router-dom";
 import './NavigationMenu.css';
 
-export default class ActorSearch extends React.Component {
+export default class NavigationMenu extends React.Component {
     constructor(props) {
         super(props);
 
