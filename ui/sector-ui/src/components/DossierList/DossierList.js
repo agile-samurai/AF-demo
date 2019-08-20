@@ -1,15 +1,11 @@
 import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import './DossierList.css';
 import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
-import NavigationMenu from "../NavigationMenu/NavigationMenu";
-import {Link} from "react-router-dom";
 import DossierContent from "../DossierContent/DossierContent";
+import HeaderBar from "../HeaderBar/HeaderBar";
 
 export default class DossierList extends React.Component {
     constructor(props) {
@@ -40,18 +36,7 @@ export default class DossierList extends React.Component {
 
         return (
             <div className='dossier-search'>
-                <AppBar position="static">
-                    <Toolbar variant="dense" className="search-toolbar">
-                        <div className="star-power-text">
-                            <Link to="/" className="navigation-link">
-                                <span className="star-text">star</span>pwr
-                            </Link>
-                        </div>
-                        <IconButton edge="end" color="inherit" aria-label="menu">
-                            <NavigationMenu/>
-                        </IconButton>
-                    </Toolbar>
-                </AppBar>
+                <HeaderBar/>
                 <div className="main-section">
                     <TextField
                         id="standard-name"

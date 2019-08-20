@@ -3,7 +3,9 @@ import React from 'react';
 import 'react-typist/dist/Typist.css'
 import {withRouter} from 'react-router'
 import axios from 'axios';
-import { connect } from 'react-redux'
+import {connect} from 'react-redux';
+import './Login.css';
+import HeaderBar from "../HeaderBar/HeaderBar";
 
 class Login extends React.Component {
     constructor(props) {
@@ -46,15 +48,18 @@ class Login extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Username:
-                    <input type="text" value={this.state.username} onChange={this.handleUsernameChange} />
-                    Password:
-                    <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
+            <div className="login">
+                <HeaderBar/>
+                <form onSubmit={this.handleSubmit}>
+                    <label>
+                        Username:
+                        <input type="text" value={this.state.username} onChange={this.handleUsernameChange} />
+                        Password:
+                        <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
+            </div>
         );
     }
 }

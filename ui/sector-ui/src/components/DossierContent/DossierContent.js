@@ -9,6 +9,7 @@ import {Link} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
 import Tweets from "../Tweets/Tweets";
+import ShowElementByRole from "../ShowElementByRole/ShowElementByRole";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -72,21 +73,23 @@ export default class DossierContent extends React.Component {
                         <div className="delete-button-wrapper">
                             <div>
                                 {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
-                                <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
-                                     onClick={this.handleDelete}>
-                                    DELETE DOSSIER
-                                    <DeleteIcon/>
-                                </Fab>
+                                    <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
+                                         onClick={this.handleDelete}>
+                                        DELETE DOSSIER
+                                        <DeleteIcon/>
+                                    </Fab>
                                 {/*</ShowElementByRole>*/}
                             </div>
                         </div>
-                        {
-                            this.state.chartLoaded && (<div className="chart">
-                                <div id={`genreFitChart${dossierData.id}`}/>
-                                <div className="lineage">Lineage: multiple sources</div>
-                            </div>)
-                        }
-                        <Tweets tweets={tweets}/>
+                        <div className="chart-and-tweets">
+                            {
+                                this.state.chartLoaded && (<div className="chart">
+                                    <div id={`genreFitChart${dossierData.id}`}/>
+                                    <div className="lineage">Lineage: multiple sources</div>
+                                </div>)
+                            }
+                            <Tweets tweets={tweets}/>
+                        </div>
                         {perLineageDossierContentList}
                         <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                       refreshData={this.loadEncryptedData.bind(this)}/>

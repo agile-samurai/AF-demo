@@ -43,6 +43,7 @@ a.navigation-link.dossier-name-link {
     justify-content: flex-end;
     align-items: flex-start;
     width: 100%;
+    margin-bottom: 30px;
 }
 
 .delete-button-wrapper .delete-dossier-button, .delete-button-wrapper .delete-dossier-button:hover {
@@ -61,4 +62,12 @@ a.navigation-link.dossier-name-link {
 
 .chart {
     margin-bottom: 30px;
+}
+
+.chart-and-tweets {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
 }
