@@ -77,17 +77,26 @@ resources:
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: ((app_data_bucket))/data/ci/models
+      bucket: ((app_data_bucket))
+      path: /data/ci/models
       region: ((bucket_aws_region))
   - name: data
     type: simple-s3-resource
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
-      bucket: ((app_data_bucket))/data/ci/data
-      options: ["--quiet"]
+      bucket: ((app_data_bucket))
+      path: data/ci/data
       region: ((bucket_aws_region))
-  - name: movies_json
+  - name: raw_data
+    type: simple-s3-resource
+    source:
+      access_key_id: ((aws_access_key_id))
+      secret_access_key: ((aws_secret_access_key))
+      bucket: ((app_data_bucket))
+      path: /data/ci/raw
+      region: ((bucket_aws_region))
+  - name: omdb_json
     type: simple-s3-resource
     source:
       access_key_id: ((aws_access_key_id))
@@ -456,14 +465,14 @@ jobs:
               python -m nltk.downloader stopwords
               python movies.py
               cd ../../../../
-              cp -R source/services/data-science-service/data/ .
+              cp -R source/services/data-science-service/data/ raw_data
               pwd
               ls -all
           inputs:
             - name: source
           outputs:
-            - name: data
-      - put: data
+            - name: raw_data
+      - put: raw_data
   - name: Consildate Data
     public: true
     serial: true
@@ -472,7 +481,7 @@ jobs:
       - get: version
         trigger: true
         passed: [Initialize]
-      - get: movies_json
+      - get: omdb_json
         trigger: true
       - task: Gather Data
         params:
@@ -491,7 +500,7 @@ jobs:
             - -ec
             - |
               mkdir -p source/services/data-science-service/data
-              cp -r movies_json source/services/data-science-service/data/
+              cp -r omdb_json source/services/data-science-service/rdso/
               cd source/services/data-science-service/imdb-scraper
               pip install --quiet -r requirements.txt
               cd ../rdso
@@ -503,13 +512,18 @@ jobs:
               python -m nltk.downloader stopwords
               python movies.py
               cd ../../../../
-              cp -R source/services/data-science-service/data/ .
+              ls -al data
+              rm -rf source/services/data-science-service/data/omdb_json
+              rm -rf data/data/omdb_json
+              echo "Foo br"
+              cp source/services/data-science-service/data/movies_df.pkl data
           inputs:
             - name: source
-            - name: movies_json
+            - name: omdb_json
           outputs:
             - name: data
       - put: data
+
   - name: Train Models
     public: true
     serial: true
@@ -519,7 +533,7 @@ jobs:
       #   passed: [Initialize]
       - get: data
         trigger: true
-        passed: [Capture data and push to s3, Consildate Data]
+        passed: [Consildate Data]
       - task: Train model
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
@@ -855,6 +869,7 @@ jobs:
         trigger: true
         passed: [Provision ECR Repositories]
       - get: version
+        trigger: true
         passed: [Provision ECR Repositories]
       - task: Build Front End Image
         config:
@@ -901,6 +916,7 @@ jobs:
           - Provision ECR Repositories
         trigger: true
       - get: version
+        trigger: true
         passed:
           - Provision ECR Repositories
       - task: Build Server Image
