@@ -195,7 +195,7 @@ resource aws_instance hsm_gateway {
     }
 
     inline = [
-      "nohup java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar &"
+      "java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar"
     ]
   }
 
