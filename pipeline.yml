@@ -602,7 +602,7 @@ jobs:
                 npm install -g sonarqube-scanner --silent
                 sonar-scanner -h
                 echo "installing sonarqube"
-                sonar-scanner -Dsonar.host.url=((sonarqube_url)) -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
+                sonar-scanner -Dsonar.host.url=http://sonarqube-infra-lb-911331727.us-east-2.elb.amazonaws.com -Dsonar.projectKey=rdso-ui -Dsonar.projectName=rdso-ui -Dsonar.sources=./src
                 echo "pushing results to sonarqube complete"
 
                 echo "preparing files for container build"
@@ -681,7 +681,7 @@ jobs:
               cd source/ui/server
               # must compile first with java10 for sonarqube
               mvn clean install -Djava.version=10 -DskipTests -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=((sonarqube_url)) -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
+              mvn sonar:sonar -DskipTests -Dsonar.java.source=10 -B -Dsonar.jacoco.reportPath=target/jacoco.exec -Dsonar.junit.reportsPath=target/surefire-reports -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsonar.projectKey=rdso-server -Dsonar.projectName=rdso-server -Dsonar.host.url=http://sonarqube-infra-lb-911331727.us-east-2.elb.amazonaws.com -Dsonar.sources=src/main -Dsonar.exclusions=src/main/webapp/WEB-INF/static/build/css/*,src/main/webapp/WEB-INF/static/build/js/* -Dsonar.tests=src/test/java  -Dsonar.java.binaries=./target/classes/
           inputs:
           - name: source
       - task: Build Server
