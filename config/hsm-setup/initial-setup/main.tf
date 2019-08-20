@@ -23,13 +23,15 @@ variable "aws_region" {
   }
 }
 
+data "aws_availability_zones" "available" {}
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   name = "hsm-vpc"
   cidr = "10.6.0.0/16"
 
-  azs = ["${var.aws_region["${terraform.workspace}"]}a"]
+  azs = ["${data.aws_availability_zones.available[0]}"]
   private_subnets = ["10.6.1.0/24"]
   public_subnets = ["10.6.101.0/24"]
 
