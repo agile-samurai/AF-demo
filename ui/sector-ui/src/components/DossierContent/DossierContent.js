@@ -29,11 +29,6 @@ export default class DossierContent extends React.Component {
         }
     }
 
-    // TODO use to conditionally allow Dossier deletion
-    /*<ShowElementByRole role='ROLE_SUPERVISOR'>*/
-
-    /*</ShowElementByRole>*/
-
     render() {
         if (this.state.deleted || this.props.deleted) {
             return <div className="dossier-deleted-message">Dossier has been deleted</div>;
