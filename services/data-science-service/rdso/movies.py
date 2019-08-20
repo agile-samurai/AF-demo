@@ -38,7 +38,10 @@ def load_movietweetings_df():
         names=["imdb_id", "title", "genres"],
         dtype={"imdb_id": str},
     )
-    mv["year"] = mv.title.apply(lambda x: x[-5:-1])
+    mv["film_id"] = mv.imdb_id.apply(lambda x: "tt" + str(x))
+    mv["url"] = mv.film_id.apply(lambda x: "/title/" + str(x) + "/")
+    mv["year"] = mv.title.apply(lambda x: x[-5:-1]).astype(int)
+    mv = mv[mv["year"] > 2008]
     mv["parsed_title"] = mv.title.apply(lambda x: x[:-6])
     mv["primary_genre"] = mv.genres.apply(
         lambda x: x.split("|")[0] if type(x) == str else x
@@ -154,19 +157,69 @@ def process_movie_list_to_df(data):
     return movies_df
 
 
-def merged_movie_data(data):
-    movies_processed = process_movie_list_to_df(data)
+def load_imdb_tables_from_dump(folder="../data/imdb_dump"):
+    names = pd.read_csv(folder + "/name.basics.tsv", sep="\t")
+    titles = pd.read_csv(folder + "/title.principals.tsv", sep="\t")
+    return names, titles
+
+
+def process_imdb_dump(names, titles):
+    mdf = titles.merge(names).replace("\\N", pd.np.nan)
+    actors = mdf[(mdf.category == "actor") | (mdf.category == "actress")]
+    actors.columns = [
+        "film_id",
+        "ordering",
+        "person_id",
+        "category",
+        "job",
+        "characters",
+        "name",
+        "birthYear",
+        "deathYear",
+        "profession",
+        "other_films",
+    ]
+    actors.other_films = actors.other_films.apply(
+        lambda x: x.split(",") if isinstance(x, str) else x
+    )
+    actors["lineage"] = "imdb"
+    return actors
+
+
+def get_actor_dict(film_id, actor_df):
+    return actor_df[actor_df["film_id"] == film_id].to_dict(orient="records")
+
+
+def process_omdb_to_df():
+    list_of_dicts = load_json_files(folder="../data/omdb_json")
+    omdb = pd.DataFrame(list_of_dicts)
+    omdb.rename(columns={"Plot": "description"}, inplace=True)
+    omdb["top_genre"] = omdb["Genre"].apply(lambda x: x.split(",")[0])
+    omdb["imdb_id"] = omdb["imdbID"].apply(lambda x: x[2:])
+    omdb["movie_tokens"] = omdb["description"].apply(nlp_clean)
+    # omdb.dropna(subset=["description", "genre"], inplace=True)
+    return omdb
+
+
+def merged_movie_data(data=None):
+    # movies_processed = process_movie_list_to_df(data)
+    movies_processed = process_omdb_to_df()
     mv = load_movietweetings_df()
+    # names, titles = load_imdb_tables_from_dump()
+    # actor_df = process_imdb_dump(names, titles)
+    # mv["actors"] = mv.film_id.apply(lambda x: get_actor_dict(x, actor_df))
     mdf = movies_processed.merge(mv, how="left", on="imdb_id")
+    mdf = mdf[mdf.film_id.notnull()]
     return mdf
 
 
 if __name__ == "__main__":
     # Read all movie JSON files
-    movies_json_list = load_json_files()
-    print(f"Loaded {len(movies_json_list)} JSON files")
+    # movies_json_list = load_json_files()
+    # print(f"Loaded {len(movies_json_list)} JSON files")
     # Convert list of JSON data and MovieTweetings to cleaned DataFrame
-    movies_dataframe = merged_movie_data(movies_json_list)
+    # movies_dataframe = merged_movie_data(movies_json_list)
+    movies_dataframe = merged_movie_data()
 
     # Save movies_df to local .pkl file
     cwd = pathlib.Path(".").resolve()

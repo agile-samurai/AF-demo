@@ -50,6 +50,7 @@ def get_genre_distance_metrics(d2v_model, movies_df):
 
     :return: dict of shape {cluster_name: {mean: X, stdev: Y}}
     """
+    # movies_df = movies_df[movies_df["top_genre"].notnull()]
     genres = movies_df["top_genre"].unique()
     centroids = {}
     distance_metrics = {}
@@ -59,6 +60,7 @@ def get_genre_distance_metrics(d2v_model, movies_df):
             "film_id"
         ].tolist()
         vectors_list = [d2v_model.docvecs[film_id] for film_id in genre_movies_list]
+
         # Find the genre centroid
         centroid = np.mean(vectors_list, axis=0)
         centroids[genre] = centroid
@@ -108,6 +110,9 @@ def cli(version):
     print(f"Saving model version {version}")
     model_filename = f"movies_doc2vec.{version}.model"
     d2v_model.save(str(models_dir / model_filename))
+
+    # For testing, loading d2v model from memory
+    # d2v_model = Doc2Vec.load(str(models_dir / model_filename))
 
     # Find genre centroids and use them to compute distance metrics for model performance
     genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)

@@ -10,33 +10,31 @@ def parse_movie(html: str):
     Parses HTML string and extracts movie JSON
 
     :param html: String of IMDB movie page HTML
-    :return: list of dicts with character details
+    :return: dict of movie JSON
     """
-    bs = BeautifulSoup(html, "html.parser")
-    characters = []
-    table = bs.find("table", {"class": "cast_list"})
-    if not table:
-        return characters
-    for row in table.find_all("tr")[1:]:
+    bs = BeautifulSoup(html, features="lxml")
+    movie = {}
+    for script_tag in bs.find_all("script"):
         try:
-            photo, name, _, character = row.find_all("td")
-            try:
-                photo_img = photo.find("img")["loadlate"]
-            except:
-                photo_img = photo.find("img")["src"]
-            actor_id = photo.find("a")["href"]
-            character = character.text.strip("\n ").replace("\n", "")
-            name = name.text.strip("\n ")
-            cdict = dict(
-                zip(
-                    ("photo_img", "actor_id", "name", "character"),
-                    (photo_img, actor_id, name, character),
-                )
-            )
-            characters.append(cdict)
-        except:
-            pass
-        return characters
+            if script_tag.attrs["type"] == "application/ld+json":
+                movie = json.loads(script_tag.string)
+            else:
+                continue
+        except KeyError:
+            continue
+
+    bs = BeautifulSoup(html, "html.parser")
+    try:
+        movie["longer_desc"] = bs.find("meta", {"property": "og:description"})[
+            "content"
+        ]
+    except TypeError:
+        movie["longer_desc"] = ""
+        pass
+    movie["short_desc"] = movie.get("description", "")
+    movie["description"] = "\n".join([movie["longer_desc"], movie["short_desc"]])
+
+    return movie
 
 
 if __name__ == "__main__":
@@ -44,7 +42,7 @@ if __name__ == "__main__":
     cwd = pathlib.Path(".").resolve()
     data_dir = cwd.parents[0] / "data"
     html_dir = data_dir / "movies_html"
-    json_dir = data_dir / "characters_json"
+    json_dir = data_dir / "longer_desc_json"
     if not json_dir.is_dir():
         json_dir.mkdir()
 
