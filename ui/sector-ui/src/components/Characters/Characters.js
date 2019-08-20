@@ -1,31 +1,37 @@
 import React from 'react';
 import './Characters.css';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 export default class Characters extends React.Component {
     render() {
         const {characters} = this.props;
 
-        if(characters === null) {
+        if (characters === null) {
             return null;
         }
 
         const processedCharacters = characters.map(character => {
             return (
-                <div className="character" key={character.name}>
-                    <div><img src={character.photo_img}/></div>
-                    <div>Character: {character.character}</div>
-                    <div>Played by: {character.name}</div>
-                </div>
+                <Card className="character" key={character.name}>
+                    <CardContent>
+                        {character.name} as <i>{character.character}</i>
+                    </CardContent>
+                </Card>
             );
         });
 
         return (
             <div>
                 {
-                    processedCharacters.length > 0 ? <div className="characters">
-                        <div className="character-heading">Characters:</div>
-                        {processedCharacters}
-                    </div> : null
+                    processedCharacters.length > 0 && (
+                        <div className="characters-container">
+                            <div className="character-heading">Characters:</div>
+                            <div className="characters">
+                                {processedCharacters}
+                            </div>
+                        </div>
+                    )
                 }
             </div>
         );

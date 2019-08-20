@@ -1,9 +1,12 @@
-.characters {
+.characters-container {
     margin-top: 40px;
 }
 
-.character:not(:first-child) {
+.characters {
     margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px 20px;
 }
 
 .character-heading {
