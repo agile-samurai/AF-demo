@@ -22,7 +22,7 @@ public class WikipediaMoveDataSource extends MovieDetailsDataSource {
         super(Lineage.WIKIPEDIA);
     }
 
-    public WikipediaMoveDataSource(@Value("${aws.folder.wikipedia}") String folder,
+    public WikipediaMoveDataSource(@Value("${aws.wikipedia}") String folder,
                                    S3DataService dataService) {
         super(Lineage.WIKIPEDIA);
         this.folder = folder;
