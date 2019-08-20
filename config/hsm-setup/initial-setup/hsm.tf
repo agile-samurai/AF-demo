@@ -37,11 +37,11 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-resource "aws_eip" "this" {
-  vpc        = true
-  instance   = aws_instance.hsm_gateway.id
-  depends_on = [aws_instance.hsm_gateway]
-}
+# resource "aws_eip" "this" {
+#   vpc        = true
+#   instance   = aws_instance.hsm_gateway.id
+#   depends_on = [aws_instance.hsm_gateway]
+# }
 
 resource "tls_private_key" "hsm_key" {
   algorithm = "RSA"
