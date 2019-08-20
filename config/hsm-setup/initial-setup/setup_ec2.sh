@@ -8,6 +8,8 @@ password=$(echo "${PASS}" | cut -c10-20)
 setup_cloudhsm_client() {
   sleep 5s
   printf "\n**** Setting up CloudHSM ****\n"
+  printf "\n**** password: ****: ${password}\n"
+  printf "\n**** ID: ****: ${HSM_ID}\n"
 
   printf "\n-- Updating configuration files CloudHSM client and command line tools\n"
   sudo bash -c "cp /tmp/customerCA.crt /opt/cloudhsm/etc/customerCA.crt"
