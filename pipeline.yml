@@ -1115,18 +1115,31 @@ jobs:
     plan:
     - get: source
       passed:
-      - Push DS Image
-      - Push server Image
-      - Push UI
-      passed:
       - Deploy Services To Dev
+      trigger: true
     - get: version
       passed:
       - Deploy Services To Dev
-      # - Execute OWASP Prod Security Scan Test
       trigger: true
-    - task:  Write Variables and Run TF Deploy
+    - task: Write Variables and Run TF Deploy
       attempts: 10
+      params:
+        AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        TF_VAR_access_key: ((aws_secret_access_key))
+        TF_VAR_ecr_image_region: ((ecr_aws_region))
+        TF_VAR_base_domain: ((base_domain))
+        TF_VAR_access_key: ((aws_access_key_id))
+        TF_VAR_access_secret: ((aws_secret_access_key))
+        TF_VAR_rds_password: ((rds_password))
+        TF_VAR_db_pass: ((rds_password))
+        TF_VAR_db_user: dbusername1
+        TF_VAR_infra_version: useless
+        TF_VAR_aws_account_id: ((aws_account_id))
+        TF_VAR_jwt_secret: ((jwt_secret))
+        TF_VAR_business_user_password: ((business_user_password))
+        TF_VAR_business_supervisor_password: ((business_supervisor_password))
+        TF_VAR_system_user_password: ((system_user_password))
       config:
         platform: linux
         image_resource:
@@ -1138,96 +1151,32 @@ jobs:
           args:
           - -ec
           - |
-            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
-            echo ecr_image_region = \"((ecr_aws_region))\" >> vars/terraform.tfvars
-            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
-            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
-            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
-            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
-            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
-            echo db_user = \"dbusername1\" >> vars/terraform.tfvars
-            echo infra_version = \"useless\" >> vars/terraform.tfvars
-            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
-            echo business_user_password = \"((business_user_password))\" >> vars/terraform.tfvars
-            echo business_supervisor_password = \"((business_supervisor_password))\" >> vars/terraform.tfvars
-            echo system_user_password = \"((system_user_password))\" >> vars/terraform.tfvars
-            echo jwt_secret = \"((jwt_secret))\" >> vars/terraform.tfvars
-            echo "Planning deployment to the test environment"
+            export TF_VAR_images_version=`cat version/number`
+
+            cd source/config/service-setup
+            terraform version
+            terraform init
+            # Always try to create the workspace, ignore non-zero exit code if it already exists
+            terraform workspace new test || true
+            terraform workspace list
+            terraform workspace select test
+            terraform refresh
+            terraform apply -parallelism=20 --auto-approve
+
+            echo "Waiting for server to come up"
+            export SERVER_DNS_NAME=`terraform output server_dns_name`
+            export WWW_DNS_NAME=`terraform output www-url`
+            cd ../..
+            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            echo "Server is up!!"
+            # export WWW_DNS_NAME=`terraform output www-url`
+            # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
+            # echo "UI is up!!"
         inputs:
+        - name: source
         - name: version
         outputs:
         - name: vars
-    - put: terraform
-      attempts: 10
-      params:
-        # env:
-        #   AWS_REGION: ((test_aws_region))
-        # env:
-        #   TF_VAR_access_key: ((aws_access_key_id))
-        #   TF_VAR_access_secret: ((aws_secret_access_key))
-        #   TF_VAR_aws_account_id: ((aws_account_id))
-        #   TF_VAR_aws_infra_region: ((aws_infra_region))
-        #   TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
-        #   TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
-        #   TF_VAR_project: ((project))
-        env_name: test #terraform workspace
-        plan_only: true
-        terraform_source: source/config/service-setup
-        var_files:
-        - ./vars/terraform.tfvars
-    - put: terraform
-      attempts: 10
-      params:
-        # env:
-        #   AWS_REGION: ((test_aws_region))
-        env_name: test #terraform workspace
-        plan_run: true
-        terraform_source: source/config/service-setup
-        var_files:
-        - ./vars/terraform.tfvars
-    - task: show-outputs
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: alpine
-        inputs:
-        - name: terraform
-        - name: source
-        run:
-          path: /bin/sh
-          args:
-            - -c
-            - |
-                echo "name: $(cat terraform/name)"
-                echo "metadata: $(cat terraform/metadata)"
-                # source/wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
-                # echo "Server is up!!"
-    # - task: Check-Server
-    #   config:
-    #     platform: linux
-    #     image_resource:
-    #       type: docker-image
-    #       source:
-    #         repository: ugroup/centos-terraform-aws
-    #     run:
-    #       path: sh
-    #       args:
-    #       - -ec
-    #       - |
-    #         cd source/config/service-setup
-    #         terraform init
-    #         terraform workspace select test
-    #         #export TF_LOG=debug
-    #         #`cat source/.git/HEAD`
-    #         echo "Waiting for server to come up"
-    #         export SERVER_DNS_NAME=`terraform output server_dns_name`
-    #         cd ../..
-    #         ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
-    #         echo "Server is up!!"
-        # inputs:
-        # - name: source
 
   - name: Deploy Services To Production
     serial: true
@@ -1235,13 +1184,30 @@ jobs:
     - get: source
       passed:
       - Deploy Services To Test
-    - get: version
       trigger: true
+    - get: version
       passed:
       - Deploy Services To Test
-      # - Execute OWASP Prod Security Scan Test
-    - task:  Write Variables and Run TF Deploy
+      trigger: true
+    - task: Write Variables and Run TF Deploy
       attempts: 10
+      params:
+        AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        TF_VAR_access_key: ((aws_secret_access_key))
+        TF_VAR_ecr_image_region: ((ecr_aws_region))
+        TF_VAR_base_domain: ((base_domain))
+        TF_VAR_access_key: ((aws_access_key_id))
+        TF_VAR_access_secret: ((aws_secret_access_key))
+        TF_VAR_rds_password: ((rds_password))
+        TF_VAR_db_pass: ((rds_password))
+        TF_VAR_db_user: dbusername1
+        TF_VAR_infra_version: useless
+        TF_VAR_aws_account_id: ((aws_account_id))
+        TF_VAR_jwt_secret: ((jwt_secret))
+        TF_VAR_business_user_password: ((business_user_password))
+        TF_VAR_business_supervisor_password: ((business_supervisor_password))
+        TF_VAR_system_user_password: ((system_user_password))
       config:
         platform: linux
         image_resource:
@@ -1253,60 +1219,32 @@ jobs:
           args:
           - -ec
           - |
-            echo images_version = \"`(cat ./version/number)`\" >> vars/terraform.tfvars
-            echo ecr_image_region = \"((ecr_aws_region))\" >> vars/terraform.tfvars
-            echo base_domain = \"((base_domain))\" >> vars/terraform.tfvars
-            echo access_key = \"((aws_access_key_id))\" >> vars/terraform.tfvars
-            echo access_secret = \"((aws_secret_access_key))\" >> vars/terraform.tfvars
-            echo rds_password = \"((rds_password))\" >> vars/terraform.tfvars
-            echo db_pass = \"((rds_password))\" >> vars/terraform.tfvars
-            echo infra_version = \"useless\" >> vars/terraform.tfvars
-            echo aws_account_id = \"((aws_account_id))\" >> vars/terraform.tfvars
-            echo business_user_password = \"((business_user_password))\" >> vars/terraform.tfvars
-            echo business_supervisor_password = \"((business_supervisor_password))\" >> vars/terraform.tfvars
-            echo system_user_password = \"((system_user_password))\" >> vars/terraform.tfvars
-            echo jwt_secret = \"((jwt_secret))\" >> vars/terraform.tfvars
-            echo "Planning deployment to the prod environment"
+            export TF_VAR_images_version=`cat version/number`
+
+            cd source/config/service-setup
+            terraform version
+            terraform init
+            # Always try to create the workspace, ignore non-zero exit code if it already exists
+            terraform workspace new prod || true
+            terraform workspace list
+            terraform workspace select prod
+            terraform refresh
+            terraform apply -parallelism=20 --auto-approve
+
+            echo "Waiting for server to come up"
+            export SERVER_DNS_NAME=`terraform output server_dns_name`
+            export WWW_DNS_NAME=`terraform output www-url`
+            cd ../..
+            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            echo "Server is up!!"
+            # export WWW_DNS_NAME=`terraform output www-url`
+            # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
+            # echo "UI is up!!"
         inputs:
+        - name: source
         - name: version
         outputs:
         - name: vars
-    - put: terraform
-      attempts: 10
-      params:
-        env:
-          AWS_REGION: ((prod_aws_region))
-        env_name: prod #terraform workspace
-        plan_only: true
-        terraform_source: source/config/service-setup
-        var_files:
-        - ./vars/terraform.tfvars
-    - put: terraform
-      params:
-        env:
-          AWS_REGION: ((prod_aws_region))
-        env_name: prod #terraform workspace
-        plan_run: true
-        terraform_source: source/config/service-setup
-        var_files:
-        - ./vars/terraform.tfvars
-    - task: show-outputs
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: alpine
-        inputs:
-        - name: terraform
-        - name: source
-        run:
-          path: /bin/sh
-          args:
-            - -c
-            - |
-                echo "name: $(cat terraform/name)"
-                echo "metadata: $(cat terraform/metadata)"
 
   - name: OWASP Prod Security Scan
     serial: false
@@ -1316,7 +1254,7 @@ jobs:
       passed:
         - Deploy Services To Dev
       # passed:
-      #   - Deploy Services To Production
+      #   - Deploy Services To Productionuction
     - task: get-lb
       attempts: 10
       config:
