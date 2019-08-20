@@ -9,20 +9,6 @@ resource "aws_cloudhsm_v2_cluster" "cloudhsm_v2_cluster" {
   depends_on = [module.vpc]
 }
 
-
-variable "aws_region" {
-  type        = map(string)
-
-  default = {
-    #default = "us-east-1",
-    dev  = "us-east-1",
-    test = "us-east-2",
-    prod = "us-west-1",
-    concourse   = "us-west-2",
-    infra   = "us-west-2"
-  }
-}
-
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id        = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
   availability_zone = "${var.aws_region[terraform.workspace]}c"
