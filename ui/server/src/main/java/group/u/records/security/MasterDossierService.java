@@ -47,7 +47,7 @@ public class MasterDossierService {
 
     private void updateDeletePublicSummary(UUID dossierId) {
         MoviePublicSummary moviePublicSummary = publicSummaryRepository.findById(dossierId).get();
-        moviePublicSummary.setDossierAvailable(true);
+        moviePublicSummary.setDossierAvailable(false);
         publicSummaryRepository.save(moviePublicSummary);
     }
 

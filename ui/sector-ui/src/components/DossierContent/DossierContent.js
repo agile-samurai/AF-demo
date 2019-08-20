@@ -24,7 +24,9 @@ export default class DossierContent extends React.Component {
     }
 
     componentDidMount() {
-        this.loadEncryptedData(this.props.dossierID);
+        if (!this.props.deleted) {
+            this.loadEncryptedData(this.props.dossierID);
+        }
     }
 
     // TODO use to conditionally allow Dossier deletion
@@ -33,63 +35,62 @@ export default class DossierContent extends React.Component {
     /*</ShowElementByRole>*/
 
     render() {
-        let dossierData;
-        if (this.props.dossierID) {
-            dossierData = this.state.dossierData;
+        if (this.state.deleted || this.props.deleted) {
+            return <div className="dossier-deleted-message">Dossier has been deleted</div>;
+        }
 
-            if (!this.state.loaded) {
-                return (
-                    <div className="dossier-loading-container">
-                        <CircularProgress className="dossier-loading-image"/>
-                        <div className="dossier-loading-text">Decrypting and loading dossier</div>
-                    </div>
-                );
-            }
+        const dossierData = this.state.dossierData;
+
+        if (!this.state.loaded) {
+            return (
+                <div className="dossier-loading-container">
+                    <CircularProgress className="dossier-loading-image"/>
+                    <div className="dossier-loading-text">Decrypting and loading dossier</div>
+                </div>
+            );
         }
 
         const {dossiers} = dossierData;
 
         const perLineageDossierContentList = dossiers
             .map((perLineageDossier, index) => <PerLineageDossierContent key={index}
-                                                                dossierID={dossierData.id}
-                                                                refreshData={this.loadEncryptedData.bind(this)}
-                                                                dossierData={perLineageDossier}/>);
+                                                                         dossierID={dossierData.id}
+                                                                         refreshData={this.loadEncryptedData.bind(this)}
+                                                                         dossierData={perLineageDossier}/>);
 
         return (
             <div>
-                {
-                    this.state.deleted ? <div className="dossier-deleted-message">Dossier has been deleted</div> :
-                        <div className="dossier-main-section-wrapper">
-                            <div className="dossier-main-section">
-                                <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
-                                    <div className="image-and-name">
-                                        <div>
-                                            <img src={dossiers[0].image} height={80}/>
-                                        </div>
-                                        <div className="dossier-name-wrapper">
-                                            <div className="dossier-name">{dossierData.name}</div>
-                                        </div>
-                                    </div>
-                                </Link>
-                                <div className="delete-button-wrapper">
-                                    <div>
-                                        {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
-                                        <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier" onClick={this.handleDelete}>
-                                            DELETE DOSSIER
-                                            <DeleteIcon/>
-                                        </Fab>
-                                        {/*</ShowElementByRole>*/}
-                                    </div>
+                <div className="dossier-main-section-wrapper">
+                    <div className="dossier-main-section">
+                        <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
+                            <div className="image-and-name">
+                                <div>
+                                    <img src={dossiers[0].image} height={80}/>
                                 </div>
-                                {perLineageDossierContentList}
-                                <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
-                                              refreshData={this.loadEncryptedData.bind(this)}/>
-                                <Files dossierID={dossierData.id} files={dossierData.dossierFileInfos}
-                                       refreshData={this.loadEncryptedData.bind(this)}/>
-                                <div className="end-of-dossier-indicator"/>
+                                <div className="dossier-name-wrapper">
+                                    <div className="dossier-name">{dossierData.name}</div>
+                                </div>
+                            </div>
+                        </Link>
+                        <div className="delete-button-wrapper">
+                            <div>
+                                {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
+                                <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
+                                     onClick={this.handleDelete}>
+                                    DELETE DOSSIER
+                                    <DeleteIcon/>
+                                </Fab>
+                                {/*</ShowElementByRole>*/}
                             </div>
                         </div>
-                }
+                        {perLineageDossierContentList}
+                        <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
+                                      refreshData={this.loadEncryptedData.bind(this)}/>
+                        <Files dossierID={dossierData.id} files={dossierData.dossierFileInfos}
+                               refreshData={this.loadEncryptedData.bind(this)}/>
+                        <div className="end-of-dossier-indicator"/>
+                    </div>
+                </div>
             </div>
         );
     }

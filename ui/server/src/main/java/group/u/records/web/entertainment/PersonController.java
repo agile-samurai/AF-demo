@@ -26,5 +26,4 @@ public class PersonController {
                                                @RequestParam(value = "cursor", required = false, defaultValue="0") int cursor){
         return ok(actorService.getActors(searchString, quantity, cursor));
     }
-
 }
