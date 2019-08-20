@@ -15,12 +15,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class TwitterMovieDataSource{
-    private Map<String, List<String>> tweetMap;
+    private Map<String, List<String>> tweetMap = new HashMap<>();
     private DataService dataService;
     private Logger logger = LoggerFactory.getLogger(TwitterMovieDataSource.class);
 
@@ -29,7 +30,6 @@ public class TwitterMovieDataSource{
                                   S3DataService dataService,
                                   ObjectMapper objectMapper) {
         this.dataService = dataService;
-
         String file = dataService.getFile( bucketName, folder + "/tweet_data.json" );
         try {
             Arrays.stream(objectMapper.readValue(file, MovieTweet[].class)).forEach(t->{

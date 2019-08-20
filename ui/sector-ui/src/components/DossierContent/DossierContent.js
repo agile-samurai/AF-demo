@@ -8,6 +8,7 @@ import Files from "../Files/Files";
 import {Link} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
+import Tweets from "../Tweets/Tweets";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -45,7 +46,7 @@ export default class DossierContent extends React.Component {
             );
         }
 
-        const {dossiers} = dossierData;
+        const {dossiers, tweets} = dossierData;
 
         const perLineageDossierContentList = dossiers
             .map((perLineageDossier, index) => <PerLineageDossierContent key={index}
@@ -79,6 +80,7 @@ export default class DossierContent extends React.Component {
                                 {/*</ShowElementByRole>*/}
                             </div>
                         </div>
+                        <Tweets tweets={tweets}/>
                         {perLineageDossierContentList}
                         <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                       refreshData={this.loadEncryptedData.bind(this)}/>
@@ -107,7 +109,7 @@ export default class DossierContent extends React.Component {
                         loaded: true
                     }, () => {
                         try{
-                            Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
+                            window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
                                 `genreFitChart${this.state.dossierData.id}`);
                         } catch (error) {}
                     });
