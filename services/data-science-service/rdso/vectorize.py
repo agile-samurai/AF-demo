@@ -76,7 +76,7 @@ def get_genre_distance_metrics(d2v_model, movies_df):
             "stdev": distance_stdev.item(),
         }
 
-    return distance_metrics
+    return distance_metrics, centroids
 
 
 def get_tagged_corpus(movie_df):
