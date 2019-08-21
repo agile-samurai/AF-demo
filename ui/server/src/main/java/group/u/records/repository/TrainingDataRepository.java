@@ -1,4 +1,4 @@
-package group.u.records.service.dossier;
+package group.u.records.repository;
 
 import group.u.records.ds.training.TrainingData;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.ds.training.TrainingData;
 import group.u.records.service.dossier.Dossier;
 import group.u.records.models.entity.Person;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,6 @@ public class S3DataService implements DataService {
 
     @Override
     public String get(UUID dossierid) {
-        Dossier dossier = null;
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(dossierStorageBucket).key(dossierid.toString()).build());
 
         //Todo: Make this more reusable.

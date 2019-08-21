@@ -2,15 +2,13 @@ package group.u.records.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.service.datamanagement.S3DataService;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-
-import javax.persistence.Id;
 
 import static org.mockito.Mockito.mock;
 

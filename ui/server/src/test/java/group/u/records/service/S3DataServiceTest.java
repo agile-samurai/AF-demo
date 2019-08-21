@@ -7,7 +7,7 @@ import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.repository.PersonRepository;
 import group.u.records.service.datamanagement.S3DataService;
 import group.u.records.service.dossier.DossierBuilderService;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

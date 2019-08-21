@@ -1044,6 +1044,7 @@ jobs:
           args:
           - -ec
           - |
+            # Put in wait for sh call to HSM for this env
             export TF_VAR_images_version=`cat version/number`
             cd source/config/service-setup
             terraform version

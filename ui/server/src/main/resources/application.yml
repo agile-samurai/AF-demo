@@ -26,7 +26,7 @@ app:
     enableDistributionImages: true
   content:
     security:
-      host: http://184.169.235.7:8080
+      host: http://35.182.191.152:8080
   ds:
     redact:
       host: http://spacy

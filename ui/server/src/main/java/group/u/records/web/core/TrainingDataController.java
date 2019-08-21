@@ -1,7 +1,7 @@
 package group.u.records.web.core;
 
 import group.u.records.ds.training.TrainingData;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
