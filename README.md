@@ -110,7 +110,7 @@ Within the CI/CD pipeline, code flows from Left to right with the left most step
 Each stage is represented as a series of dependencies and outputs which then build our promotion process. Concourse CI provides rapid delivery and enables automation to be accomplished with compliance during the delivery process. Our pipeline includes several features that provide zero-downtime deployments in a high availability configuration:
 
 __Data Science Model Training and Engineering within the Pipeline:__
-`Build Training Set -> Train Model -> Promote Model Binary -> Containerize Model Service`
+`Build Training Set -> Process and Prepare Data for Training -> Train Model -> Promote Model Binary -> Containerize Model Service`
 
 __Data Integration:__
 `Build Data Transformations -> Contract Specification & Documentation -> Micro Service Containerization`
@@ -144,7 +144,9 @@ Our solution is comprised of the following components, which are explained in de
 * Data Streaming & Persistence
 * User Experience and Data Visualizations
 
-Our solution makes use of AWS through a fully automated CI/CD pipeline orchestrated with Terraform as a configuration management tool.  Our selection of AWS and Terraform was driven by the ability to create environments seamlessly without being coupled to a given deployment target as well as the familiarity of these tools within USCIS.  As we are provisioning Docker Containers, we also have the ability seamlessly provision workloads within the cloud and have AWS’ Platform as a Service implementation (Elastic Container Service) handle our process scheduling.
+Our solution makes use of AWS through a fully automated CI/CD pipeline orchestrated with Terraform as a configuration management tool.  Our selection of AWS and Terraform was driven by the ability to create environments seamlessly without being coupled to a given deployment target as well as the familiarity of these tools within USCIS.  As we are provisioning Docker Containers, we also have the ability to seamlessly provision workloads within the cloud and have AWS’ Platform as a Service implementation (Elastic Container Service) handle our process scheduling.
+
+HSMGATEWAY???
 
 __Stability:__ To ensure Stability:
 Our platform leverages cloud optimized platform as a service techniques and built in telemetry support of the container platform.
