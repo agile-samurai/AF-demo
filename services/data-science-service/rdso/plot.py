@@ -127,7 +127,8 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
     mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
     mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
     mdf = mdf[mdf.top_genre.notna()].sample(frac=0.2)
-    item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
+    item = mdf.iloc[0].to_dict()
+    # item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
     # colormap = dict(
     #     zip(mdf.top_genre.unique(), Category20[len(mdf.top_genre.unique())])
     # )
@@ -158,7 +159,7 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
         grayed_out_colormap[genre_of_item] = color_of_item
         mdf["color"] = mdf.top_genre.map(lambda x: grayed_out_colormap[x])
     else:
-        mdf["color"] - mdf.top_genre.map(lambda x: colormap[x])
+        mdf["color"] = mdf.top_genre.map(lambda x: colormap[x])
 
     p = sc_plot_genre_colors(mdf, colormap)
 
