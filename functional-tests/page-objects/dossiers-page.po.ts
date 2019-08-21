@@ -33,6 +33,9 @@ export class HomePage extends CommonActions  {
     public async waitForPresenceAndGetDeleteButton(): Promise<ElementFinder> {
         return this.waitForPresenceAndGetElementByCss(this.deleteButton);
     }
+    public async getDeleteButton(): Promise<ElementFinder> {
+        return this.byCss(this.deleteButton);
+    }
 
     public async waitForClickableAndCLickDeleteButton(): Promise<ElementFinder> {
         const deleteButton = await this.waitForPresenceAndGetDeleteButton();
