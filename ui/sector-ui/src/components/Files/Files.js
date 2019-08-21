@@ -70,10 +70,6 @@ export default class Files extends React.Component {
         axios.get(`/api/files/${this.props.dossierID}/${fileName}`, {
             headers: {
                 'File-Action': 'download'
-            },
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
             }
         }).then(response => {
             this.openFileDialog(response.data, fileName, contentType);

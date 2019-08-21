@@ -117,12 +117,7 @@ export default class DossierContent extends React.Component {
         this.setState({
             loaded: false
         }, () => {
-            axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`, {
-                auth: {  // TODO remove
-                    username: 'business-user',
-                    password: 'password'
-                }
-            })
+            axios.get(`${this.DOSSIER_ENDPOINT}/${dossierID}`)
                 .then(response => {
                     this.setState({
                         dossierData: response.data,
@@ -150,14 +145,7 @@ export default class DossierContent extends React.Component {
     handleDelete() {
         const {dossierID} = this.props;
 
-        axios.delete(`/api/dossier/${dossierID}`
-            ,
-            {
-                auth: {  // TODO remove
-                    username: 'business-supervisor',
-                    password: 'password'
-                }
-            })
+        axios.delete(`/api/dossier/${dossierID}`)
             .then(() => {
                 this.setState({
                     deleted: true

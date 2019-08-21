@@ -108,14 +108,7 @@ export default class DossierNotes extends React.Component {
         axios.post(`/api/dossier/${dossierID}/note`,
             {
                 content: this.state.noteInputValue
-            }
-            ,
-            {
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
-            }
-        })
+            })
         .then(() => {
             this.setState({
                 noteInputValue: ''

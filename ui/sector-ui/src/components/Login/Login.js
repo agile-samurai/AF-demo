@@ -35,7 +35,7 @@ class Login extends React.Component {
 
         axios.get(`/api/login`,
             {
-                auth: { // TODO remove
+                auth: {
                     username: this.state.username,
                     password: this.state.password
                 }
@@ -91,7 +91,6 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log("state: ", state);
     return ({
         jwtLoaded: state.jwtLoaded
     })
