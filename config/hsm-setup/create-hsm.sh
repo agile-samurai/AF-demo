@@ -3,6 +3,7 @@
 ###
 # [root@0ffe5c6cf6ae hsm-setup]# export AWS_DEFAULT_REGION=us-east-1
 # [root@0ffe5c6cf6ae hsm-setup]# ./create-hsm.sh us-west-2
+#
 ###
 #HSM_USER_PASS=$(dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 -b 0 | rev | cut -b 2- | rev)
 
