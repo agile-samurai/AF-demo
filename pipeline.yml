@@ -42,7 +42,7 @@ resources:
     source: &repo-source
       uri: ((git_source_url))
       branch: master
-      paths: 
+      paths:
         - config/**/*
       private_key: ((git_private_key))
   - name: version
@@ -296,7 +296,7 @@ jobs:
                 cd ../../../
                 cd hsm-source/config/hsm-setup/initial-setup
                 ls -all
-                
+
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new test || true
                 terraform workspace list
@@ -339,7 +339,7 @@ jobs:
                 cd ../../../
                 cd hsm-source/config/hsm-setup/initial-setup
                 ls -all
-                
+
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new test-ian || true
                 terraform workspace list
@@ -382,7 +382,7 @@ jobs:
                 cd ../../../
                 cd hsm-source/config/hsm-setup/initial-setup
                 ls -all
-                
+
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new france || true
                 terraform workspace list
@@ -426,7 +426,7 @@ jobs:
                 cd ../../../
                 cd hsm-source/config/hsm-setup/initial-setup
                 ls -all
-                
+
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new stockholm || true
                 terraform workspace list
@@ -435,7 +435,7 @@ jobs:
                 export TF_VAR_REGION=eu-north-1
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
-          
+
   - name: Deploy HSM - Prod
     public: true
     serial: true
@@ -502,7 +502,7 @@ jobs:
             path: /bin/bash
             args:
             - -exc
-            - | 
+            - |
                 cd hsm-source/config/hsm-setup/initial-setup
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new prod-ir || true
@@ -533,7 +533,7 @@ jobs:
             path: /bin/bash
             args:
             - -exc
-            - | 
+            - |
                 cd hsm-source/config/hsm-setup/initial-setup
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new dev || true
@@ -564,7 +564,7 @@ jobs:
             path: /bin/bash
             args:
             - -exc
-            - | 
+            - |
                 cd hsm-source/config/hsm-setup/initial-setup
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new test || true
@@ -862,7 +862,7 @@ jobs:
             - -ec
             - |
                 echo "begin build front end script"
-                cd source/ui/sector-ui
+                cd source/ui/frontend
                 echo "building front end"
                 npm install --silent
                 yarn build
@@ -1142,7 +1142,7 @@ jobs:
             - -ec
             - |
               echo "begin build front end script"
-              cd source/ui/sector-ui
+              cd source/ui/frontend
 
               echo "building front end"
               npm install  --silent

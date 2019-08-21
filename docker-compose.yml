@@ -2,8 +2,8 @@
 version: '3.7'
 
 services:
-  sector-ui:
-    image: records/sector-ui
+  frontend:
+    image: records/frontend
     restart: on-failure
     depends_on:
       - ui-backend
@@ -12,7 +12,7 @@ services:
     environment:
       - SERVER_URL=ui-backend:8080
     volumes:
-      - ./ui/sector-ui/build:/build
+      - ./ui/frontend/build:/build
 
   ui-backend:
     image: records/ui-backend
