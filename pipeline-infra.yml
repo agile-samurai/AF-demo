@@ -1,0 +1,146 @@
+resource_types:
+  - name: terraform
+    type: docker-image
+    source:
+      repository: ljfranklin/terraform-resource
+      tag: 0.12.5
+
+resources:
+  - name: terraform
+    type: terraform
+    source:
+      backend_type: s3
+      backend_config:
+        bucket: ((tf_backend_bucket))
+        key: infra.tfstate
+        region: ((bucket_aws_region))
+        access_key: ((aws_access_key_id))
+        secret_key: ((aws_secret_access_key))
+      env:
+        AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+        AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+  - name: source
+    type: git
+    source: &repo-source
+      uri: ((git_source_url))
+      branch: master
+      private_key: ((git_private_key))
+
+groups:
+  - name: all
+    jobs:
+    #- Create-Terraform-Persistence
+    - Create-Infra
+    - Initialize
+  - name: destroy
+    jobs:
+     - Destroy-Infra
+  #     - terraform-destroy-all-envs
+  #     - terraform-destroy-dev-service
+  #     - terraform-destroy-test-service
+  #     - terraform-destroy-prod-service
+
+jobs:
+  - name: Initialize
+    public: true
+    plan:
+      - get: source
+        trigger: true
+
+  # - name: Create-Terraform-Persistence
+  #   public: true
+  #   serial: true
+  #   plan:
+  #     - get: source
+  #       trigger: true
+  #       passed: [Initialize]
+  #     - task: Create Buckets
+  #       attempts: 10
+  #       config:
+  #         platform: linux
+  #         image_resource:
+  #           type: docker-image
+  #           source:
+  #             repository: mesosphere/aws-cli
+  #         run:
+  #           path: sh
+  #           args:
+  #             - -xc
+  #             - |
+  #               ((sonarqube_url))
+  #               export AWS_ACCESS_KEY_ID=((aws_access_key_id))
+  #               export AWS_SECRET_ACCESS_KEY=((aws_secret_access_key))
+  #               echo "Creating Repository Persistence"
+  #               aws s3api list-buckets --region ((bucket_aws_region))
+  #               aws s3api create-bucket --bucket ((tf_backend_bucket)) --region ((bucket_aws_region))
+  #               aws s3api create-bucket --bucket ((app_data_bucket)) --region ((bucket_aws_region))
+  #         outputs:
+  #           - name: vars
+  # TODO: test this
+  - name: Create-Infra
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+        passed: [Initialize]
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          plan_only: true
+          env_name: infra #workspace
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          env_name: infra
+          plan_run: true
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
+  - name: Destroy-Infra
+    public: true
+    serial: true
+    plan:
+      - get: source
+        trigger: false
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          plan_only: true
+          env_name: infra #workspace
+          get_params:
+            action: destroy
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
+      - put: terraform
+        params:
+          terraform_source: source/config/infra-setup/scripts
+          env_name: infra
+          plan_run: true
+          action: destroy
+          env:
+            TF_VAR_access_key: ((aws_access_key_id))
+            TF_VAR_access_secret: ((aws_secret_access_key))
+            TF_VAR_aws_account_id: ((aws_account_id))
+            TF_VAR_sonarqube_rds_username: ((sonarqube_rds_username))
+            TF_VAR_sonarqube_rds_password: ((sonarqube_rds_password))
+            TF_VAR_project: ((project))
+      ###NOW FLY SETPIPELINE WITH SONARQUBE URL
+      ####add output from this step 
+  

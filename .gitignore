@@ -70,8 +70,6 @@ share/python-wheels/
 MANIFEST
 
 ## devops
-credentials*.y*
-rdso-accounts.txt
 
 # Data Science data and models
 services/data-science-service/imdb-scraper/data/*

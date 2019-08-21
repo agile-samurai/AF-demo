@@ -64,7 +64,7 @@ fly targets
 
 # infra pipeline
 fly set-pipeline -n -p "infra-$PIPELINE" --target $FLY_TARGET -c pipeline-infra.yml -l credentials.template.yml \
-  --var=git_username=$GIT_USERNAME \
+  --var=  sername=$GIT_USERNAME \
   --var=git_password=$GIT_PASSWORD \
   --var=aws_account_id=$AWS_ACCOUNT_ID \
   --var=aws_access_key_id=$AWS_ACCESS_KEY_ID \
