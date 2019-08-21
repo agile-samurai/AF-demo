@@ -274,4 +274,5 @@ __Scalability:__  To ensure scalability, we have containerized all aspects of ou
 
 The solution architecture builds off of the architectural principles of Micro Service Design, while leveraging Cloud Centricity to achieve a highly scalable and testable system. These concerns enabled the creation of a pluggable abstraction that provides fault tolerance in a consistent and predictable fashion. These abstractions not only made the solution testable, they also added an additional level of flexibility to enable offline development through the use of Feature Toggles and Test Doubles.
 
+
 ![Architecture](img/Diagram-1.png)
