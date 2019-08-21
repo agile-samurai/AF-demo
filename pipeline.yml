@@ -37,6 +37,14 @@ resources:
       uri: ((git_source_url))
       branch: master
       private_key: ((git_private_key))
+  - name: hsm-source
+    type: git
+    source: &repo-source
+      uri: ((git_source_url))
+      branch: master
+      paths: 
+        - config/**/*
+      private_key: ((git_private_key))
   - name: version
     type: semver
     source:
@@ -118,6 +126,9 @@ groups:
     - Deploy HSM - Dev
     - Deploy HSM - Test
     - Deploy HSM - Prod
+    - Deploy HSM - Ian
+    - Deploy HSM - France
+    - Deploy HSM -stockholme
     - Initialize
     - Consolidate Data
     - Build UI
@@ -173,6 +184,9 @@ groups:
       - terraform-destroy-dev-service
       - terraform-destroy-test-service
       - terraform-destroy-prod-service
+      - REMOVE HSM - Prod
+      - REMOVE HSM - Test
+      - REMOVE HSM - Dev
 
 jobs:
   # TODO: test this
@@ -207,8 +221,7 @@ jobs:
     public: true
     serial: true
     plan:
-      - get: source
-        trigger: true
+      - get: hsm-source
       - task: Deploy HSM
         attempts: 2
         params:
@@ -220,8 +233,8 @@ jobs:
             type: docker-image
             source:
               repository: ugroup/centos-terraform-aws
-          params:
-              HSM_REGION: ((hsm_region))
+          inputs:
+              - name: hsm-source
           run:
             path: /bin/bash
             args:
@@ -231,11 +244,11 @@ jobs:
                 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
                 wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
                 mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
-                cd source/services/hsmgateway
+                cd hsm-source/services/hsmgateway
                 mvn clean install -DskipTests
-                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../source/config/hsm-setup/initial-setup/
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
                 cd ../../../
-                cd source/config/hsm-setup/initial-setup
+                cd hsm-source/config/hsm-setup/initial-setup
 
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new dev || true
@@ -249,15 +262,12 @@ jobs:
                 echo $TF_VAR_hsm_controller
                 terraform plan -out plan && terraform apply plan
                 echo $TF_VAR_hsm_controller
-          inputs:
-            - name: source
 
   - name: Deploy HSM - Test
     public: true
     serial: true
     plan:
-      - get: source
-        trigger: true
+      - get: hsm-source
       - task: Deploy HSM
         attempts: 2
         params:
@@ -269,15 +279,24 @@ jobs:
             type: docker-image
             source:
               repository: ugroup/centos-terraform-aws
-          params:
-              HSM_REGION: ((hsm_region))
+          inputs:
+              - name: hsm-source
           run:
             path: /bin/bash
             args:
             - -exc
             - |
-                yum install bind-utils openssl openssl-devel -y
-                cd source/config/hsm-setup/initial-setup
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd hsm-source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd hsm-source/config/hsm-setup/initial-setup
+                ls -all
+                
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new test || true
                 terraform workspace list
@@ -286,15 +305,12 @@ jobs:
                 export TF_VAR_REGION=us-west-2
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
-          inputs:
-                - name: source
 
-  - name: Deploy HSM - Prod
+  - name: Deploy HSM - Ian
     public: true
     serial: true
     plan:
-      - get: source
-        trigger: true
+      - get: hsm-source
       - task: Deploy HSM
         attempts: 2
         params:
@@ -306,26 +322,257 @@ jobs:
             type: docker-image
             source:
               repository: ugroup/centos-terraform-aws
-          params:
-              HSM_REGION: ((hsm_region))
+          inputs:
+              - name: hsm-source
           run:
             path: /bin/bash
             args:
             - -exc
             - |
-                yum install bind-utils openssl openssl-devel -y
-                cd source/config/hsm-setup/initial-setup
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd hsm-source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd hsm-source/config/hsm-setup/initial-setup
+                ls -all
+                
                 terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
-                terraform workspace new prod || true
+                terraform workspace new test-ian || true
                 terraform workspace list
-                terraform workspace select prod
-                export AWS_DEFAULT_REGION=us-east-2
-                export TF_VAR_REGION=us-east-2
+                terraform workspace select test-ian
+                export AWS_DEFAULT_REGION=eu-west-2
+                export TF_VAR_REGION=eu-west-2
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+
+  - name: Deploy HSM - France
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+      - task: Deploy HSM france
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd hsm-source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd hsm-source/config/hsm-setup/initial-setup
+                ls -all
+                
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new france || true
+                terraform workspace list
+                terraform workspace select france
+                export AWS_DEFAULT_REGION=eu-west-3
+                export TF_VAR_REGION=eu-west-3
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+
+  - name: Deploy HSM -stockholme
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+        trigger: true
+      - task: Deploy HSM stockholm
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd hsm-source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd hsm-source/config/hsm-setup/initial-setup
+                ls -all
+                
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new stockholm || true
+                terraform workspace list
+                terraform workspace select stockholm
+                export AWS_DEFAULT_REGION=eu-north-1
+                export TF_VAR_REGION=eu-north-1
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+          
+  - name: Deploy HSM - Prod
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+      - task: Deploy HSM
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - |
+                yum install bind-utils openssl openssl-devel wget maven -y
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-latest.el7.x86_64.rpm
+                wget https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/EL7/cloudhsm-client-jce-latest.el7.x86_64.rpm && yum install -y ./cloudhsm-client-jce-latest.el7.x86_64.rpm
+                mvn install:install-file -Dfile=/opt/cloudhsm/java/cloudhsm-2.0.3.jar -DgroupId=com.cavium -DartifactId=cloudhsm -Dversion=2.0.3 -Dpackaging=jar
+                cd hsm-source/services/hsmgateway
+                mvn clean install -DskipTests
+                cp target/hsmgateway-0.0.1-SNAPSHOT.jar ../../../hsm-source/config/hsm-setup/initial-setup/
+                cd ../../../
+                cd hsm-source/config/hsm-setup/initial-setup
+                ls -all
+
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new prod-ir || true
+                terraform workspace list
+                terraform workspace select prod-ir
+                export AWS_DEFAULT_REGION=eu-west-1
+                export TF_VAR_REGION=eu-west-1
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
                 TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
           inputs:
                 - name: source
-
+  - name: REMOVE HSM - Prod
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+      - task: REMOVE HSM - Prod
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - | 
+                cd hsm-source/config/hsm-setup/initial-setup
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new prod-ir || true
+                terraform workspace list
+                terraform workspace select prod-ir
+                export AWS_DEFAULT_REGION=eu-west-1
+                export TF_VAR_REGION=us-east-1
+                TF_VAR_hsm_controller="deleteme" terraform destroy -auto-approve
+  - name: REMOVE HSM - Dev
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+      - task: Destroy HSM Dev
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - | 
+                cd hsm-source/config/hsm-setup/initial-setup
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new dev || true
+                terraform workspace list
+                terraform workspace select dev
+                export AWS_DEFAULT_REGION=us-east-1
+                export TF_VAR_REGION=us-east-1
+                TF_VAR_hsm_controller="deleteme" terraform destroy -auto-approve
+  - name: REMOVE HSM - Test
+    public: true
+    serial: true
+    plan:
+      - get: hsm-source
+      - task: REMOVE HSM - Test
+        attempts: 2
+        params:
+          AWS_ACCESS_KEY_ID: ((aws_access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ugroup/centos-terraform-aws
+          inputs:
+              - name: hsm-source
+          run:
+            path: /bin/bash
+            args:
+            - -exc
+            - | 
+                cd hsm-source/config/hsm-setup/initial-setup
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
+                terraform workspace new test || true
+                terraform workspace list
+                terraform workspace select test
+                export AWS_DEFAULT_REGION=us-west-1
+                export TF_VAR_REGION=us-west-1
+                TF_VAR_hsm_controller="deleteme" terraform destroy -auto-approve
   - name: terraform-destroy-all-envs
     public: false
     plan:
@@ -335,7 +582,7 @@ jobs:
         action: destroy
       params:
         env_name: ecr
-        terraform_source: source/config/ecr-setup
+        terraform_source: hsm-source/config/ecr-setup
         action: destroy
         env:
           TF_VAR_aws_region: ((bucket_aws_region))
@@ -689,6 +936,7 @@ jobs:
           - Initialize
         trigger: true
       - task: SonarQube Scan
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -707,6 +955,7 @@ jobs:
           inputs:
           - name: source
       - task: Build Server
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -720,7 +969,7 @@ jobs:
             - |
               cd source/ui/server
               # now build with java 12
-              mvn clean install -Djava.version=12 -DskipTests -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
+              mvn clean install -Djava.version=12 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn ### do tests
           inputs:
           - name: source
           outputs:
@@ -880,6 +1129,7 @@ jobs:
         trigger: true
         passed: [Provision ECR Repositories]
       - task: Build Front End Image
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -928,6 +1178,7 @@ jobs:
         passed:
           - Provision ECR Repositories
       - task: Build Server Image
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -968,7 +1219,9 @@ jobs:
         trigger: true
         passed: [Execute Data Model Tests]
       - get: data
+        trigger: true
       - task: Package API
+        attempts: 2
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -1004,13 +1257,13 @@ jobs:
     plan:
     - get: source
       passed:
-      - Push Data Model Image
+      #- Push Data Model Image
       - Push server Image
       - Push UI
       trigger: true
     - get: version
       passed:
-      - Push Data Model Image
+      #- Push Data Model Image
       - Push server Image
       - Push UI
       trigger: true
@@ -1060,8 +1313,8 @@ jobs:
             export SERVER_DNS_NAME=`terraform output server_dns_name`
             export WWW_DNS_NAME=`terraform output www-url`
             cd ../..
-            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
-            echo "Server is up!!"
+            # ./wait-for-status-code-at-url.sh "https://${SERVER_DNS_NAME}/health" 200
+            # echo "Server is up!!"
             # export WWW_DNS_NAME=`terraform output www-url`
             # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
             # echo "UI is up!!"
@@ -1224,8 +1477,8 @@ jobs:
             export SERVER_DNS_NAME=`terraform output server_dns_name`
             export WWW_DNS_NAME=`terraform output www-url`
             cd ../..
-            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
-            echo "Server is up!!"
+            # ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            # echo "Server is up!!"
             # export WWW_DNS_NAME=`terraform output www-url`
             # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
             # echo "UI is up!!"
@@ -1293,8 +1546,8 @@ jobs:
             export SERVER_DNS_NAME=`terraform output server_dns_name`
             export WWW_DNS_NAME=`terraform output www-url`
             cd ../..
-            ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
-            echo "Server is up!!"
+            # ./wait-for-status-code-at-url.sh "${SERVER_DNS_NAME}/health" 200
+            # echo "Server is up!!"
             # export WWW_DNS_NAME=`terraform output www-url`
             # ./wait-for-status-code-at-url.sh "${WWW_DNS_NAME}/" 200
             # echo "UI is up!!"

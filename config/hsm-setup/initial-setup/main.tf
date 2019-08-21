@@ -24,6 +24,10 @@ provider "null" {
 }
 
 
+terraform {
+  required_version = "0.12.5"
+}
+
 variable "aws_region" {
   type        = map(string)
 

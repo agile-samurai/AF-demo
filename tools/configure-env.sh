@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#user:rdso.eval
+#password-nf@i03Rr
+#rdso.eval@gmail.com
 
 for ARGUMENT in "$@"
 do
@@ -17,12 +19,15 @@ do
 done
 
 
-yes | cp pipeline.yml config/infra-setup/scripts/
-cd config/infra-setup
+# yes | cp pipeline.yml config/infra-setup/scripts/
+# yes | cp pipeline-infra.yml config/infra-setup/scripts/
+# yes | cp launch.sh config/infra-setup/scripts/
+# yes | cp destroy-launch.yml config/infra-setup/scripts/
+cd config/rdso-infra-setup
 
 
-docker build . -t mdas/runner && docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}  \
+docker build . -t rdso/runner && docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}  \
                                             -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
                                             -e GITHUB_USERNAME=${GITHUB_USERNAME} \
                                             -e GITHUB_PASSWORD=${GITHUB_PASSWORD} \
-                                            -it mdas/runner /bin/bash
+                                            -it rdso/runner /bin/bash

@@ -28,6 +28,15 @@ resource "aws_cloudwatch_log_group" "container" {
   }
 }
 
+data "terraform_remote_state" "hsm" {
+  backend   = "s3"
+  workspace = terraform.workspace
+  config = {
+    key    = "hsm.tfstate"
+    region = local.region
+  }
+}
+
 module "log-forwarding" {
   source           = "./modules/log-forwarding"
   es_endpoint      = module.elasticsearch.ElasticSearchEndpoint
