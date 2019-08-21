@@ -52,10 +52,6 @@ const useStyles = theme => ({
         maxWidth: '360px',
         backgroundColor: grey,
     },
-    sectors: {
-        padding: 20,
-        elevation: 3
-    },
     list: {
         width: '100%',
         maxWidth: 360

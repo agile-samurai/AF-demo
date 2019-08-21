@@ -2,7 +2,7 @@
 set -e
 
 echo "begin build front end script"
-cd source/ui/sector-ui
+cd source/ui/frontend
 
 echo "building front end"
 npm install

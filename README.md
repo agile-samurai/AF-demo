@@ -137,7 +137,7 @@ Another business user needs to generate a report given the data he found in the 
 | /services/hsmgateway | Location for HSM Gateway configuration and application deployment using Docker
 | /tools | Contains the tools and utilities used for quick and easy configuration of the dev environment. |
 | /ui | Contains the front-end configuration for the UI that is deployed for a Product Owner and access of the data services. |
-| /ui/sector-ui | This is the ReactJS based frontend application that is used for exploring dossiers
+| /ui/frontend | This is the ReactJS based frontend application that is used for exploring dossiers
 | /ui/server | A Spring Boot Microservice that is implemented as a BFF (Backend for Frontend) Layer to mediate services calls between Elastic Search (our optimized persistence tier) and the Data Science Microservice. |
 | .gitignore | A file that tells Git which files to not track. |
 | ReadME.md | The ReadME.md file. |

@@ -33,7 +33,7 @@ postgres-data/
 
 services/scoring-service/extras/testing/metadata.json
 
-ui/sector-ui/container/build/**
+ui/frontend/container/build/**
 terraform.tfstate
 *.tfstate*
 ticks.txt
