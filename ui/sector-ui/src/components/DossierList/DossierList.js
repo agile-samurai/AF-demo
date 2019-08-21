@@ -77,10 +77,6 @@ export default class DossierList extends React.Component {
             params: {
                 search: searchTerm,
                 cursor: cursor + 1
-            },
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
             }
         })
         .then(response => {
@@ -106,10 +102,6 @@ export default class DossierList extends React.Component {
             params: {
                 search: searchTerm,
                 cursor: 0
-            },
-            auth: {  // TODO remove
-                username: 'business-user',
-                password: 'password'
             }
         })
         .then(response => {
