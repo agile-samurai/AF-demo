@@ -2,13 +2,13 @@ import { browser, ElementFinder } from 'protractor';
 import { CommonActions } from '../common/actions';
 
 export class LoginPage extends CommonActions  {
-    private url: string = `${browser.params.baseUrl}login`;
+    private url: string = browser.params.baseUrl;
     private username: string = `form input[type=text]`;
     private password: string = `form input[type=password]`;
     private submitButton: string = `form input[type=submit]`;
 
     public async waitForApplication(): Promise<void> {
-        await this.goToAndWaitForPage(this.url, /login/);
+        await browser.get(this.url);
     }
 
     public async waitForPresenceAndGetUserName(): Promise<ElementFinder> {

@@ -6,7 +6,7 @@ export class HomePage extends CommonActions  {
     private logo: string = `.navigation-link`;
     private searchBar: string = `#standard-name`;
     private searchResults: string = `.search-results`;
-    private dossierMainSection: string = `${this.searchResults} .dossier-main-section`;
+    private dossierMainSection: string = `${this.searchResults} nth`;
     private deleteButton: string = `${this.dossierMainSection} button[class*=delete-dossier-button]`;
     private addNoteButton: string = `${this.dossierMainSection} button[class*=add-note-button]`;
 
@@ -32,6 +32,9 @@ export class HomePage extends CommonActions  {
 
     public async waitForPresenceAndGetDeleteButton(): Promise<ElementFinder> {
         return this.waitForPresenceAndGetElementByCss(this.deleteButton);
+    }
+    public async getDeleteButton(): Promise<ElementFinder> {
+        return this.byCss(this.deleteButton);
     }
 
     public async waitForClickableAndCLickDeleteButton(): Promise<ElementFinder> {
