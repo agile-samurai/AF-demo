@@ -17,18 +17,18 @@ RUN aws s3 cp s3://ugroup-rdso-challenge-data/data/omdb_json data/omdb_json --re
 
 RUN ls -la data
 RUN cp -r data/omdb_json omdb_json
-
-RUN python3 -m nltk.downloader punkt
-RUN python3 -m nltk.downloader punkt
-RUN python3 -m nltk.downloader stopwords
-RUN python3 rdso/movies.py
-RUN python3 rdso/vectorize.py
-RUN pip3 -q install jupyter
+RUN mkdir /data
+RUN mkdir models
 
 RUN locale -a
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
-RUN python3 vectorize.py
+
+RUN python3 -m nltk.downloader stopwords
+RUN python3 rdso/movies.py
+RUN cp /data/movies_df.pkl data/movies_df.pkl
+RUN python3 rdso/vectorize.py
+RUN pip3 -q install jupyter
 
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
 # kernel crashes.

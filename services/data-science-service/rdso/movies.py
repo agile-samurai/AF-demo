@@ -37,6 +37,7 @@ def load_movietweetings_df():
         sep="::",
         names=["imdb_id", "title", "genres"],
         dtype={"imdb_id": str},
+        encoding='utf-8-sig'
     )
     mv["film_id"] = mv.imdb_id.apply(lambda x: "tt" + str(x))
     mv["url"] = mv.film_id.apply(lambda x: "/title/" + str(x) + "/")
