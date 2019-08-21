@@ -20,18 +20,6 @@ public class MasterDossier {
     private List<Note> notes;
     private List<MovieTitle> similarMovieTitles;
 
-    private MasterDossier(Builder builder) {
-        name = builder.name;
-        distribution = builder.distribution;
-        tweets = builder.tweets;
-        dossierFileInfos = builder.dossierFileInfos;
-        dossiers = builder.dossiers;
-        similarMovies = builder.similarMovies;
-        id = builder.id;
-        notes = builder.notes;
-        setSimilarMovieTitles(builder.similarMovieTitles);
-    }
-
     public List<Dossier> getDossiers() {
         return dossiers;
     }
@@ -78,7 +66,7 @@ public class MasterDossier {
         this.distribution = distribution;
         this.tweets = tweets;
         this.notes = new ArrayList<>();
-        this.dossierFileInfos = new ArrayList<>();
+        this.dossierFileInfos = new ArrayList();
     }
 
     public void addNote(String time, String name, String note) {
@@ -95,70 +83,5 @@ public class MasterDossier {
 
     public void setSimilarMovieTitles(List<MovieTitle> similarMovieTitles) {
         this.similarMovieTitles = similarMovieTitles;
-    }
-
-
-    public static final class Builder {
-        private String name;
-        private String distribution;
-        private List<String> tweets;
-        private List<DossierFileInfo> dossierFileInfos;
-        private List<Dossier> dossiers;
-        private List<UUID> similarMovies;
-        private UUID id;
-        private List<Note> notes;
-        private List<MovieTitle> similarMovieTitles;
-
-        public Builder() {
-        }
-
-        public Builder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder withDistribution(String distribution) {
-            this.distribution = distribution;
-            return this;
-        }
-
-        public Builder withTweets(List<String> tweets) {
-            this.tweets = tweets;
-            return this;
-        }
-
-        public Builder withDossierFileInfos(List<DossierFileInfo> dossierFileInfos) {
-            this.dossierFileInfos = dossierFileInfos;
-            return this;
-        }
-
-        public Builder withDossiers(List<Dossier> dossiers) {
-            this.dossiers = dossiers;
-            return this;
-        }
-
-        public Builder withSimilarMovies(List<UUID> similarMovies) {
-            this.similarMovies = similarMovies;
-            return this;
-        }
-
-        public Builder withId(UUID id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder withNotes(List<Note> notes) {
-            this.notes = notes;
-            return this;
-        }
-
-        public Builder withSimilarMovieTitles(List<MovieTitle> similarMovieTitles) {
-            this.similarMovieTitles = similarMovieTitles;
-            return this;
-        }
-
-        public MasterDossier build() {
-            return new MasterDossier(this);
-        }
     }
 }
