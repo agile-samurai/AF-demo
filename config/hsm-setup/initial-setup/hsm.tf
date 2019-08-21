@@ -165,7 +165,8 @@ resource aws_instance hsm_gateway {
       "chmod +x /tmp/setup_ec2.sh",
       "chmod +x /tmp/expect_script.sh",
       "/tmp/script.sh",
-      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address} ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state}"
+      "sleep 5",
+      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address} ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state} ${var.region}"
     ]
   }
 
@@ -222,7 +223,7 @@ resource "null_resource" "verify" {
 resource "null_resource" "sign_and_initialize" {
   count             = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state == "UNINITIALIZED" ? 1 : 0
   provisioner "local-exec" {
-    command = "./sign_and_initialize.sh ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id} ${aws_iam_user_login_profile.admin.encrypted_password}"
+    command = "./sign_and_initialize.sh ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${var.region}"
   }
 
   depends_on = [null_resource.verify, aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]

@@ -4,7 +4,7 @@ set -x
 #
 ###
 
-STATE_FILE=initial-setup/cluster_state.txt
+STATE_FILE=cluster_state.txt
 
 init() {
   printf "\n*** Building gateway service ***\n"
@@ -23,9 +23,9 @@ init() {
 initiate_hsm_setup() {
   
   printf "\n*** Provisioning HSM infrastructure ***\n"
-  if TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan; then
+  if TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) TF_VAR_region=us-east-1 terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan; then
 
-    if TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan; then
+    if TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) TF_VAR_region=us-east-1 terraform plan -out plan; then
       printf "\n--- Terraform second stage plan succeeded\n--- Applying plan\n"
 
       if terraform apply plan; then
