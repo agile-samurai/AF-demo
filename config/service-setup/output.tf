@@ -40,21 +40,21 @@ output "server_dns_name" {
 
 
 # output "hsm_cluster_id"{
-#   value = data.terraform_remote_state.hsm.hsm_cluster_id
+#   value = data.terraform_remote_state.hsm.outputs.hsm_cluster_id
 # }
 # output "hsm_cluster_state"{
-#   value = data.terraform_remote_state.hsm.hsm_cluster_state
+#   value = data.terraform_remote_state.hsm.outputs.hsm_cluster_state
 # }
 
 # output "hsm_module_eni_id"{
-#   value = data.terraform_remote_state.hsm.hsm_module_eni_id
+#   value = data.terraform_remote_state.hsm.outputs.hsm_module_eni_id
 # }
 
 
 # output "hsm_module_cluster_id"{
-#   value = data.terraform_remote_state.hsm.hsm_module_cluster_id
+#   value = data.terraform_remote_state.hsm.outputs.hsm_module_cluster_id
 # }
 
 # output "hsm_ec2_ip"{
-#   value = data.terraform_remote_state.hsm.ec2_ip
+#   value = data.terraform_remote_state.hsm.outputs.ec2_ip
 # }

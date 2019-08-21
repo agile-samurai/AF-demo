@@ -32,9 +32,9 @@ resource "aws_cloudwatch_log_group" "container" {
 #   backend   = "s3"
 #   workspace = terraform.workspace
 #   config = {
-#     bucket = "overwriteme"
+#     bucket = "${var.rs_bucket}"
 #     key    = "hsm.tfstate"
-#     region = local.region
+#     region = "us-east-1"
 #   }
 # }
 
