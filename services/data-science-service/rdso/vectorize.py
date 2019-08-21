@@ -79,6 +79,22 @@ def get_genre_distance_metrics(d2v_model, movies_df):
     return distance_metrics
 
 
+def get_tagged_corpus(movie_df):
+    """Convert movies_to a tagged corpus for vectorization"""
+    movies_labels = list(movie_df["film_id"])
+    movie_tokens = movie_df["movie_tokens"].tolist()
+    tagged_corpus = TaggedLineDocument(movie_tokens, movies_labels)
+    return tagged_corpus
+
+
+def get_vectors(corpus, model):
+    """Return a labeled list of vectors after sentences have been embedded"""
+    tlist = list(corpus)
+    film_ids = [x.tags[0] for x in tlist]
+    matrix = [model.docvecs[t] for t in film_ids]  # or list(d2v.docvecs)
+    return matrix
+
+
 @click.command()
 @click.option(
     "--version", "-v", default="0.0.0", help="Version number to use in model filename"
@@ -119,6 +135,7 @@ def cli(version):
     metrics_file = models_dir / f"metrics.{version}.json"
     with metrics_file.open("w") as outfile:
         json.dump(genre_metrics, outfile, indent=2)
+
 
 if __name__ == "__main__":
     cli()
