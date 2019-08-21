@@ -16,7 +16,7 @@ public class Dossier {
     private List<Review> reviews;
     private List<Genre> genres;
     private Lineage lineage;
-
+    private String image;
 
     public String getName() {
         return name;
@@ -42,8 +42,18 @@ public class Dossier {
         return reviews;
     }
 
+    public String getImage() {
+        return image;
+    }
 
-    public Dossier(UUID id, String name, String summary, List<MovieCharacter> characters, List<Review> reviews, List<Genre> genres, Lineage lineage) {
+    public Dossier(UUID id,
+                   String name,
+                   String summary,
+                   List<MovieCharacter> characters,
+                   List<Review> reviews,
+                   List<Genre> genres,
+                   Lineage lineage,
+                   String image) {
         this.id = id;
         this.name = name;
         this.summary = summary;
@@ -51,6 +61,7 @@ public class Dossier {
         this.reviews = reviews;
         this.genres = genres;
         this.lineage = lineage;
+        this.image = image;
     }
 
     public Dossier(){}

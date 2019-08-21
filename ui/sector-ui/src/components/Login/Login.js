@@ -6,6 +6,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import './Login.css';
 import HeaderBar from "../HeaderBar/HeaderBar";
+import TextField from '@material-ui/core/TextField';
 
 class Login extends React.Component {
     constructor(props) {
@@ -33,7 +34,7 @@ class Login extends React.Component {
 
         axios.get(`/api/login`,
             {
-                auth: {
+                auth: { // TODO remove
                     username: this.state.username,
                     password: this.state.password
                 }
@@ -50,15 +51,36 @@ class Login extends React.Component {
         return (
             <div className="login">
                 <HeaderBar/>
-                <form onSubmit={this.handleSubmit}>
-                    <label>
-                        Username:
-                        <input type="text" value={this.state.username} onChange={this.handleUsernameChange} />
-                        Password:
-                        <input type="password" value={this.state.password} onChange={this.handlePasswordChange} />
-                    </label>
-                    <input type="submit" value="Submit" />
-                </form>
+                <div className="login-box-wrapper">
+                    <div className="login-box">
+                        <div className="login-heading">Login</div>
+                        <form onSubmit={this.handleSubmit}>
+                            <div className="username-field">
+                                <TextField label="username"
+                                           margin="dense"
+                                           variant="outlined"
+                                           type="text"
+                                           className="login-form-field"
+                                           value={this.state.username}
+                                           onChange={this.handleUsernameChange}/>
+                            </div>
+                            <div className="password-field">
+                                <TextField label="username"
+                                           margin="dense"
+                                           variant="outlined"
+                                           type="password"
+                                           className="login-form-field"
+                                           value={this.state.password}
+                                           onChange={this.handlePasswordChange}/>
+                            </div>
+                            <div className="submit-button-wrapper">
+                                <div>
+                                    <input type="submit" value="LOGIN" className="submit-button"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         );
     }

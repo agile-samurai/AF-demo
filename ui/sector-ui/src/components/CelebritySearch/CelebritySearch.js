@@ -1,21 +1,21 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import './ActorSearch.css';
+import './CelebritySearch.css';
 import {InputAdornment} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import axios from "axios/index";
-import ActorRow from "../ActorRow/ActorRow";
+import CelebrityRow from "../CelebrityRow/CelebrityRow";
 import HeaderBar from "../HeaderBar/HeaderBar";
 
-export default class ActorSearch extends React.Component {
+export default class CelebritySearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             searchTerm: '',
-            actorSearchResults: [],
+            celebritySearchResults: [],
             cursor: 0
         };
-        this.ACTORS_ENDPOINT = '/api/actors';
+        this.CELEBRITIES_ENDPOINT = '/api/actor';
 
         this.setUpInfiniteScroll();
 
@@ -23,10 +23,10 @@ export default class ActorSearch extends React.Component {
     }
 
     render() {
-        const {searchTerm, actorSearchResults} = this.state;
+        const {searchTerm, celebritySearchResults} = this.state;
 
-        const actorRows = actorSearchResults
-            .map(actorSearchResult => <ActorRow actor={actorSearchResult} key={actorSearchResult.id} />);
+        const celebrityRows = celebritySearchResults
+            .map(celebritySearchResult => <CelebrityRow celebrity={celebritySearchResult} key={celebritySearchResult.id} />);
 
         return (
             <div>
@@ -51,7 +51,7 @@ export default class ActorSearch extends React.Component {
 
                 <div className="search-results-wrapper">
                     <div className="search-results">
-                        {actorRows}
+                        {celebrityRows}
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@ export default class ActorSearch extends React.Component {
     loadMore() {
         const {searchTerm, cursor} = this.state;
 
-        axios.get(this.ACTORS_ENDPOINT, {
+        axios.get(this.CELEBRITIES_ENDPOINT, {
             params: {
                 search: searchTerm,
                 cursor: cursor + 1
@@ -81,7 +81,7 @@ export default class ActorSearch extends React.Component {
         })
         .then(response => {
             this.setState({
-                actorSearchResults: this.state.actorSearchResults.concat(response.data.content),
+                celebritySearchResults: this.state.celebritySearchResults.concat(response.data.content),
                 cursor: cursor + 1
             });
         });
@@ -98,7 +98,7 @@ export default class ActorSearch extends React.Component {
     }
 
     doSearch(searchTerm) {
-        axios.get(this.ACTORS_ENDPOINT, {
+        axios.get(this.CELEBRITIES_ENDPOINT, {
             params: {
                 search: searchTerm,
                 cursor: 0
@@ -110,7 +110,7 @@ export default class ActorSearch extends React.Component {
         })
         .then(response => {
             this.setState({
-                actorSearchResults: response.data.content
+                celebritySearchResults: response.data.content
             });
         });
     }

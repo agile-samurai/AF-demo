@@ -62,7 +62,8 @@ public class DossierBuilderService {
                 movieDetail.getCharacters(),
                 movieDetail.getReviews(),
                 asList(new Genre(movieDetail.getGenre())),
-                movieDetail.getLineage());
+                movieDetail.getLineage(),
+                movieDetail.getImage());
         dossier.setRedactionSuggestions(autoRedactProvider.redact(dossier));
 
         logger.debug("Generating dossier for:  " + movieDetail);

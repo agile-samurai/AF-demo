@@ -10,7 +10,7 @@ import {green, grey} from "@material-ui/core/colors";
 import Login from "./components/Login/Login";
 import Dossier from "./components/Dossier/Dossier";
 import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
-import ActorSearch from "./components/ActorSearch/ActorSearch";
+import CelebritySearch from "./components/CelebritySearch/CelebritySearch";
 import TrainingData from "./components/TrainingData/TrainingData";
 import DossierList from "./components/DossierList/DossierList";
 
@@ -87,7 +87,7 @@ export class App extends React.Component {
                     />
                     <Route
                         path="/celebrity-search"
-                        component={ActorSearch}
+                        component={CelebritySearch}
                     />
                     <Route
                         path="/dossier-list-and-search"

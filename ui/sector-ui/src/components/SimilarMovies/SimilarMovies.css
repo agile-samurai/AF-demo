@@ -1,0 +1,12 @@
+.similar-movies {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 100px 20px;
+    margin-bottom: 50px;
+    margin-top: 20px;
+}
+
+.similar-movies-heading {
+    margin-top: 38px;
+    font-size: 36px;
+}

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class MovieTitle {
     private String name;
 
-    private boolean dossierAvailable;
+    private boolean dossierAvailable = true;
 
     private String image;
 
@@ -19,14 +19,15 @@ public class MovieTitle {
 
     public MovieTitle(){}
 
-    public MovieTitle(String name, String image, UUID id) {
+    public MovieTitle(String name, String image, UUID id, boolean dossierAvailable) {
         this.name = name;
         this.image = image;
         this.id = id;
+        this.dossierAvailable = dossierAvailable;
     }
 
     public static MovieTitle from(Movie movie) {
-        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
+        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId(), true);
     }
 
     @Override
@@ -43,11 +44,11 @@ public class MovieTitle {
     }
 
     public static MovieTitle from(MovieDetail movie) {
-        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
+        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId(), true);
     }
 
     public static MovieTitle from(MoviePublicSummary movie) {
-        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId());
+        return new MovieTitle(movie.getName(), movie.getImage(), movie.getId(), movie.isDossierAvailable());
     }
 
     public String getName() {

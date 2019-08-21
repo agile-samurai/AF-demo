@@ -9,7 +9,11 @@ class Dossier extends React.Component {
         return (
             <div className="dossier-page">
                 <HeaderBar/>
-                <DossierContent dossierID={this.props.match.params.dossierID}/>
+                <div className="standalone-dossier-outer-wrapper">
+                    <div className="standalone-dossier-inner-wrapper">
+                        <DossierContent dossierID={this.props.match.params.dossierID}/>
+                    </div>
+                </div>
             </div>
         );
     }

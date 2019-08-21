@@ -3,3 +3,53 @@
     height: 100%;
     background-color: #fcfcfc;
 }
+
+.login-box-wrapper {
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    height: 300px;
+    width: 500px;
+    padding: 33px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.login-heading {
+    font-size: 24px;
+}
+
+.login-form-field {
+    width: 100%;
+}
+
+.username-field {
+    margin-top: 20px;
+    height: 84px;
+}
+
+.password-field {
+    margin-top: 15px;
+    height: 84px;
+}
+
+.submit-button-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.submit-button {
+    height: 36px;
+    width: 104px;
+    background: #212121;
+    color: white;
+    font-size: 14px;
+    margin-top: 30px;
+}
