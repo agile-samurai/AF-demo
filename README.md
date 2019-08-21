@@ -1,6 +1,5 @@
 <!-- ![Web](docs/images/web-image.png) -->
 ## Documentation
-
 ![Overview](img/celebrity_page.png)
 
 All documents for this submission can be found in the [docs](docs) folder
