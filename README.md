@@ -60,7 +60,7 @@ docker run -it -e "GIT_USERNAME=<git_hub_user>" -e "GIT_PASSWORD=<git_hub_passwo
 
 Install the following tools
 
-[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3) 
+[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3)
 
 GIT_USERNAME=<git_hub_user> GIT_PASSWORD=<git_hub_password> AWS_ACCESS_KEY_ID=<aws_access_key_id> AWS_SECRET_ACCESS_KEY=<aws_secret-access_key> ./launch.sh
 
@@ -271,5 +271,7 @@ __Scalability:__  To ensure scalability, we have containerized all aspects of ou
 
 
 ## High Level architecture
+
+The solution architecture builds off of the architectural principles of Micro Service Design, while leveraging Cloud Centricity to achieve a highly scalable and testable system. These concerns enabled the creation of a pluggable abstraction that provides fault tolerance in a consistent and predictable fashion. These abstractions not only made the solution testable, they also added an additional level of flexibility to enable offline development through the use of Feature Toggles and Test Doubles.
 
 ![Architecture](img/Diagram-1.png)
