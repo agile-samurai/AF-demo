@@ -237,7 +237,7 @@ jobs:
                 cd ../../../
                 cd source/config/hsm-setup/initial-setup
 
-                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new dev || true
                 terraform workspace list
                 terraform workspace select dev
@@ -278,7 +278,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new test || true
                 terraform workspace list
                 terraform workspace select test
@@ -315,7 +315,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=hsm.tfstate"
                 terraform workspace new prod || true
                 terraform workspace list
                 terraform workspace select prod
