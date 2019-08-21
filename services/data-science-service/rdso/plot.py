@@ -55,11 +55,11 @@ def sc_plot_genre_colors(mdf, colormap=None):
 
     # for now, this populates random values, but eventually, this should use the
     # first two principal components of the Doc2Vec model to populate the x and y vars
-    # mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
-    # mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
+    mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
+    mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
 
     # only want to use it to plot if there is a genre attached
-    mdf = mdf[mdf.top_genre.notna()]
+    mdf = mdf[mdf.top_genre.notna()].sample(frac=0.2)
 
     if not colormap:
         colormap = dict(
@@ -86,7 +86,7 @@ def sc_plot_genre_colors(mdf, colormap=None):
         data=dict(
             x=mdf.x,
             y=mdf.y,
-            name=mdf.name,
+            name=mdf.parsed_title,
             year=mdf.year,
             genre=mdf.top_genre,
             color=mdf.color,
@@ -126,8 +126,9 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
     # first two principal components of the Doc2Vec model to populate the x and y vars
     mdf["x"] = pd.np.random.random(size=len(mdf)) * 10000
     mdf["y"] = pd.np.random.random(size=len(mdf)) * 10000
-    mdf = mdf[mdf.top_genre.notna()]
-    item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
+    mdf = mdf[mdf.top_genre.notna()].sample(frac=0.2)
+    item = mdf.iloc[0].to_dict()
+    # item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
     # colormap = dict(
     #     zip(mdf.top_genre.unique(), Category20[len(mdf.top_genre.unique())])
     # )
@@ -151,13 +152,16 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
     )
     genre_of_item = item["primary_genre"]
     color_of_item = colormap[item["primary_genre"]]
-    everything_else = "gray"
-    grayed_out_colormap = dict(zip(colormap.keys(), ["gray"] * len(colormap)))
-    grayed_out_colormap[genre_of_item] = color_of_item
 
-    mdf["color"] = mdf.top_genre.map(lambda x: grayed_out_colormap[x])
+    if gray_out:
+        everything_else = "gray"
+        colormap = dict(zip(colormap.keys(), ["gray"] * len(colormap)))
+        grayed_out_colormap[genre_of_item] = color_of_item
+        mdf["color"] = mdf.top_genre.map(lambda x: grayed_out_colormap[x])
+    else:
+        mdf["color"] = mdf.top_genre.map(lambda x: colormap[x])
 
-    p = sc_plot_genre_colors(mdf, grayed_out_colormap)
+    p = sc_plot_genre_colors(mdf, colormap)
 
     p.circle_x(
         x=item["x"], y=item["y"], size=20, fill_color=color_of_item, line_color="red"

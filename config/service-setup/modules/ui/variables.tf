@@ -53,8 +53,3 @@ variable "zone_id" {}
 variable "server_url" {}
 variable "region"{}
 variable "cloud_watch_log_group_name" {}
-
-# variable "cert_pem"{}
-# variable "private_key_pem" {}
-
-variable "server_container_family" {}

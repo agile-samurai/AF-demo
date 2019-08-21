@@ -78,8 +78,6 @@ variable "system_user_password" {}
 
 variable "data_science_url" {}
 
-variable "ds_container_family" {}
-
 variable "KAFKA_INTERNAL_IP" {
   default = "127.0.0.1"
 }

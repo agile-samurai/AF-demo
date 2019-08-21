@@ -21,12 +21,6 @@ resource "aws_ecs_task_definition" "service" {
        "hostPort": ${var.container_port}
      }
    ],
-    "dependsOn": [
-    {
-      "containerName": "${var.server_container_family}",
-      "condition": "HEALTHY"
-    }
-    ],
    "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -158,7 +152,7 @@ resource "aws_alb_listener" "front_end_https" {
   load_balancer_arn = "${aws_alb.lb.id}"
   port = "${var.loadbalancer_port_https}"
   protocol = "HTTPS"
-  ssl_policy = "ELBSecurityPolicy-2016-08"  #predefined ssl  security policy  
+  ssl_policy = "ELBSecurityPolicy-2016-08"  #predefined ssl  security policy
   certificate_arn   = "${aws_iam_server_certificate.test_cert.arn}"
 
   default_action {

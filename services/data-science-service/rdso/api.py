@@ -80,6 +80,12 @@ def load_model(api):
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
+# @hug.startup()
+# def infer_document_vectors():
+#     tlist=get_tagged_corpus()
+#
+
+
 @hug.get("/all_available_movies/", examples="n=6")
 def get_all_available_movies(n=None):
     mdf = movies_df
