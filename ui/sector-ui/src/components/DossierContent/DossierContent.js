@@ -57,6 +57,14 @@ export default class DossierContent extends React.Component {
                                                                          refreshData={this.loadEncryptedData.bind(this)}
                                                                          dossierData={perLineageDossier}/>);
 
+        const imageIfExists = dossiers.reduce((accumulator, currentDossier) => {
+            if (currentDossier.image) {
+                return currentDossier.image
+            }
+
+            return accumulator;
+        }, null);
+
         return (
             <Paper className="dossier-paper-container">
                 <div className="dossier-main-section-wrapper">
@@ -64,7 +72,7 @@ export default class DossierContent extends React.Component {
                         <Link to={`/dossier/${dossierData.id}`} className="navigation-link dossier-name-link">
                             <div className="image-and-name">
                                 <div>
-                                    <img src={dossiers[0].image} height={80}/>
+                                    {imageIfExists && <img src={imageIfExists} height={150}/>}
                                 </div>
                                 <div className="dossier-name-wrapper">
                                     <div className="dossier-name">{dossierData.name}</div>

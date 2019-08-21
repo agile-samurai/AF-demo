@@ -5,22 +5,30 @@ RUN pip3 -q install pip --upgrade
 
 RUN mkdir data-science-service
 WORKDIR data-science-service
-COPY rdso rdso
-COPY setup.py .
-RUN ls -al
+
+COPY . .
+
+RUN pip3 install -r rdso/requirements.txt
 RUN pip3 install .
-WORKDIR rdso
-COPY data data
-COPY models models
-RUN pip3 -q install -r requirements.txt
+RUN pip3 install awscli --upgrade
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+RUN aws s3 cp s3://ugroup-rdso-challenge-data/data/omdb_json data/omdb_json --recursive
+
+RUN ls -la data
+RUN cp -r data/omdb_json omdb_json
+
+RUN python3 -m nltk.downloader punkt
+RUN python3 -m nltk.downloader punkt
+RUN python3 -m nltk.downloader stopwords
+RUN python3 rdso/movies.py
+RUN python3 rdso/vectorize.py
 RUN pip3 -q install jupyter
 
 RUN locale -a
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 RUN python3 vectorize.py
-
-RUN mkdir /notebooks
 
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
 # kernel crashes.
@@ -30,13 +38,3 @@ RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
-
-# ENTRYPOINT ["jupyter", "notebook", "--port", "8888"]
-# CMD jupyter notebook --no-browser --ip 0.0.0.0 --port 8888 /notebooks
-# CMD jupyter notebook --ip 0.0.0.0 --port 8888
-
-# RUN pip install -q --upgrade pip && pip -q install -r rdso/requirements.txt
-# RUN rdso/movies.py && rdso/vectorize.py
-#
-# RUN pip install -q jupyter, ipykernel
-# RUN pip install rdso

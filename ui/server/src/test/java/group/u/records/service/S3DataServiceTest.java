@@ -56,7 +56,7 @@ public class S3DataServiceTest {
         S3Client client = mock(S3Client.class);
 
         S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,
-                DOSSIER_FILE_FOLDER, mock(TrainingDataRepository.class), client, mock(ObjectMapper.class));
+                DOSSIER_FILE_FOLDER, mock(TrainingDataRepository.class), mock(ObjectMapper.class));
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         TestSDKIterable<S3Object> iterable = new TestSDKIterable<>(new ArrayList());
@@ -80,7 +80,7 @@ public class S3DataServiceTest {
 
         when(client.getObject(any(GetObjectRequest.class))).thenReturn(response);
 
-        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,DOSSIER_FILE_FOLDER,mock(TrainingDataRepository.class), client, new ObjectMapper());
+        S3DataService service = new S3DataService(BUCKET_NAME, FOLDER, REGION_AS_STRING, DOSSIER_STORAGE,DOSSIER_FILE_FOLDER,mock(TrainingDataRepository.class), new ObjectMapper());
         ListObjectsV2Iterable iterables = mock(ListObjectsV2Iterable.class);
 
         ArrayList testList = new ArrayList();

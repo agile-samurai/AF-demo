@@ -6,7 +6,11 @@ export default class SimilarMovies extends React.Component {
     render() {
         const {similarMovies} = this.props;
 
-        const processedSimilarMovies = similarMovies && similarMovies
+        if(!processedSimilarMovies || processedSimilarMovies.length === 0) {
+            return null;
+        }
+
+        const processedSimilarMovies = similarMovies
             .map(similarMovie => <Movie movie={similarMovie} key={similarMovie.id}/>);
 
         return (
