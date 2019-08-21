@@ -2,7 +2,6 @@
 printf "\n*** Signing Cluster CSR ***\n"
 CLUSTER_ID=$1
 PASS=$2
-REGION=$3
 
 password=$(echo "${PASS}" | cut -c10-20)
 country=US
@@ -28,7 +27,7 @@ if ! openssl x509 -req -days 3652 -in ${CLUSTER_ID}_ClusterCSR.csr -CA customerC
 fi
 
 printf "\n--- Initializing HSM Cluster\n"
-if ! aws cloudhsmv2 initialize-cluster --region $REGION --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
+if ! aws cloudhsmv2 initialize-cluster --region $AWS_DEFAULT_REGION --cluster-id ${CLUSTER_ID} --signed-cert file://${CLUSTER_ID}_CustomerHsmCertificate.crt --trust-anchor file://customerCA.crt; then
   exit 1
 else
   printf "\n--- HSM Cluster Initialized\n"

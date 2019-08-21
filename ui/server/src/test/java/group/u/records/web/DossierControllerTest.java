@@ -4,7 +4,7 @@ import group.u.records.datasource.entity.Movie;
 import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.security.MasterDossierService;
-import group.u.records.service.dossier.MasterDossier;
+import group.u.records.service.dossier.models.MasterDossier;
 import group.u.records.web.entertainment.DossierController;
 import org.junit.Before;
 import org.junit.Test;

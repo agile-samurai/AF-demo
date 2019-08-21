@@ -14,11 +14,12 @@ We assume that the developer machines used for this project will be pre-configur
 | **Python (v.3.6)** |   | **X** |   |
 | **Terraform (v.0.11.13)** |   | **X** |   |
 | **Docker (v.18.09.2)** |   | **X** | **X** |
+| **Node.js (v10.16.0)** |   | **X** |   |
 | **NPM (v.6.9.0)** |   | **X** |   |
 | **AWS Account** |  | **X** | **X** |
 
 
-__Note: Instructions for installing these tools and configuring the dev environment can be found in the “Help for Pre-requisites” section of the [Solutions.PDF](docs/Solution.pdf) document located in the main folder of the GitHub repo.__
+__Note: Instructions for installing these tools and configuring the dev environment can be found in the “Help for Prerequisites” section of the [Solutions.PDF](docs/Solution.pdf) document located in the main folder of the GitHub repo.__
 
 |   Component              | Url                               |
 |---                       |                            ---    |
@@ -40,17 +41,22 @@ Run the script
 
 * Replace the <> characters in the above command with the appropriate values. As we do not allow authentication information into version control, please leverage the account information that was provided as part of the code submission for GitHub access.
 
-* The command gets executed for about 15 minutes and the output is a URL that will be presented to the user at the end of execution. This is the Concourse CI URL. Use the URL and the Github credentials provided to log into Concourse CI. When you log in, you will see a build job getting executed. This job will run the build and deploy jobs for the development, end to end testing and production environments The entire process takes around 30 minutes to complete.
+* The command gets executed for about 15 minutes and the output is a URL that will be presented to the user at the end of execution. This is the Concourse CI URL. Use the URL and the Github credentials provided to log into Concourse CI. When you log in, you will see a build job getting executed. This job will run the build and deploy jobs for the development, end to end testing and production environments. The entire process takes around 30 minutes to complete.
 
-_Note after deployment the environments will take a few minutes to fully start, after which the automated build process will continue._
+_Note that after deployment and upon startup each environment will begin progressively building up the data used by the application. Over time more Dossiers and actors will be built up and loaded by the system, and the existing entries will become more 
+rich enriched.
 
-* The development environment will be deployed automatically. In order to ensure the deployment of end-to-end testing and prod environments, follow the below remaining steps:
+For example, as more movies are processed, the list of similar movies within a given dossier can grow. Similarly, as more movies are processed, the list of movies associated with a given actor can grow if more are encountered.
+The application takes about 3 to 5 minutes to start up initially.
 
-* Once the deployment phase of stage is complete, click on the next phase in the concourse pipeline to begin that phase (end-to-end testing or prod).
-Click on the “+” sign to deploy it into those environments.
-Once each stage turns green, click on that stage and then expand the Terraform section to see the URLS.
+* The development environment will be deployed automatically. In order to ensure the deployment of the end-to-end testing and prod environments, follow the below remaining steps:
 
-* Client URL of each stage is where the web end of that stage is deployed.
+* Once the deployment job for given environment is completes (goes from yellow to green), click on the next phase in the concourse pipeline to begin that phase (end-to-end testing or prod).
+Click on the “+” sign for the deploy job for a given environment to deploy it to that environment.
+Once each stage turns green, click on that stage and then expand the Terraform section to see the URLS at the bottom of the output for that job. To that, go to the job, click on "Write Variables and Run TF Deploy", 
+and then scroll to the bottom of the output. 
+
+* www-url of each stage is where the web end of that stage is deployed.
 
 * Notebook URL of each stage is where the notebook is generated. To log on to notebook, enter the notebook URL into browser and use Github password provided to log into it.
 
@@ -64,7 +70,7 @@ __NOTE: This command will also build a docker container that can be used to orch
 __LOCAL DEVELOPMENT__   
 Developers on our team use tools including `docker-compose` and `jupyter` to explore the data and develop our applications. To start these environments, navigate to the root of the `ugroup-records-submission` repository and run the following command:
 ```
-export AWS_ACCESS_KEY_ID='<>';export AWS_SECRET_ACCESS_KEY='<>';docker-compose up
+export AWS_ACCESS_KEY_ID='<>';export AWS_SECRET_ACCESS_KEY='<>';./run-all.sh
 ```   
 Fill in AWS access keys and secret access keys for the '<>' characters.
 
@@ -74,31 +80,28 @@ docker run ugroup/data-science-notebook
 ```
 The notebook environment will be available in a browser at `http://localhost:8888` and will require the use of a token generated by the process after a download is complete. Inside the notebook environment will be a file called `AI/`
 
-If you would prefer to build the image downloaded by this step yourself, navigate to the `ugroup-records-submission/services/data-science-service/interactive-notebook` and run the following commands, filling in your AWS credentials as discussed above:   
+If you would prefer to build the image downloaded by this step yourself, navigate to the `ugroup-records-submission/services/data-science-service` and run the following commands, filling in your AWS credentials as discussed above:   
 ```
 docker build -t evaluation-image .
 docker run -it -p 8888:8888 \
     --build-args AWS_ACCESS_KEY_ID='<>' \
     --build-args AWS_SECRET_ACCESS_KEY='<>' \
-    evaluation-image -v $PWD:/notebooks evaluation-image
+    evaluation-image
 ```
-
 
 ## SOLUTION DESCRIPTION
 __High Level Project Overview__
 
 We have included a series of scripts to accelerate delivery and development as follows:
 
-* `build-all.sh && docker-compose up --build` - This will allow a user to run the entire platform locally. This is aimed at providing quick developer feedback and will provision an instance of the entire platform on your local machine. Note on launch, the environment will load all tickers and rate each company so initial start up will take a few minutes.
+* `build-all.sh && docker-compose up` - This will allow a user to run the entire platform locally. This is aimed at providing quick developer feedback and will provision an instance of the entire platform on your local machine. Note on launch, the environment will load all tickers and rate each company so initial start up will take a few minutes.
 
-* `tools/training/data-importer-batch` - Our utility for creating new training sets that will generate a new set of training data. This process is time consuming as it will query the following data sources:
+* Within `services/data-science-service` there are utilities for creating new training sets that will generate a new set of training data. This process is time consuming as it will query the following data sources:
   * __Movietweetings__ - A list of the films that represented ground truth, as well as a record of microblogging messages from Twitter users who rated films released after 2009
   * __IMDB__ - 10 years of data on on the film details, actors, and characters identified in movies between June 2009 and June 2019 obtained from a public data dump by the site
   * __OMDB__ - Supplemental data describing the plots and keywords used by our model training
 
-The data-importer-batch is a Java program that leverages Spring-Boot and Spring-Batch to complete work. You can execute this application by going into tools/training/data-importer-batch and executing `mvn spring-boot:run`. This will start the collection of a training data set and place it in tools/training/mdas-data-set.
-
-
+That scraping is done by python programs to complete work. You can execute those programs by going into the pipeline and running the `Capture data and push to s3` job there. This will start the collection of a training data set and place it in S3.
 
 __Business Use Cases__
 
@@ -143,12 +146,12 @@ Another business user needs to generate a report given the data he found in the 
 | ReadME.md | The ReadME.md file. |
 | build-all.sh | Builds the docker containers locally – used for dev only. |
 | build-ds.sh | Builds the docker containers for data science servces locally – used for dev only. |
+| run-all.sh | Runs all of the services locally – used for dev only. **Note: this is the only way that services should be run locally.** That is because a timestamp is created in run-all.sh, and that timestamp is used as part of the bucket name for a bucket created by the UI server. Bucket names must be globally unique, and so the first line of run-all.sh accomplishes that. 
 | docker-compose.yml | Local dev file to orchestrate local dev environment.  Also used in contract tests. |
 | generate-project.sh | Initial microservice and configuration scaffolding. |
 | pipeline.yml | A descriptor used to evaluate and control the entire project pipeline. |
 | pom.xml | A descriptor of the project as a maven module. |
 | Scans.md | The Scans.md file. |
-| test-project | A concourse version file. |
 | wait-for-status-code-at-url.sh | A shell script for waiting for a status code via a cURL commands and in a loop. |
 
 
@@ -171,17 +174,16 @@ __User Experience__
 
 ### Continuous Testing
 
-As we are deploying multiple components (Batch Processes for training, Micro Services for integration and Micro Services for Sector Scoring) we also provide Consumer Driven Contract Tests. This strategy allows our developers and data scientists to communicate their intent via code in a testable and documented fashion within the pipeline. These consumer driven tests become a statement of expectations that will reflect how integration can be done in production. Each of the pipeline features are automatically tested through the pipeline, including:
+As we are deploying multiple components (Batch Processes for training, Micro Services for integration and Micro Services for Data Science capabilities) we also provide Consumer Driven Contract Tests. This strategy allows our developers and data scientists to communicate their intent via code in a testable and documented fashion within the pipeline. These consumer driven tests become a statement of expectations that will reflect how integration can be done in production. Each of the pipeline features are automatically tested through the pipeline, including:
 
 * Unit
 * Integration
-* Functional
 * Security (OWASP - In the Pipeline )
 * Contract (Necessary to ensure model integration)
-* Model Performance - Ensures model performance only improves as part of our CI process i.e. Models that degrade will fail the build process
 * Experience Responsiveness
 * Static Code Analysis (SonarQube)
 
+In addition, we include functional tests that can be run against any of the 4 environments that we support: local, dev, test (end to end testing), and prod
 ### URLs and Work Products
 __Note: the URLs are available within the deployment steps of their respective environments (dev, test, prod).__
 
@@ -200,16 +202,16 @@ Our solution makes use of AWS through a fully automated CI/CD pipeline orchestra
 
 
 __Stability:__ To ensure Stability:
-Our platform leverages cloud optimized platform as a service techniques and built in telemetry support of the container platform.
+Our platform leverages cloud optimized Platform as a Service (PaaS) techniques and built in telemetry support for the container platform.
 
 __Security:__  Our application leverages AWS provided security implementations, along with Role-Based Access Controls.
 
 __Maintainability:__ We utilized 3 core principles for maintainability:
-* Simplicity- Dividing the architecture into distinct components that new developers and data scientists can get acclimated to the system easily.
+* Simplicity- Dividing the architecture into distinct components so that new developers and data scientists can easily get acclimated to the system.
 
-* Reliability – All services, including models provide a series of telemetry to CloudWatch which can be used to get insight into transactions that are inflight and additionally, to measure model performance over time ensuring better maintenance of various components.
+* Reliability – All services, including models, provide a series of channels of telemetry to CloudWatch which can be used to get insight into transactions that are in flight. Additionally, that telemetry is used to measure model performance over time, giving visibility into how the accuracy of our models is increasing overtime. Data on model performance over time can then be used to build AI/ML trust from the perspective of the system's stakeholders.
 
-* Extensibility – Modular design easy enough to adjust to evolving needs and technology.
+* Extensibility – Modular design that easy enough to adjust to evolving needs and technology.
 
 __Scalability:__  To ensure scalability, we have containerized all aspects of our solution and deploy them as independently scalable components with high availability requirements in two different availability zones. This along with Elastic Load Balancers, provides an unparalleled level of scalability and redundancy within the platform
 
