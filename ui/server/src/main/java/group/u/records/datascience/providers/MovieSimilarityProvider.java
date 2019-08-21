@@ -35,43 +35,18 @@ public class MovieSimilarityProvider {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        ResponseEntity<String> rawResponse = restTemplate.getForEntity(host + "/most_similar/" + imdbId, String.class);
         try {
+            ResponseEntity<String> rawResponse = restTemplate.getForEntity(host + "/most_similar/" + imdbId, String.class);
             logger.debug("Raw result:  " + rawResponse.getBody());
             Set<String> similar = new HashSet();
             Matcher m = Pattern.compile("tt\\d\\d*").matcher(rawResponse.getBody());
-            while(m.find()){
+            while (m.find()) {
                 similar.add(m.group().substring(2));
             }
 
-
-            logger.debug( "similar movies:  " + similar );
+            logger.debug("similar movies:  " + similar);
             return similar.stream().map(
-                    s-> UUID.nameUUIDFromBytes(s.getBytes())).collect(toList());
-//            return Arrays.stream(objectMapper.readValue(rawResponse.getBody(), HashMap.class))
-//                    .map(MovieTitle::from)
-//                    .collect(toList());
-
-
-//            Arrays.stream(objectMapper.readValue(rawResponse.getBody()
-//                    .replace("NaN", "\"NaN\""), HashMap[].class)).forEach(
-//                    h -> {
-//                        HashMap<String, Map> returnMap = new HashMap();
-//                        for (Object key : h.keySet()) {
-//                            logger.debug("key:  " + key);
-//                            logger.debug( "value:  " + h.get(key));
-//                            try {
-//                                HashMap<String, String> map = objectMapper.readValue(h.get(key).toString(), HashMap.class);
-//                                logger.debug( "new map:  " + map );
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//
-////                                return returnMap;
-//                    }
-//            );
-
+                    s -> UUID.nameUUIDFromBytes(s.getBytes())).collect(toList());
         } catch (Exception e) {
             e.printStackTrace();
         }
