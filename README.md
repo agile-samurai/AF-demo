@@ -116,11 +116,11 @@ For our use case, a SPIDER business supervisor should be able to navigate first 
 - The business supervisor should be able to navigate to the page of the actor who plays Buzz Lightyear and see what other films he has starred in.
 - The business supervisor should be able to make a note on the page for one of the actors she finds suspicious.
 - The business supervisor notices that some of the names in the Plot Summary section of one of the films might be sensitive, so she would like to be able to quickly identify the names of people, organizations, and countries that occur in them using the Auto Redact tool.
--
+- The business supervisor would like to insert a PDF with some valuable information for a business user who may look at a dossier later.
 - After considering one of the film dossiers, the business supervisor realizes that the dossier should no longer be able to be shown in the data, and decides to delete it.
 
 
-   
+
 ### Repository Hierarchy List
 | PACKAGE | PURPOSE |
 | --- | --- |
