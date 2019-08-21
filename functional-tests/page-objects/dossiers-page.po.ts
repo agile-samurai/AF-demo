@@ -11,7 +11,7 @@ export class HomePage extends CommonActions  {
     private addNoteButton: string = `${this.dossierMainSection} button[class*=add-note-button]`;
 
     public async waitForApplication(): Promise<void> {
-        await this.goToAndWaitForPage(this.url, /amazonaws/);
+        await browser.get(this.url);
     }
 
     public async waitForPresenceAndGetLogo(): Promise<ElementFinder> {
@@ -32,6 +32,12 @@ export class HomePage extends CommonActions  {
 
     public async waitForPresenceAndGetDeleteButton(): Promise<ElementFinder> {
         return this.waitForPresenceAndGetElementByCss(this.deleteButton);
+    }
+
+    public async waitForClickableAndCLickDeleteButton(): Promise<ElementFinder> {
+        const deleteButton = await this.waitForPresenceAndGetDeleteButton();
+        await this.waitForClickable(this.deleteButton);
+        return deleteButton.click();
     }
 
     public async waitForPresenceAndGetAddNoteButton(): Promise<ElementFinder> {
