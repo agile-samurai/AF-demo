@@ -10,6 +10,8 @@ baseConfigObject = {
     framework: 'jasmine2',
 
     specs: [
+        './tests/login.e2e.ts',
+
         './tests/dossiers/home-page.e2e.ts',
         './tests/dossiers/search-and-view-dossier.e2e.ts',
         './tests/dossiers/search-and-delete-dossier.e2e.ts',

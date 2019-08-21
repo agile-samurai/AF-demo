@@ -1,6 +1,6 @@
 import { HomePage } from '../../page-objects/dossiers-page.po';
 
-xdescribe(`Feature: Search and Delete a Dossiers`, async () => {
+describe(`Feature: Search and Delete a Dossiers`, async () => {
     let homePage: HomePage;
     const dossierToSearchFor = `Toy Story 3`;
 
@@ -9,6 +9,8 @@ xdescribe(`Feature: Search and Delete a Dossiers`, async () => {
         await homePage.waitForApplication();
     });
 
+    // TODO -- Delete a dossier
+    // This test currently only checks the presence of the delete button
     it(`I search and delete a dossier with the following name: ${dossierToSearchFor}`, async () => {
         beforeAll( async () => {
             await homePage.searchForDossier(dossierToSearchFor);
