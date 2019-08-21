@@ -30,7 +30,6 @@ export default class CelebritySearch extends React.Component {
 
         return (
             <div>
-                <HeaderBar/>
                 <div className="main-section">
                     <TextField
                         id="standard-name"

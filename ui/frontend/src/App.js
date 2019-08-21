@@ -13,6 +13,7 @@ import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
 import CelebritySearch from "./components/CelebritySearch/CelebritySearch";
 import TrainingData from "./components/TrainingData/TrainingData";
 import DossierList from "./components/DossierList/DossierList";
+import HeaderBar from "./components/HeaderBar/HeaderBar";
 
 const theme = createMuiTheme({
     palette: {
@@ -71,6 +72,7 @@ export class App extends React.Component {
 
         return (
             <ThemeProvider theme={theme}>
+                <HeaderBar/>
                 <Switch location={location}>
                     <Route
                         exact={true}

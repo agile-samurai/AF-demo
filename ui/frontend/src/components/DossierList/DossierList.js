@@ -36,7 +36,6 @@ export default class DossierList extends React.Component {
 
         return (
             <div className='dossier-search'>
-                <HeaderBar/>
                 <div className="main-section">
                     <TextField
                         id="standard-name"

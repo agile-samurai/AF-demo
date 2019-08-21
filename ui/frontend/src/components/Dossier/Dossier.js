@@ -8,7 +8,6 @@ class Dossier extends React.Component {
     render() {
         return (
             <div className="dossier-page">
-                <HeaderBar/>
                 <div className="standalone-dossier-outer-wrapper">
                     <div className="standalone-dossier-inner-wrapper">
                         <DossierContent dossierID={this.props.match.params.dossierID}/>
