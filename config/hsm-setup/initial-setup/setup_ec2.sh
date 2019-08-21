@@ -3,14 +3,13 @@ HSM_ID=$1
 PASS=$2
 HSM_IP=$3
 CLUSTER_STATE=$4
+REGION=$5
 
 printf "\n*** Cluster State: ${CLUSTER_STATE}***\n"
 
 setup_cloudhsm_client() {
   sleep 5s
   printf "\n**** Setting up CloudHSM ****\n"
-  printf "\n**** password: ****: ${password}\n"
-  printf "\n**** ID: ****: ${HSM_ID}\n"
 
   printf "\n-- Updating configuration files CloudHSM client and command line tools\n"
   sudo bash -c "cp /tmp/customerCA.crt /opt/cloudhsm/etc/customerCA.crt"
@@ -33,6 +32,7 @@ setup_cloudhsm_client
 
 if ${CLUSTER_STATE} == INITIALIZED; then
   if setup_cloudhsm_client; then
+    sleep 5;
       run_client_and_gateway
   fi
 elif ${CLUSTER_STATE} == ACTIVE; then
