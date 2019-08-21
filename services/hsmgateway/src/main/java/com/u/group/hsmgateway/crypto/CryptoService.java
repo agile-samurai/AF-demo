@@ -55,8 +55,7 @@ public class CryptoService {
     public String decryptDossier(CryptoRequest request) throws NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException {
         final String dossierId = request.getId();
         final Key masterKey = keyStore.getKey(MASTER_KEY_LABEL, null);
-        final String objectLabel = toHexString(getSHA(dossierId + masterKey.getAlgorithm()));
-        final Key objectKey = keyStore.getKey(objectLabel, null);
+        final Key objectKey = keyStore.getKey(toHexString(getSHA(dossierId + masterKey.getAlgorithm())), null);
         try {
             final byte[] decodedDossier = Base64.getDecoder().decode(request.getDossier());
             byte[] result = decryptAES(decodedDossier, objectKey, dossierId);
@@ -67,6 +66,18 @@ public class CryptoService {
         }
 
         return null;
+    }
+
+    public Boolean deleteDossier(String id) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, CFM2Exception {
+        final Key masterKey = keyStore.getKey(MASTER_KEY_LABEL, null);
+        final String objectLabel = toHexString(getSHA(id + masterKey.getAlgorithm()));
+        if (keyStore.containsAlias(objectLabel)) {
+            final Key objectKey = keyStore.getKey(objectLabel, null);
+            Util.deleteKey((CaviumKey) objectKey);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void rsaAesWrap(SecretKey wrappingKey, Key extractableKey)
