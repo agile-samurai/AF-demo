@@ -1,4 +1,4 @@
-package group.u.records.service.dossier;
+package group.u.records.service.dossier.models;
 
 public enum Lineage {
     IMDB,

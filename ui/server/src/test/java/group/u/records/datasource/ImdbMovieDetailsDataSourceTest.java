@@ -7,11 +7,9 @@ import group.u.records.models.MovieDetail;
 import group.u.records.repository.people.PersonRegistry;
 import group.u.records.service.MovieIdentifier;
 import group.u.records.service.datamanagement.S3DataService;
-import group.u.records.service.dossier.Genre;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.*;

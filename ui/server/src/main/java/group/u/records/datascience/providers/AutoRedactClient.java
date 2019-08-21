@@ -1,7 +1,7 @@
 package group.u.records.datascience.providers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.service.dossier.Dossier;
+import group.u.records.service.dossier.models.Dossier;
 import group.u.records.datascience.EntityClassification;
 import group.u.records.datascience.SpacyRequest;
 import org.springframework.beans.factory.annotation.Value;

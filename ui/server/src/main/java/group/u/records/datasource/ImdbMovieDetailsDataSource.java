@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static group.u.records.service.dossier.Lineage.IMDB;
+import static group.u.records.service.dossier.models.Lineage.IMDB;
 import static java.util.Arrays.asList;
 
 @Component

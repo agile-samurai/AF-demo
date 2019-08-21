@@ -2,12 +2,9 @@ package group.u.records.datasource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.models.users.MovieTweet;
-import group.u.records.models.MovieDetail;
 import group.u.records.service.*;
 import group.u.records.service.datamanagement.DataService;
 import group.u.records.service.datamanagement.S3DataService;
-import group.u.records.service.dossier.Lineage;
-import group.u.records.service.dossier.MovieDetailsDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

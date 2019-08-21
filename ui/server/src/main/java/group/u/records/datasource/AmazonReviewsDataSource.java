@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static group.u.records.service.dossier.Lineage.AMAZON;
+import static group.u.records.service.dossier.models.Lineage.AMAZON;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 

@@ -3,7 +3,7 @@ package group.u.records.security;
 import group.u.records.models.entity.MoviePublicSummary;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.service.datamanagement.DataService;
-import group.u.records.service.dossier.MasterDossier;
+import group.u.records.service.dossier.models.MasterDossier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

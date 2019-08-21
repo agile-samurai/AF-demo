@@ -4,7 +4,7 @@ import group.u.records.datasource.entity.OMDBMovie;
 import group.u.records.datasource.entity.Movie;
 import group.u.records.models.entity.Person;
 import group.u.records.models.users.Review;
-import group.u.records.service.dossier.Lineage;
+import group.u.records.service.dossier.models.Lineage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
