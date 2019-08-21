@@ -73,6 +73,9 @@ resources:
       bucket: ((app_data_bucket))
       path: /data/ci/models
       region: ((bucket_aws_region))
+      options:
+        - "--exclude '*'"
+        - "--include 'movies_*'"
   - name: data
     type: simple-s3-resource
     source:
@@ -185,7 +188,7 @@ jobs:
   #   public: false
   #   plan:
   #   - task: noop
-  #     attempts: 10
+  #     attempts: 2
   #     config:
   #       platform: linux
   #       image_resource:
@@ -206,7 +209,7 @@ jobs:
       - get: source
         trigger: true
       - task: Deploy HSM
-        attempts: 10
+        attempts: 2
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -233,7 +236,7 @@ jobs:
                 cd ../../../
                 cd source/config/hsm-setup/initial-setup
 
-                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new dev || true
                 terraform workspace list
                 terraform workspace select dev
@@ -251,7 +254,7 @@ jobs:
       - get: source
         trigger: true
       - task: Deploy HSM
-        attempts: 10
+        attempts: 2
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -270,7 +273,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new test || true
                 terraform workspace list
                 terraform workspace select test
@@ -288,7 +291,7 @@ jobs:
       - get: source
         trigger: true
       - task: Deploy HSM
-        attempts: 10
+        attempts: 2
         params:
           AWS_ACCESS_KEY_ID: ((aws_access_key_id))
           AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -307,7 +310,7 @@ jobs:
             - |
                 yum install bind-utils openssl openssl-devel -y
                 cd source/config/hsm-setup/initial-setup
-                terraform init -backend-config "bucket=((tf_backend))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
+                terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
                 terraform workspace new prod || true
                 terraform workspace list
                 terraform workspace select prod
@@ -322,7 +325,7 @@ jobs:
     public: false
     plan:
     - put: terraform
-      attempts: 10
+      attempts: 2
       get_params:
         action: destroy
       params:
@@ -365,7 +368,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
-      attempts: 10
+      attempts: 2
       get_params:
         action: destroy
       params:
@@ -389,7 +392,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
-      attempts: 10
+      attempts: 2
       get_params:
         action: destroy
       params:
@@ -413,7 +416,7 @@ jobs:
     plan:
     - get: source
     - put: terraform
-      attempts: 10
+      attempts: 2
       get_params:
         action: destroy
       params:
@@ -556,12 +559,13 @@ jobs:
             args:
             - -ec
             - |
-              mkdir -p source/services/data-science-service/data/
-              mkdir -p source/services/data-science-service/models/
-              ls ./data/data
-              # cp -R ./data/data/movies_df.pkl source/services/data-science-service/data/.
-              cp -R ./data/data/* source/services/data-science-service/data/.
-              ls -all source/services/data-science-service/data/.
+              mkdir -p source/services/data-science-service/rdso/data/
+              mkdir -p source/services/data-science-service/rdso/models/
+              ls ./data/data/
+              echo "______________________----------____________________"
+              cp -R ./data/data/* source/services/data-science-service/rdso/data/
+              ls -all source/services/data-science-service/rdso/data/.
+              echo "______________________----------____________________"
               cd source/services/data-science-service/rdso
               apt-get -qq update && apt-get -qq -y install gcc
               pip install --quiet --upgrade pip
@@ -575,9 +579,9 @@ jobs:
               ls -all
               touch testfile.txt
               python vectorize.py
-              ls -all ../models/
+              ls -all models/
               cd ../../../../
-              cp -R source/services/data-science-service/models/ .
+              cp -R source/services/data-science-service/rdso/models/ .
               #cp -R source/services/data-science-service/data/* source/services/data-science-service/data/.
               #ls source/services/data-science-service/data/
               #rm -rf source/services/data-science-service/data/data
@@ -600,7 +604,7 @@ jobs:
       - get: version
         passed: [Initialize]
       - task: Build Front End
-        attempts: 10
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -848,7 +852,7 @@ jobs:
           #- Push DS Image
         trigger: true
       - put: terraform
-        attempts: 10
+        attempts: 2
         params:
           terraform_source: source/config/ecr-setup
           plan_only: true
@@ -858,7 +862,7 @@ jobs:
             TF_VAR_aws_account_id: ((aws_account_id))
             TF_VAR_bucket_name: ((tf_backend_bucket))
       - put: terraform
-        attempts: 10
+        attempts: 2
         params:
           terraform_source: source/config/ecr-setup
           env_name: ecr
@@ -1029,7 +1033,7 @@ jobs:
       - Push UI
       trigger: true
     - task: Write Variables and Run TF Deploy
-      attempts: 10
+      attempts: 2
       params:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -1120,7 +1124,7 @@ jobs:
         - Push UI
         trigger: true
       - task:  Write Variables and Run TF Deploy
-        attempts: 10
+        attempts: 2
         config:
           platform: linux
           image_resource:
@@ -1152,7 +1156,7 @@ jobs:
           outputs:
           - name: vars
       - put: terraform
-        attempts: 10
+        attempts: 2
         params:
           env_name: ft #terraform workspace
           plan_only: true
@@ -1160,7 +1164,7 @@ jobs:
           var_files:
           - ./vars/terraform.tfvars
       - put: terraform
-        attempts: 10
+        attempts: 2
         params:
           env_name: ft #terraform workspace
           plan_run: true
@@ -1210,7 +1214,7 @@ jobs:
       - Deploy Services To Dev
       trigger: true
     - task: Write Variables and Run TF Deploy
-      attempts: 10
+      attempts: 2
       params:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -1278,7 +1282,7 @@ jobs:
       - Deploy Services To Test
       trigger: true
     - task: Write Variables and Run TF Deploy
-      attempts: 10
+      attempts: 2
       params:
         AWS_ACCESS_KEY_ID: ((aws_access_key_id))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_access_key))
@@ -1344,7 +1348,7 @@ jobs:
       # passed:
       #   - Deploy Services To Productionuction
     - task: get-lb
-      attempts: 10
+      attempts: 2
       config:
         platform: linux
         image_resource:
@@ -1410,7 +1414,7 @@ jobs:
       passed:
         - Deploy Services To Dev
     - task: get-lb
-      attempts: 10
+      attempts: 2
       config:
         platform: linux
         image_resource:
