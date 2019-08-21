@@ -3,7 +3,7 @@ package group.u.records.datascience;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import group.u.records.service.dossier.Dossier;
+import group.u.records.service.dossier.models.Dossier;
 import group.u.records.datascience.providers.AutoRedactClient;
 import org.junit.Before;
 import org.junit.Test;

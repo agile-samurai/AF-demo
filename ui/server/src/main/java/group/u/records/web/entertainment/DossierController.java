@@ -4,7 +4,7 @@ import group.u.records.models.MovieTitle;
 import group.u.records.models.web.NoteDTO;
 import group.u.records.repository.MoviePublicSummaryRepository;
 import group.u.records.security.MasterDossierService;
-import group.u.records.service.dossier.MasterDossier;
+import group.u.records.service.dossier.models.MasterDossier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;

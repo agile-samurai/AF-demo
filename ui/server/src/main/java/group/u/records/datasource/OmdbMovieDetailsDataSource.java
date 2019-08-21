@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static group.u.records.service.dossier.Lineage.OMDB;
+import static group.u.records.service.dossier.models.Lineage.OMDB;
 
 @Component
 public class OmdbMovieDetailsDataSource extends MovieDetailsDataSource {

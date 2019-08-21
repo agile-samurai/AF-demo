@@ -74,7 +74,6 @@ public class S3DataService implements DataService {
     public String get(UUID dossierid) {
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(dossierStorageBucket).key(dossierid.toString()).build());
 
-        //Todo: Make this more reusable.
         try {
             String rawDoc = IOUtils.toString(response.readAllBytes());
             logger.debug("About to retrieve dossier:  " + rawDoc );
@@ -83,8 +82,6 @@ public class S3DataService implements DataService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //Todo: Discuss this flow.
         return "";
     }
 
