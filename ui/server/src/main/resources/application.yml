@@ -10,7 +10,7 @@ aws:
     access:
       key: SECRET
   region: us-east-1
-  bucketName: rdso-challenge2
+  bucketName: ugroup-rdso-challenge-data
   folder: data/movies_json
   tweets: data/tweets/parsed
   wikipedia: data/wikipedia
