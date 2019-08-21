@@ -159,7 +159,7 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
         grayed_out_colormap[genre_of_item] = color_of_item
         mdf["color"] = mdf.top_genre.map(lambda x: grayed_out_colormap[x])
     else:
-        mdf["color"] - mdf.top_genre.map(lambda x: colormap[x])
+        mdf["color"] = mdf.top_genre.map(lambda x: colormap[x])
 
     p = sc_plot_genre_colors(mdf, colormap)
 
