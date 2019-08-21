@@ -5,8 +5,10 @@ To run the tests, follow these steps:
 
  1. Go to the `functional-test` directory
  2. Run `npm install`
- 5. Run `npm run webdriver:update`
- 6. Run `npm run protractor` to run the test
+ 3. Run `npm run webdriver:update`
+ 4. Run `npm run protractor:local` to run the tests locally. This will run against the application locally at `http://localhost:9091/`
+ 5. Run `npm run protractor:baseUrl <targetUrl>` where the targetUrl is the URL you want to run tests against. 
+ The syntax looks like this `npm run protractor:baseUrl www.example.com`.
  
  
  Framework Architecture
