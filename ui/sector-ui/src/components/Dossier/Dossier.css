@@ -60,6 +60,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
+    margin-top: 45px;
 }
 
 .standalone-dossier-inner-wrapper {

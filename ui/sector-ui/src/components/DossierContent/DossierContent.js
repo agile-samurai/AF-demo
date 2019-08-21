@@ -10,6 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Fab from '@material-ui/core/Fab';
 import Tweets from "../Tweets/Tweets";
 import Paper from '@material-ui/core/Paper';
+import SimilarMovies from "../SimilarMovies/SimilarMovies";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -91,6 +92,7 @@ export default class DossierContent extends React.Component {
                             <Tweets tweets={tweets}/>
                         </div>
                         {perLineageDossierContentList}
+                        <SimilarMovies similarMovies={dossierData.similarMovieTitles}/>
                         <DossierNotes dossierID={dossierData.id} notes={dossierData.notes}
                                       refreshData={this.loadEncryptedData.bind(this)}/>
                         <Files dossierID={dossierData.id} files={dossierData.dossierFileInfos}

@@ -14,7 +14,7 @@ export default class Tweets extends React.Component {
 
         const processedTweets = tweets
             .slice(0, numberOfTweetsToShow)
-            .map(tweet => <TwitterTweetEmbed tweetId={tweet}/>);
+            .map(tweet => <TwitterTweetEmbed tweetId={tweet} key={tweet}/>);
 
         return (
             <div className="tweets">
