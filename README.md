@@ -26,11 +26,19 @@ __Note: Instructions for installing these tools and configuring the dev environm
 
 |   Component              | Url                               |
 |---                       |                            ---    |
-|   Build Server          |   http://concourse.rdso.ugrouptech.com |
-|   Sonar                 |   http://sonarqube.rdso.ugrouptech.com|
-|   StrPwr - Prod         |   http://www.rdso.ugrouptech.com |
-|   StrPwr - E2E          |   http://www-test.rdso.ugrouptech.com |
-|   StrPwr - Dev          |   http://www-dev.rdso.ugrouptech.com |
+|   StrPwr - Prod          |   https://www-lb-98250145.us-east-2.elb.amazonaws.com |
+
+## User Defaults
+__Business User__
+
+* Username - business-user
+* Password - password
+
+__Business Supervisor__
+* Username - business-supervisor
+* Password - password
+
+
 
 
 __INSTRUCTIONS FOR DEPLOYING SOLUTION IN AWS ACCOUNT__
@@ -43,7 +51,7 @@ To build the CI/CD pipeline and automatically build the infrastructure and envir
 Run the script
 
 docker build -t rdso/builder .
-docker run -it -e "GIT_USERNAME=rdsoeval" -e "GIT_PASSWORD=<nf@i03Rr>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder
+docker run -it -e "GIT_USERNAME=<git_hub_user>" -e "GIT_PASSWORD=<git_hub_password>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder
 
 * Replace the <> characters in the above command with the appropriate values. As we do not allow authentication information into version control, please leverage the account information that was provided as part of the code submission for GitHub access.
 
