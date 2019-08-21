@@ -2,14 +2,12 @@ package group.u.records.datasource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.datasource.entity.Movie;
-import group.u.records.ds.training.TrainingData;
 import group.u.records.models.MovieCharacter;
 import group.u.records.models.MovieDetail;
 import group.u.records.repository.people.PersonRegistry;
 import group.u.records.service.dossier.MovieDetailsDataSource;
 import group.u.records.service.MovieIdentifier;
 import group.u.records.service.datamanagement.S3DataService;
-import group.u.records.service.dossier.TrainingDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

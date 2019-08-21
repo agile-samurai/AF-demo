@@ -72,3 +72,7 @@ a.navigation-link.dossier-name-link {
     padding-bottom: 15px;
     margin-bottom: 50px;
 }
+
+.chart-heading {
+    font-size: 36px;
+}

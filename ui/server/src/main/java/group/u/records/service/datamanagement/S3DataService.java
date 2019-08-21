@@ -2,9 +2,8 @@ package group.u.records.service.datamanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.u.records.ds.training.TrainingData;
-import group.u.records.service.dossier.Dossier;
 import group.u.records.models.entity.Person;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import java.util.UUID;
 
 @Service
 public class S3DataService implements DataService {
+    private final static Region REGION = Region.US_EAST_1;
     private Region region;
     private String folder;
     private String bucketName;
@@ -41,7 +41,6 @@ public class S3DataService implements DataService {
                          @Value("${aws.dossier.storage.name}") String dossierStorageBucket,
                          @Value("${aws.dossier.storage.files}") String dossierFileFolder,
                          TrainingDataRepository trainingDataRepository,
-                         S3Client s3Client,
                          ObjectMapper objectMapper) {
         this.dossierStorageBucket = dossierStorageBucket;
         this.dossierFileFolder = dossierFileFolder;
@@ -51,8 +50,7 @@ public class S3DataService implements DataService {
         this.bucketName = bucketName;
         this.region = Region.of(regionAsString);
         this.folder = folder;
-        this.s3Client = s3Client;
-
+        this.s3Client = S3Client.builder().region(REGION).build();
         actorList = new HashMap();
     }
 
@@ -74,7 +72,6 @@ public class S3DataService implements DataService {
 
     @Override
     public String get(UUID dossierid) {
-        Dossier dossier = null;
         ResponseInputStream<GetObjectResponse> response = s3Client.getObject(GetObjectRequest.builder().bucket(dossierStorageBucket).key(dossierid.toString()).build());
 
         //Todo: Make this more reusable.
