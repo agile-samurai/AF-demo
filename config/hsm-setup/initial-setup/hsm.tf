@@ -166,7 +166,7 @@ resource aws_instance hsm_gateway {
       "chmod +x /tmp/expect_script.sh",
       "/tmp/script.sh",
       "sleep 5",
-      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address} ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state} ${var.region}"
+      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address} ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state}"
     ]
   }
 
