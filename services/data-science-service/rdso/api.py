@@ -10,6 +10,7 @@ import pathlib
 # local imports
 import plot
 import movies
+import feature_extraction
 
 doc2vec_model = None
 movies_df = None
@@ -80,10 +81,12 @@ def load_model(api):
     doc2vec_model = Doc2Vec.load(str(models_file))
 
 
-# @hug.startup()
-# def infer_document_vectors():
-#     tlist=get_tagged_corpus()
-#
+@hug.startup()
+def apply_document_transform(api):
+    global mdf
+
+    tlist = get_tagged_corpus()
+    pass
 
 
 @hug.get("/all_available_movies/", examples="n=6")
@@ -122,8 +125,7 @@ def most_similar_movies(imdbID: str):
 
 @hug.get("/all_movie_scatter_plot")
 def get_all_movie_plot():
-    mdf = movies_df  # global, set at startup
-    # mdf = movies.merged_movie_data(1000)
+    mdf = movies_df.sample(frac=0.2)  # global, set at startup
     p = plot.sc_plot_genre_colors(mdf)
     return plot.jsonify_image(p)
 
@@ -131,7 +133,12 @@ def get_all_movie_plot():
 @hug.get("/highlighted_film_plot/{imdbID}")
 def get_highlighted_plot(imdbID: hug.types.text):
     mdf = movies_df
-    p = plot.sc_plot_for_one(mdf, imdbID)
+    item = mdf.loc[item]
+    mdf = feature_extraction.principal_components_analysis(mdf)
+    try:
+        p = plot.sc_plot_for_one(mdf, imdbID)
+    except:
+        p = plot.sc_plot_genre_colors(mdf)
     if not imdbID:
         p = plot.sc_plot_genre_colors(mdf)
     return plot.jsonify_image(p)

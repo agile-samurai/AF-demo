@@ -129,9 +129,6 @@ def sc_plot_for_one(mdf, imdbID: str, gray_out=False):
     mdf = mdf[mdf.top_genre.notna()].sample(frac=0.2)
     item = mdf.iloc[0].to_dict()
     # item = mdf.loc[mdf.imdb_id == imdbID].to_dict(orient="records")[0]
-    # colormap = dict(
-    #     zip(mdf.top_genre.unique(), Category20[len(mdf.top_genre.unique())])
-    # )
     colormap = dict(
         zip(
             mdf.top_genre.unique(),
