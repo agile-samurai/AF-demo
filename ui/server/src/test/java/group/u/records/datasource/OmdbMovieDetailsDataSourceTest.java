@@ -6,7 +6,7 @@ import group.u.records.models.MovieDetail;
 import group.u.records.repository.people.PersonRegistry;
 import group.u.records.service.MovieIdentifier;
 import group.u.records.service.datamanagement.S3DataService;
-import group.u.records.service.dossier.TrainingDataRepository;
+import group.u.records.repository.TrainingDataRepository;
 import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
