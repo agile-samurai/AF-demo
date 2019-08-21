@@ -71,18 +71,19 @@ resources:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
       bucket: ((app_data_bucket))
-      path: /data/ci/models
+      path: data/ci/models
       region: ((bucket_aws_region))
       options:
         - "--exclude '*'"
-        - "--include 'movies_*'"
+        - "--include '*movies*model*'"
+        - "--include '*metrics*'"
   - name: data
     type: simple-s3-resource
     source:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
       bucket: ((app_data_bucket))
-      path: /data/ci/data
+      path: data/ci/data
       options:
         - "--exclude '*'"
         - "--include '*.pkl'"
@@ -127,11 +128,11 @@ groups:
     - Provision ECR Repositories
     - Push UI
     - Push server Image
-    - Push DS Image
+    - Push Data Model Image
     - Deploy Services To Dev
     - Deploy Services To Test
     - Deploy Services To Production
-    - Execute main-ds-service Tests
+    - Execute Data Model Tests
     - Train Models
     - Capture data and push to s3
     - pa11y-accessibility-scan
@@ -154,13 +155,13 @@ groups:
     - Execute server Functional Tests
     - Execute server Contract Tests
     - Execute UI Automated Tests
-    - Execute main-ds-service Tests
+    - Execute Data Model Tests
   - name: publish-and-scan
     jobs:
     - Provision ECR Repositories
     - Push UI
     - Push server Image
-    - Push DS Image
+    - Push Data Model Image
     - Deploy Services To Dev
     - Deploy Services To Test
     - Deploy Services To Production
@@ -242,8 +243,12 @@ jobs:
                 terraform workspace select dev
                 export AWS_DEFAULT_REGION=us-east-1
                 export TF_VAR_REGION=us-east-1
-                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
-                TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4) terraform plan -out plan && terraform apply plan
+                export TF_VAR_hsm_controller=$(dig @resolver1.opendns.com ANY myip.opendns.com +short -4)
+                echo $TF_VAR_hsm_controller
+                terraform plan -out plan -target=aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm -target=local_file.ec2_key && terraform apply plan
+                echo $TF_VAR_hsm_controller
+                terraform plan -out plan && terraform apply plan
+                echo $TF_VAR_hsm_controller
           inputs:
             - name: source
 
@@ -571,20 +576,13 @@ jobs:
               pip install --quiet --upgrade pip
               pip install --quiet -r requirements.txt
               python -c "import nltk;nltk.download('stopwords')"
-              pwd
-              ls -all ../../../../
-              ls -all ../../../../models
-              ls -all ../../../../data
-              ls -all ../../../../data/data
-              ls -all
-              touch testfile.txt
               python vectorize.py
               ls -all models/
               cd ../../../../
               cp -R source/services/data-science-service/rdso/models/ .
-              #cp -R source/services/data-science-service/data/* source/services/data-science-service/data/.
-              #ls source/services/data-science-service/data/
-              #rm -rf source/services/data-science-service/data/data
+              ls -all models/
+              ls -al
+
           inputs:
             - name: source
             - name: data
@@ -767,7 +765,7 @@ jobs:
             - path: maven
 
 ###################### CONTRACT TESTS ############################
-  - name: Execute main-ds-service Tests
+  - name: Execute Data Model Tests
     public: true
     plan:
       - get: source
@@ -849,7 +847,7 @@ jobs:
           #- Execute main-ds-service Contract Tests
           - Execute server Contract Tests
           - Build UI
-          #- Push DS Image
+          #- Push Data Model Image
         trigger: true
       - put: terraform
         attempts: 2
@@ -956,35 +954,19 @@ jobs:
           build: docker
           tag_file: version/number
 
-  # - name: Push main-ds-service Image
-  #   public: true
-  #   plan:
-  #     - get: source
-  #       passed:
-  #         - Provision ECR Repositories
-  #       trigger: true
-  #     - get: version
-  #       passed:
-  #         - Provision ECR Repositories
-  #     - put: main-ds-service-docker-image
-  #       params:
-  #         build: source/services/data-science-service/rdso
-  #         tag_file: version/number
-  #         #additional_tags:
-  #          # -
-  - name: Push DS Image
+  - name: Push Data Model Image
     public: true
     serial: true
     plan:
       - get: source
         trigger: true
-        passed: [ Provision ECR Repositories]
+        passed: [Provision ECR Repositories]
       - get: version
         trigger: true
-        passed: [ Provision ECR Repositories, Execute main-ds-service Tests]
+        passed: [Provision ECR Repositories, Execute Data Model Tests]
       - get: models
         trigger: true
-        passed: [Execute main-ds-service Tests]
+        passed: [Execute Data Model Tests]
       - get: data
       - task: Package API
         params:
@@ -1005,7 +987,7 @@ jobs:
               cd build
               cp -r ../source/services/data-science-service/rdso/* .
               cp -r ../data/data .
-              cp -r ../models .
+              cp -r ../models/models .
           inputs:
             - name: source
             - name: data
@@ -1022,13 +1004,13 @@ jobs:
     plan:
     - get: source
       passed:
-      - Push DS Image
+      - Push Data Model Image
       - Push server Image
       - Push UI
       trigger: true
     - get: version
       passed:
-      - Push DS Image
+      - Push Data Model Image
       - Push server Image
       - Push UI
       trigger: true
@@ -1063,14 +1045,14 @@ jobs:
           - -ec
           - |
             export TF_VAR_images_version=`cat version/number`
-
             cd source/config/service-setup
             terraform version
-            terraform init
+            terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
             # Always try to create the workspace, ignore non-zero exit code if it already exists
             terraform workspace new dev || true
             terraform workspace list
             terraform workspace select dev
+            terraform init
             terraform refresh
             terraform apply -parallelism=20 --auto-approve
 
@@ -1088,24 +1070,6 @@ jobs:
         - name: version
         outputs:
         - name: vars
-#    - put: terraform
-#      params:
-#        env_name: dev
-#        plan_only: true
-#        terraform_source: source/config/service-setup
-#        var_files:
-#        - ./vars/terraform.tfvars
-#        vars:
-#          environment: dev
-#    - put: terraform
-#      params:
-#        env_name: dev
-#        plan_run: true
-#        terraform_source: source/config/service-setup
-#        var_files:
-#        - ./vars/terraform.tfvars
-#        vars:
-#          environment: dev
 
 ###################### Deploy and Run Functional Tests ############################
   - name: Deploy and Run Functional Tests
@@ -1113,13 +1077,13 @@ jobs:
     plan:
       - get: source
         passed:
-        - Push DS Image
+        - Push Data Model Image
         - Push server Image
         - Push UI
         trigger: false
       - get: version
         passed:
-        - Push DS Image
+        - Push Data Model Image
         - Push server Image
         - Push UI
         trigger: true
@@ -1247,11 +1211,12 @@ jobs:
 
             cd source/config/service-setup
             terraform version
-            terraform init
+            terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
             # Always try to create the workspace, ignore non-zero exit code if it already exists
             terraform workspace new test || true
             terraform workspace list
             terraform workspace select test
+            terraform init
             terraform refresh
             terraform apply -parallelism=20 --auto-approve
 
@@ -1315,11 +1280,12 @@ jobs:
 
             cd source/config/service-setup
             terraform version
-            terraform init
+            terraform init -backend-config "bucket=((tf_backend_bucket))" -backend-config "region=((bucket_aws_region))" -backend-config "key=rdso.tfstate"
             # Always try to create the workspace, ignore non-zero exit code if it already exists
             terraform workspace new prod || true
             terraform workspace list
             terraform workspace select prod
+            terraform init
             terraform refresh
             terraform apply -parallelism=20 --auto-approve
 
