@@ -36,7 +36,7 @@ def parse_movie(html: str):
             characters.append(cdict)
         except:
             pass
-        return characters
+    return characters
 
 
 if __name__ == "__main__":
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     cwd = pathlib.Path(".").resolve()
     data_dir = cwd.parents[0] / "data"
     html_dir = data_dir / "movies_html"
-    json_dir = data_dir / "characters_json"
+    json_dir = data_dir / "film_characters_json"
     if not json_dir.is_dir():
         json_dir.mkdir()
 
