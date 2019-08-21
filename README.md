@@ -105,19 +105,25 @@ __Business Use Cases__
 ###### Business User
 Our initial user is a SPIDER investigator who needs to review the plot details, and actors (or the names of their characters) that correspond to a film dossier. This user would like to understand at a glance what people are saying about the film, what other similar films are, and use that as a launching point to investigate the celebrities who act in the film. The assignment for the business user today is ***Toy Story 3***.
 - The user should be able to locate the dossier for Toy Story using a search bar.
-- The user should be able to make note of the most similar other films, and other films that have been identified using similar terms in the plot summary for the film.
-- The user should be able to see information from multiple data sources and scroll through all of the information detail.
+- When the user finds the dossier, the user should also be able to see the actors that star in the film.
 - From the initial Toy Story 3 dossier, the user should be able to navigate to the page for ***Tom Hanks*** without additional searching.
+- The user should be able to see information from multiple data sources and scroll through all of the information detail.
 
 
 ###### Business Supervisor
-For our use case, a SPIDER business supervisor should be able to navigate first to the page of a celebrity and use it to generate a new investigation to assign to a business user. The business supervisor has a celebrity in mind, but can only remember the name of the character, so she initiates a search with ***Buzz Lightyear***.    
+For our use case, a SPIDER business supervisor should be able to navigate first to the page of a celebrity and use it to conduct a new investigation of a movie. The business supervisor has a celebrity in mind, but can only remember the name of the character, so she initiates a search with ***Buzz Lightyear***.    
 <<<<NOTE: WE NEED TO MAKE SURE THESE MOVIES ARE IN THE DATA>>>>
 - The business supervisor should be able to navigate to the page of the actor who plays Buzz Lightyear and see what other films he has starred in.
 - The business supervisor should be able to make a note on the page for one of the actors she finds suspicious.
-- The business supervisor notices that some of the names in the Plot Summary section of one of the films might be sensitive, so she would like to be able to quickly identify the names of people, organizations, and countries that occur in them using the Auto Redact tool.
 - The business supervisor would like to insert a PDF with some valuable information for a business user who may look at a dossier later.
 - After considering one of the film dossiers, the business supervisor realizes that the dossier should no longer be able to be shown in the data, and decides to delete it.
+- The business supervisor searches for the dossier she just deleted, to ensure that it can no longer be used by business users.
+
+###### Business Report Generation
+Another business user needs to generate a report given the data he found in the dossier. He wants to collect a list of films that fit together, and present their dossiers, as well as all collected information such as notes from other business users.
+- The user should be able to make note of the most similar other films, and other films that have been identified using similar terms in the plot summary for the film.
+- The business user notices that some of the names in the Plot Summary section of one of the films might be sensitive for a report, so she would like to be able to quickly identify the names of people, organizations, and countries that occur in them using the Auto Redact tool.
+- The identified dossier data should be saved in a secure persistent data source on AWS for archival, audit, and reference.
 
 
 
@@ -192,7 +198,6 @@ Our solution is comprised of the following components, which are explained in de
 
 Our solution makes use of AWS through a fully automated CI/CD pipeline orchestrated with Terraform as a configuration management tool.  Our selection of AWS and Terraform was driven by the ability to create environments seamlessly without being coupled to a given deployment target as well as the familiarity of these tools within USCIS.  As we are provisioning Docker Containers, we also have the ability to seamlessly provision workloads within the cloud and have AWS’ Platform as a Service implementation (Elastic Container Service) handle our process scheduling.
 
-HSMGATEWAY???
 
 __Stability:__ To ensure Stability:
 Our platform leverages cloud optimized platform as a service techniques and built in telemetry support of the container platform.
