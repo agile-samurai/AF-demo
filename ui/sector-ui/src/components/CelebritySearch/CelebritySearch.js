@@ -15,7 +15,7 @@ export default class CelebritySearch extends React.Component {
             celebritySearchResults: [],
             cursor: 0
         };
-        this.CELEBRITIES_ENDPOINT = '/api/actor';
+        this.CELEBRITIES_ENDPOINT = '/api/celebrity';
 
         this.setUpInfiniteScroll();
 

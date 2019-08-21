@@ -24,6 +24,6 @@ public class MoviePublicSummaryController {
     @GetMapping
     public ResponseEntity<List<MoviePublicSummary>> getAll(@RequestParam("search") String searchString,
                                                            @RequestParam(value = "cursor", required = false, defaultValue="0") int cursor) {
-        return ok(moviePublicSummaryService.getMovies(searchString, 1, cursor));
+        return ok(moviePublicSummaryService.getMovies(searchString, 2, cursor));
     }
 }

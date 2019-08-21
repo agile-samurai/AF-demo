@@ -69,9 +69,9 @@ export class App extends React.Component {
     render() {
         const {location} = this.props;
 
-        // if(!this.props.jwtLoaded) {
-        //     return <ThemeProvider theme={theme}><Login/></ThemeProvider>;
-        // }
+        if(!this.props.jwtLoaded) {
+            return <ThemeProvider theme={theme}><Login/></ThemeProvider>;
+        }
 
         return (
             <ThemeProvider theme={theme}>
@@ -102,7 +102,7 @@ export class App extends React.Component {
                         component={TrainingData}
                     />
                     <Route
-                        component={NotFoundPage}
+                        component={DossierList}
                     />
                 </Switch>
             </ThemeProvider>

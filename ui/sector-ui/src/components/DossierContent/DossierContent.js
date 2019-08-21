@@ -11,6 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import Tweets from "../Tweets/Tweets";
 import Paper from '@material-ui/core/Paper';
 import SimilarMovies from "../SimilarMovies/SimilarMovies";
+import ShowElementByRole from "../ShowElementByRole/ShowElementByRole";
 
 export default class DossierContent extends React.Component {
     constructor(props) {
@@ -81,13 +82,13 @@ export default class DossierContent extends React.Component {
                         </Link>
                         <div className="delete-button-wrapper">
                             <div>
-                                {/*<ShowElementByRole role='ROLE_SUPERVISOR'>*/}
-                                <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
-                                     onClick={this.handleDelete}>
-                                    DELETE DOSSIER
-                                    <DeleteIcon/>
-                                </Fab>
-                                {/*</ShowElementByRole>*/}
+                                <ShowElementByRole role='ROLE_SUPERVISOR'>
+                                    <Fab variant="extended" className="delete-dossier-button" aria-label="delete dossier"
+                                         onClick={this.handleDelete}>
+                                        DELETE DOSSIER
+                                        <DeleteIcon/>
+                                    </Fab>
+                                </ShowElementByRole>
                             </div>
                         </div>
                         <div className="chart-and-tweets">
