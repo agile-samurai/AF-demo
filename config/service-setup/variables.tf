@@ -2,6 +2,8 @@ variable "ecr_image_region" {
   default = "us-east-1"
 }
 
+variable "rs_bucket" {}
+
 # variable "ami" {
 #   type        = map(string)
 #   description = "AWS ECS AMI id"
