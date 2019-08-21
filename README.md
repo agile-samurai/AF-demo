@@ -9,7 +9,7 @@ We assume that the developer machines used for this project will be pre-configur
 | --- | --- | --- | --- |
 | **Git (for Mac)** | **X** | **X** | **X** |
 | **Git-Bash (for Windows)** | **X** | **X** | **X** |
-| **JAVA (version 10 or greater)** |   | **X** |   |
+| **JAVA (version 12 or greater)** |   | **X** |   |
 | **Maven (v.3.6.1)** |   | **X** |   |
 | **Python (v.3.6)** |   | **X** |   |
 | **Terraform (v.0.11.13)** |   | **X** |   |
@@ -20,23 +20,20 @@ We assume that the developer machines used for this project will be pre-configur
 
 __Note: Instructions for installing these tools and configuring the dev environment can be found in the “Help for Pre-requisites” section of the [Solutions.PDF](docs/Solution.pdf) document located in the main folder of the GitHub repo.__
 
-|   Component                 | Url                               |
-|---                          |                            ---    |
-|   Build Server              |   http://concourse.mdas2.com      |
-|   Sonar                     |   http://sonarqube.mdas2.com      |
-|   Ravens Poe - Prod         |   http://www.theravenspoe.io      |
-|   Ravens Poe - E2E          |   http://www-test.theravenspoe.io |
-|   Ravens Poe - Dev          |   http://www-dev.theravenspoe.io  |
-|   Jupyter Notebook - Prod   |   http://notebook-prod.theravenspoe.io     |
-|   Jupyter Notebook - E2E    |   http://notebook-test.theravenspoe.io |
-|   Jupyter Notebook - Dev    |   http://notebook-dev.theravenspoe.io  |
+|   Component              | Url                               |
+|---                       |                            ---    |
+|   Build Server          |   http://concourse.XXXXXXXXXXXXXX |
+|   Sonar                 |   http://sonarqube.XXXXXXXXXXXXXX |
+|   StrPwr - Prod         |   http://www.XXXXXXXXXXXXXX |
+|   StrPwr - E2E          |   http://www-test.XXXXXXXXXXXXXX |
+|   StrPwr - Dev          |   http://www-dev.XXXXXXXXXXXXXX |
 
 
 __INSTRUCTIONS FOR DEPLOYING SOLUTION IN AWS ACCOUNT__
 
 To build the CI/CD pipeline and automatically build the infrastructure and environment, we have provided a one-step script:
 
-* Open a terminal and navigate to the extracted directory `mdas-challenge`
+* Open a terminal and navigate to the extracted directory `ugroup-records-submission`
 Run the script
 
 `bash tools/configure-env.sh AWS_ACCESS_KEY_ID='<>' AWS_SECRET_ACCESS_KEY='<>' GITHUB_USERNAME='<>' GITHUB_PASSWORD='<>'`
