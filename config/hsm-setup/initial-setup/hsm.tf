@@ -222,7 +222,7 @@ resource "null_resource" "verify" {
 resource "null_resource" "sign_and_initialize" {
   count             = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state == "UNINITIALIZED" ? 1 : 0
   provisioner "local-exec" {
-    command = "./sign_and_initialize.sh ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${var.aws_region[terraform.workspace]}"
+    command = "./sign_and_initialize.sh ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id} ${aws_iam_user_login_profile.admin.encrypted_password}"
   }
 
   depends_on = [null_resource.verify, aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
