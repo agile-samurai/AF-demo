@@ -15,3 +15,13 @@ output "hsm_module_cluster_id" {
 output "hsm_cluster_state" {
   value = local.cluster_state
 }
+
+output "ec2_ip" {
+  value = aws_instance.hsm_gateway.public_ip
+}
+
+resource "local_file" "hsm_ec2_ip" {
+  sensitive_content = aws_instance.hsm_gateway.public_ip
+  filename          = "${path.module}/hsm_ec2_ip.txt"
+  depends_on        = [aws_instance.hsm_gateway]
+}

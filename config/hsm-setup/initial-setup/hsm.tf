@@ -11,7 +11,7 @@ resource "aws_cloudhsm_v2_cluster" "cloudhsm_v2_cluster" {
 
 resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
   cluster_id        = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
-  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = data.aws_availability_zones.available.names[0]
   depends_on        = [aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
 }
 
@@ -36,12 +36,6 @@ data "aws_ami" "amazon_linux" {
     ]
   }
 }
-
-# resource "aws_eip" "this" {
-#   vpc        = true
-#   instance   = aws_instance.hsm_gateway.id
-#   depends_on = [aws_instance.hsm_gateway]
-# }
 
 resource "tls_private_key" "hsm_key" {
   algorithm = "RSA"
@@ -78,7 +72,7 @@ resource "aws_security_group" "gateway-ingress" {
 }
 
 resource aws_instance hsm_gateway {
-  availability_zone           = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone           = data.aws_availability_zones.available.names[0]
   ami                         = data.aws_ami.amazon_linux.id
   monitoring                  = true
   instance_type               = "t2.medium"
@@ -172,7 +166,7 @@ resource aws_instance hsm_gateway {
       "chmod +x /tmp/expect_script.sh",
       "/tmp/script.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password}",
       "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}",
-      "nohup java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar &"
+      "export HSM_PASSWORD=$(echo '${aws_iam_user_login_profile.admin.encrypted_password}' | cut -c10-20) && export HSM_PARTITION=${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} && export HSM_USER=gatewayuser && nohup java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar"
     ]
   }
 
@@ -188,12 +182,6 @@ resource "aws_security_group_rule" "hsm_sg_rule" {
   security_group_id = module.vpc.default_security_group_id
   depends_on        = [module.vpc]
 }
-
-//resource "null_resource" "depends_on" {
-//  triggers = {
-//    depends_on = join("", aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_certificates.*)
-//  }
-//}
 
 resource "local_file" "csr_file" {
   count             = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state == "UNINITIALIZED" ? 1 : 0
@@ -240,40 +228,6 @@ resource "null_resource" "sign_and_initialize" {
 
   depends_on = [null_resource.verify, aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
 }
-
-//resource "null_resource" "provisioner" {
-//  count             = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state != "INITIALIZED" ? 1 : 0
-//  connection {
-//    host        = aws_eip.this.public_ip
-//    type        = "ssh"
-//    user        = "ec2-user"
-//    private_key = file("${path.module}/key.pem")
-//  }
-//
-//  provisioner "file" {
-//    source      = "customerCA.crt"
-//    destination = "/tmp/customerCA.crt"
-//  }
-//
-//  provisioner "file" {
-//    source      = "expect_script.sh"
-//    destination = "/tmp/expect_script.sh"
-//  }
-//
-//  provisioner "file" {
-//    source      = "setup_ec2.sh"
-//    destination = "/tmp/setup_ec2.sh"
-//  }
-//
-//  provisioner "remote-exec" {
-//    inline = [
-//      "chmod +x /tmp/setup_ec2.sh",
-//      "chmod +x /tmp/expect_script.sh",
-//    "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}'"]
-//  }
-//
-//  depends_on = [aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm, aws_iam_user_login_profile.admin, aws_instance.hsm_gateway, null_resource.sign_and_initialize]
-//}
 
 resource "local_file" "ec2_key" {
   sensitive_content = tls_private_key.hsm_key.private_key_pem

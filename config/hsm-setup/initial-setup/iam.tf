@@ -1,6 +1,5 @@
-
 resource "aws_iam_user" "admin-user" {
-  name          = "admin-${terraform.workspace}"
+  name          = "admin-${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id}"
   path          = "/"
   force_destroy = true
 }
@@ -11,15 +10,15 @@ resource "aws_iam_user_login_profile" "admin" {
 }
 
 resource "aws_iam_group" "admin-group" {
-  name = "admins-${terraform.workspace}"
+  name = "admins-${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id}"
 }
 
 resource "aws_iam_group" "user-group" {
-  name = "CloudHsmReadOnlyUsers-${terraform.workspace}"
+  name = "CloudHsmReadOnlyUsers-${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id}"
 }
 
 resource "aws_iam_policy" "admin-policy" {
-  name        = "admin-policy-${terraform.workspace}"
+  name        = "admin-policy-${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id}"
   description = "A test admin policy"
   policy      = <<EOF
 {
@@ -36,7 +35,7 @@ EOF
 }
 
 resource "aws_iam_policy" "hsm-policy" {
-  name        = "HSMAdminPolicy-${terraform.workspace}"
+  name        = "HSMAdminPolicy-${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id}"
   description = "HSM policy for administrators"
   policy      = <<EOF
 {

@@ -1,14 +1,24 @@
 terraform {
   backend "s3" {
-    bucket = "rdso-challenge2"
-    key    = "hsm.tfstate"
-    region    = "us-east-1"
+    bucket = "infra-735978838162"
+    key    = "hsm-3.tfstate"
+    region = "eu-west-1"
   }
 }
 
 provider "aws" {
   version = "~> 2.0"
 }
+provider "tls" {
+  version = "~> 2.0"
+}
+provider "local" {
+  version = "~> 1.3"
+}
+provider "null" {
+  version = "~> 2.1"
+}
+
 
 variable "aws_region" {
   type        = map(string)
