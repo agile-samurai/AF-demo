@@ -5,8 +5,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import {Link} from "react-router-dom";
 import './NavigationMenu.css';
+import axios from "axios/index";
+import {connect} from "react-redux";
+import Login from "../Login/Login";
 
-export default class NavigationMenu extends React.Component {
+class NavigationMenu extends React.Component {
     constructor(props) {
         super(props);
 
@@ -16,6 +19,7 @@ export default class NavigationMenu extends React.Component {
 
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.doLogout = this.doLogout.bind(this);
     }
 
     handleClick(event) {
@@ -30,7 +34,16 @@ export default class NavigationMenu extends React.Component {
         });
     }
 
+    doLogout() {
+        axios.defaults.headers.common['x-authentication'] = null;
+        this.props.unSetJWT();
+    }
+
     render() {
+        if(this.state.jwtLoaded === false) {
+            return <Login/>;
+        }
+
         return (
             <div>
                 <MenuIcon aria-controls="customized-menu"
@@ -67,13 +80,27 @@ export default class NavigationMenu extends React.Component {
                             <ListItemText primary="View Training Data" />
                         </MenuItem>
                     </Link>
-                    <Link to="/logout" className="menu-item-link">
+                    <div onClick={this.doLogout}>
                         <MenuItem>
                             <ListItemText primary="Log Out" />
                         </MenuItem>
-                    </Link>
+                    </div>
                 </Menu>
             </div>
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return ({
+        jwtLoaded: state.jwtLoaded
+    })
+};
+
+const mapDispatchToProps = (dispatch) => ({
+    unSetJWT: () => dispatch({
+        type: 'UN_SET_JWT'
+    })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(NavigationMenu);

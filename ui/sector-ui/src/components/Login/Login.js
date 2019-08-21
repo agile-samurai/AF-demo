@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import './Login.css';
 import HeaderBar from "../HeaderBar/HeaderBar";
 import TextField from '@material-ui/core/TextField';
+import DossierList from "../DossierList/DossierList";
 
 class Login extends React.Component {
     constructor(props) {
@@ -43,11 +44,14 @@ class Login extends React.Component {
                 const jwt = data.headers['x-authentication'];
                 axios.defaults.headers['x-authentication'] = jwt;
                 this.props.setJWT(jwt);
-                this.props.history.push('/');
             });
     }
 
     render() {
+        if(this.props.jwtLoaded) {
+            return <DossierList/>;
+        }
+
         return (
             <div className="login">
                 <HeaderBar/>
@@ -86,7 +90,12 @@ class Login extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => {
+    console.log("state: ", state);
+    return ({
+        jwtLoaded: state.jwtLoaded
+    })
+};
 
 const mapDispatchToProps = (dispatch) => ({
     setJWT: (jwt) => dispatch({
