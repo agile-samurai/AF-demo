@@ -1,9 +1,13 @@
 terraform {
   backend "s3" {
-    bucket = "infra-735978838162"
-    key    = "hsm-3.tfstate"
-    region = "eu-west-1"
+    #bucket = "infra-735978838162"
+    #key    = "hsm.tfstate"
+    #region = "us-east-1"
   }
+}
+
+terraform {
+  required_version = "0.12.5"
 }
 
 provider "aws" {
