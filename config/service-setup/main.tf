@@ -175,6 +175,7 @@ module "server" {
 
   access_key    = var.access_key
   access_secret = var.access_secret
+  aws_account_id = var.aws_account_id
 
 
   ds_redact_host="http://${module.ds-spaCy-model.dns_name}"   #spaCy url add http://
