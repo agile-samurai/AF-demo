@@ -24,6 +24,8 @@ We assume that the developer machines used for this project will be pre-configur
 
 __Note: Instructions for installing these tools and configuring the dev environment can be found in the “Help for Prerequisites” section of the [Solutions.PDF](docs/Solution.pdf) document located in the main folder of the GitHub repo.__
 
+
+
 |   Component              | Url                               |
 |---                       |                            ---    |
 |   StrPwr - Prod          |   https://www-lb-98250145.us-east-2.elb.amazonaws.com |
@@ -47,11 +49,24 @@ __INSTRUCTIONS FOR DEPLOYING SOLUTION IN AWS ACCOUNT__
 
 To build the CI/CD pipeline and automatically build the infrastructure and environment, we have provided a one-step script:
 
+## Option 1 - (Docker)
 * Open a terminal and navigate to the extracted directory `ugroup-records-submission`
 Run the script
 
 docker build -t rdso/builder .
 docker run -it -e "GIT_USERNAME=<git_hub_user>" -e "GIT_PASSWORD=<git_hub_password>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder
+
+## Option 2 - (Native - MacOS/linux)
+
+Install the following tools
+
+[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3)
+
+GIT_USERNAME=<git_hub_user> GIT_PASSWORD=<git_hub_password> AWS_ACCESS_KEY_ID=<aws_access_key_id> AWS_SECRET_ACCESS_KEY=<aws_secret-access_key> ./launch.sh
+
+(If these commands do no succeed you may run them again)
+
+Once completed,
 
 * Replace the <> characters in the above command with the appropriate values. As we do not allow authentication information into version control, please leverage the account information that was provided as part of the code submission for GitHub access.
 
@@ -256,5 +271,8 @@ __Scalability:__  To ensure scalability, we have containerized all aspects of ou
 
 
 ## High Level architecture
+
+The solution architecture builds off of the architectural principles of Micro Service Design, while leveraging Cloud Centricity to achieve a highly scalable and testable system. These concerns enabled the creation of a pluggable abstraction that provides fault tolerance in a consistent and predictable fashion. These abstractions not only made the solution testable, they also added an additional level of flexibility to enable offline development through the use of Feature Toggles and Test Doubles.
+
 
 ![Architecture](img/Diagram-1.png)

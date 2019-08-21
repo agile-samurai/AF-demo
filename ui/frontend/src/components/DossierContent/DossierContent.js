@@ -124,12 +124,14 @@ export default class DossierContent extends React.Component {
                         loaded: true
                     }, () => {
                         try {
-                            window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
-                                `genreFitChart${this.state.dossierData.id}`);
+                            if(!this.state.chartLoaded) {
+                                window.Bokeh.embed.embed_item(JSON.parse(this.state.dossierData.distribution),
+                                    `genreFitChart${this.state.dossierData.id}`);
 
-                            this.setState({
-                                chartLoaded: true
-                            })
+                                this.setState({
+                                    chartLoaded: true
+                                })
+                            }
                         } catch (error) {
                         }
                     });
