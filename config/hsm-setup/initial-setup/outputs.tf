@@ -24,10 +24,10 @@ output "ec2_ip" {
   value = aws_instance.hsm_gateway.public_ip
 }
 
-resource "local_file" "hsm_ec2_ip" {
-  sensitive_content = aws_instance.hsm_gateway.public_ip
-  filename          = "${path.module}/hsm_ec2_ip.txt"
-  depends_on        = [aws_instance.hsm_gateway]
+resource "local_file" "hsm_state" {
+  sensitive_content = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state
+  filename          = "${path.module}/cluster_state.txt"
+  depends_on        = [aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster]
 }
 
 

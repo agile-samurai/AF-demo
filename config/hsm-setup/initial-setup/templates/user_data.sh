@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-HSM_ID=$1
-PASS=$2
-
-echo "hsm_Id : ${HSM_ID}"
-
-
 echo "yum update..."
 sudo bash -c "yum update --nogpgcheck -y -q -e 1"
 echo "yum update...done"
