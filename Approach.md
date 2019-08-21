@@ -14,7 +14,7 @@ U.Group's philosophy:
 - Experiment relentlessly to fail early, recover quickly, and adjust as needed
 - Foster Collaboration through active collaboration either through physical colocation or investment in virtual collaboration tools
 
-![Scrum](img/Diagram 8-scrum.png)
+![Scrum](img/Diagram8-scrum.png)
 
 ## Technical Development Approach
 U.Group’s team uses Test Driven Development (TDD) and active code review techniques such as pair programming as fundamental building blocks of our delivery process. During the challenge, we actively paired to continually evolve the asset over time to ensure high quality and consistency in the vision. This is reflected in the git history through our practice of git flow to ensure pull and merge requests were compliant with best practices, standards, and our overarching technical design.
