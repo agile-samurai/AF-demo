@@ -27,18 +27,9 @@ public class OmdbMovieDetailsDataSourceTest {
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true );
 
         String regionAsString = "us-east-1";
-        String accessKeyId = "";
-        String secretAccessKey = "";
-
-        S3Client client = S3Client.builder()
-                .region(Region.of(regionAsString))
-                .credentialsProvider(StaticCredentialsProvider
-                        .create(AwsBasicCredentials.create(accessKeyId,
-                                secretAccessKey))).build();
-
 
         S3DataService dataService = new S3DataService("rdso-challenge2", "data/omdb_json", regionAsString, "dossier-storage",
-                "files",mock(TrainingDataRepository.class), client, objectMapper);
+                "files",mock(TrainingDataRepository.class), objectMapper);
         PersonRegistry personRegistry = mock(PersonRegistry.class);
         OmdbMovieDetailsDataSource ds = new OmdbMovieDetailsDataSource(dataService,personRegistry, objectMapper);
         String id = "1156466";
