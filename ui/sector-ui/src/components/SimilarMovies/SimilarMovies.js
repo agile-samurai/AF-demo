@@ -6,7 +6,9 @@ export default class SimilarMovies extends React.Component {
     render() {
         const {similarMovies} = this.props;
 
-        if(!processedSimilarMovies || processedSimilarMovies.length === 0) {
+        console.log("similar movies: ", similarMovies);
+
+        if(!similarMovies || similarMovies.length === 0) {
             return null;
         }
 

@@ -93,6 +93,7 @@ export default class DossierContent extends React.Component {
                         <div className="chart-and-tweets">
                             {
                                 this.state.chartLoaded && (<div className="chart">
+                                    <div className="chart-heading">Cluster distribution</div>
                                     <div id={`genreFitChart${dossierData.id}`}/>
                                     <div className="lineage">Lineage: multiple sources</div>
                                 </div>)
@@ -160,9 +161,6 @@ export default class DossierContent extends React.Component {
                 this.setState({
                     deleted: true
                 });
-            })
-            .catch(error => {
-                console.log(error);
             });
     }
 }
