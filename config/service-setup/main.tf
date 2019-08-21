@@ -15,8 +15,6 @@ provider "aws" {
   region  = "${local.region}"
 }
 
-//provider "tls" {}
-
 locals {
   region = "${var.aws_region[terraform.workspace]}"
 }
@@ -136,7 +134,6 @@ module "www" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/ui:${var.images_version}"
   container_family   = "www"
-  server_container_family = module.server.container_family
 
   instance_count             = 2
   timeout                    = 80
@@ -161,13 +158,6 @@ module "server" {
   public_subnets     = module.network.public_subnets
   docker_image       = "${var.aws_account_id}.dkr.ecr.${var.ecr_image_region}.amazonaws.com/server:${var.images_version}"
   container_family   = "server"
-  ds_container_family = module.datascience.container_family
-  #base_domain        = aws_route53_zone.primary.name
-
-  # SPRING_DATA_MONGODB_HOST     = module.ecs-cluster.dns_name
-  # SPRING_DATA_MONGODB_USERNAME = var.db_user
-  # SPRING_DATA_MONGODB_PASSWORD = var.db_pass
-  #SPRING_DATA_MONGODB_PORT = 27017
 
   KAFKA_INTERNAL_IP = module.ecs-cluster.dns_name
 
@@ -231,24 +221,13 @@ module "ds-spaCy-model" {
 
   docker_image     = "jgontrum/spacyapi:en_v2"
   container_family = "spaCy"
-  #base_domain      = aws_route53_zone.primary.name
 
   health_check_path = "/ui/"
   instance_count    = 1
   timeout           = 20
   container_port    = 80 #from container dockerfile
   loadbalancer_port = 80
-  #zone_id           = aws_route53_zone.primary.zone_id
 
   cloud_watch_log_group_name = aws_cloudwatch_log_group.container.name
   region                     = "${local.region}"
 }
-
-
-# module "hsm"{
-#   source = "./modules/hsm"
-#   region = terraform.workspace
-#   vpc_id             = module.network.vpc_id
-#   private_subnets    = module.network.private_subnets
-#   public_subnets     = module.network.public_subnets
-# }
