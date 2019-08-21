@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 ###
 #
 ###
@@ -16,6 +16,7 @@ init() {
 
   printf "\n*** Initializing Terraform ***\n"
   cd ../../config/hsm-setup/initial-setup
+  rm -rf .terraform
   terraform init
 }
 
