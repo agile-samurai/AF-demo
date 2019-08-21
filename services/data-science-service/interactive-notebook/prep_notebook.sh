@@ -1,5 +1,5 @@
-# mkdir data
-# mkdir models
+mkdir data
+mkdir models
 
 cp ../setup.py .
 cp -r ../rdso .
