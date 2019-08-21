@@ -60,7 +60,7 @@ export default class CelebritySearch extends React.Component {
 
     setUpInfiniteScroll() {
         window.onscroll = () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 300)) {
                 this.loadMore();
             }
         };
