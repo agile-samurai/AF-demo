@@ -4,6 +4,7 @@ import group.u.records.ds.training.TrainingData;
 import group.u.records.repository.TrainingDataRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,6 @@ public class TrainingDataController {
     }
     @GetMapping
     public ResponseEntity<Page<TrainingData>> getAll(@RequestParam(value = "cursor", required = false, defaultValue="0") int cursor) {
-        return ok(trainingDataRepository.findAll(new PageRequest(cursor,100)));
+        return ok(trainingDataRepository.findAll(PageRequest.of(cursor,100)));
     }
 }

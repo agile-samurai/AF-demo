@@ -54,7 +54,6 @@ class Login extends React.Component {
 
         return (
             <div className="login">
-                <HeaderBar/>
                 <div className="login-box-wrapper">
                     <div className="login-box">
                         <div className="login-heading">Login</div>

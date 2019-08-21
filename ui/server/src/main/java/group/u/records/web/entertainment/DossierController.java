@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class DossierController {
         List<MovieTitle> movieTitles = masterDossier.getSimilarMovies()
                 .stream()
                 .map(s -> (publicSummaryRepository.findById(s)))
-                .filter( s -> s.isPresent() )
+                .filter(Optional::isPresent)
                 .map(s->MovieTitle.from(s.get()))
                 .collect(Collectors.toList());
 
