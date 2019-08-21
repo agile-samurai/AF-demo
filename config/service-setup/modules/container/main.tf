@@ -1,3 +1,9 @@
+data "aws_instance" "hsm" {
+  instance_tags {
+    "Name" = "HSM Client instance-${terraform.workspace}"
+  }
+}
+
 resource "aws_ecs_task_definition" "service" {
   family = "${var.container_family}"
   requires_compatibilities = [
@@ -55,7 +61,7 @@ resource "aws_ecs_task_definition" "service" {
     { "name": "APP_ENVIRONMENT_TAG", "value" :"${terraform.workspace}-${var.aws_account_id}"},
 
     { "name": "APP_SECURITY_HSM_ENABLED", "value" :"${terraform.workspace == "dev" ? "false" : "true"}"},
-    { "name": "APP_CONTENT_SECURITY_HOST", "value" :"http://18.130.232.231:8080"},
+    { "name": "APP_CONTENT_SECURITY_HOST", "value" :"http://${data.aws_instance.hsm.public_ip}:8080"},
 
      { "name": "AWS_ACCESS_KEY_ID", "value" :"${var.access_key}"},
      { "name": "AWS_SECRET_ACCESS_KEY", "value" :"${var.access_secret}"}
