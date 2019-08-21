@@ -24,6 +24,8 @@ We assume that the developer machines used for this project will be pre-configur
 
 __Note: Instructions for installing these tools and configuring the dev environment can be found in the “Help for Prerequisites” section of the [Solutions.PDF](docs/Solution.pdf) document located in the main folder of the GitHub repo.__
 
+
+
 |   Component              | Url                               |
 |---                       |                            ---    |
 |   StrPwr - Prod          |   https://www-lb-98250145.us-east-2.elb.amazonaws.com |
@@ -47,11 +49,26 @@ __INSTRUCTIONS FOR DEPLOYING SOLUTION IN AWS ACCOUNT__
 
 To build the CI/CD pipeline and automatically build the infrastructure and environment, we have provided a one-step script:
 
+## Option 1 - (Docker)
 * Open a terminal and navigate to the extracted directory `ugroup-records-submission`
 Run the script
 
 docker build -t rdso/builder .
 docker run -it -e "GIT_USERNAME=<git_hub_user>" -e "GIT_PASSWORD=<git_hub_password>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder
+
+## Option 2 - (Native - MacOS)
+
+Install the following tools
+
+[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3)
+
+
+
+AWS_ACCESS_KEY_ID=<access-key-id> \
+AWS_SECRET_ACCESS_KEY=<secret-access-key> \
+control-tower deploy --iaas aws <rdso>
+
+Once completed,
 
 * Replace the <> characters in the above command with the appropriate values. As we do not allow authentication information into version control, please leverage the account information that was provided as part of the code submission for GitHub access.
 
