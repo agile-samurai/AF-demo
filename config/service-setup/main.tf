@@ -28,15 +28,15 @@ resource "aws_cloudwatch_log_group" "container" {
   }
 }
 
-data "terraform_remote_state" "hsm" {
-  backend   = "s3"
-  workspace = terraform.workspace
-  config = {
-    bucket = "${var.rs_bucket}"
-    key    = "hsm.tfstate"
-    region = "us-east-1"
-  }
-}
+# data "terraform_remote_state" "hsm" {
+#   backend   = "s3"
+#   workspace = terraform.workspace
+#   config = {
+#     bucket = "${var.rs_bucket}"
+#     key    = "hsm.tfstate"
+#     region = "us-east-1"
+#   }
+# }
 
 module "log-forwarding" {
   source           = "./modules/log-forwarding"
