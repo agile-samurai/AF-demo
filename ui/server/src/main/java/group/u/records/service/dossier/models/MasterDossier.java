@@ -1,4 +1,4 @@
-package group.u.records.service.dossier;
+package group.u.records.service.dossier.models;
 
 import group.u.records.models.users.Note;
 import group.u.records.models.MovieTitle;

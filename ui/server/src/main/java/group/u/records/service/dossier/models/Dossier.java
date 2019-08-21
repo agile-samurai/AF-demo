@@ -1,4 +1,4 @@
-package group.u.records.service.dossier;
+package group.u.records.service.dossier.models;
 
 import group.u.records.datascience.EntityClassification;
 import group.u.records.models.MovieCharacter;

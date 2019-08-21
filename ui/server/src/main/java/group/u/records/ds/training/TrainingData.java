@@ -1,6 +1,5 @@
 package group.u.records.ds.training;
 
-import group.u.records.service.dossier.Lineage;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Id;
