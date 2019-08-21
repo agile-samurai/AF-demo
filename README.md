@@ -37,11 +37,12 @@ To build the CI/CD pipeline and automatically build the infrastructure and envir
 * Open a terminal and navigate to the extracted directory `ugroup-records-submission`
 Run the script
 
-`bash tools/configure-env.sh AWS_ACCESS_KEY_ID='<>' AWS_SECRET_ACCESS_KEY='<>' GITHUB_USERNAME='<>' GITHUB_PASSWORD='<>'`
+docker build -t rdso/builder .
+docker run -it -e "GIT_USERNAME=rdsoeval" -e "GIT_PASSWORD=<nf@i03Rr>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder 
 
 * Replace the <> characters in the above command with the appropriate values. As we do not allow authentication information into version control, please leverage the account information that was provided as part of the code submission for GitHub access.
 
-* The command gets executed for about 15 minutes and the output is a URL that will be presented to the user at the end of execution. This is the Concourse CI URL. Use the URL and the Github credentials provided to log into Concourse CI. When you log in, you will see a build job getting executed. This job will run the build and deploy jobs for the development, end to end testing and production environments. The entire process takes around 30 minutes to complete.
+* The command gets executed for about 35 minutes and the output is a URL that will be presented to the user at the end of execution. This is the Concourse CI URL. Use the URL and the Github credentials provided to log into Concourse CI. When you log in, you will see a build job getting executed. This job will run the build and deploy jobs for the development, end to end testing and production environments. The entire process takes around 30 minutes to complete.
 
 _Note that after deployment and upon startup each environment will begin progressively building up the data used by the application. Over time more Dossiers and actors will be built up and loaded by the system, and the existing entries will become more 
 rich enriched.
