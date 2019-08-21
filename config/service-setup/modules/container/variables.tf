@@ -102,3 +102,7 @@ variable "access_key" {}
 variable "access_secret" {}
 
 variable "aws_account_id" {}
+
+variable "app_content_security_host" {
+  default = "http://18.130.232.231:8080"
+}
