@@ -16,6 +16,10 @@ output "hsm_cluster_state" {
   value = local.cluster_state
 }
 
+output "hsm_module_eni_id" {
+  value = aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_eni_id
+} 
+
 output "ec2_ip" {
   value = aws_instance.hsm_gateway.public_ip
 }
@@ -25,3 +29,5 @@ resource "local_file" "hsm_ec2_ip" {
   filename          = "${path.module}/hsm_ec2_ip.txt"
   depends_on        = [aws_instance.hsm_gateway]
 }
+
+

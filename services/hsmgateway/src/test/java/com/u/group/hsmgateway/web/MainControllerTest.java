@@ -1,5 +1,6 @@
 package com.u.group.hsmgateway.web;
 
+import com.cavium.cfm2.CFM2Exception;
 import com.u.group.hsmgateway.crypto.CryptoService;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,5 +62,26 @@ public class MainControllerTest {
         final ResponseEntity<String> responseEntity = mainController.decrypt(request);
 
         assertEquals(expected, responseEntity.getBody());
+    }
+
+    @Test
+    public void shouldDeleteKeyForId() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, CFM2Exception {
+        final String expected = "Key Deleted";
+        final String id = "id123456";
+        when(cryptoService.deleteDossier(id)).thenReturn(true);
+        final ResponseEntity<String> responseEntity = mainController.deleteKey(id);
+
+        assertEquals(expected, responseEntity.getBody());
+        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void shouldReturn404WhenKeyNotFound() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, CFM2Exception {
+        final String expected = "Key Deleted";
+        final String id = "id123456";
+        when(cryptoService.deleteDossier(id)).thenReturn(false);
+        final ResponseEntity<String> responseEntity = mainController.deleteKey(id);
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 }
