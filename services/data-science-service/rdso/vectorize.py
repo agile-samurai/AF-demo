@@ -130,7 +130,8 @@ def cli(version):
     # For testing, loading d2v model from memory
 
     # Find genre centroids and use them to compute distance metrics for model performance
-    genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
+    genre_metrics, _ = get_genre_distance_metrics(d2v_model, movies_df)
+    # genre_metrics = get_genre_distance_metrics(d2v_model, movies_df)
     genre_metrics["model_version"] = version
     metrics_file = models_dir / f"metrics.{version}.json"
     with metrics_file.open("w") as outfile:
