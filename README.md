@@ -195,7 +195,7 @@ Our solution is comprised of the following components, which are explained in de
 * Model Training and Deployment
 * Data Engineering and Model Optimizations
 * Data Streaming & Persistence
-* User Experience and Data Visualizations. The UX mockups for our solution can be accessed here: https://projects.invisionapp.com/prototype/rdso-workspace-cjzd929e50001wz01msyqqrjj.
+* User Experience and Data Visualizations. The UX mockups for our solution can be accessed [here](https://projects.invisionapp.com/prototype/rdso-workspace-cjzd929e50001wz01msyqqrjj).
 * Security for Data in Various Modes (i.e., at rest, in transit, and in use)
 
 Our solution makes use of AWS through a fully automated CI/CD pipeline orchestrated with Terraform as a configuration management tool.  Our selection of AWS and Terraform was driven by the ability to create environments seamlessly without being coupled to a given deployment target as well as the familiarity of these tools within USCIS.  As we are provisioning Docker Containers, we also have the ability to seamlessly provision workloads within the cloud and have AWS’ Platform as a Service implementation (Elastic Container Service) handle our process scheduling.
