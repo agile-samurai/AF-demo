@@ -23,11 +23,11 @@ __Note: Instructions for installing these tools and configuring the dev environm
 
 |   Component              | Url                               |
 |---                       |                            ---    |
-|   Build Server          |   http://concourse.XXXXXXXXXXXXXX |
-|   Sonar                 |   http://sonarqube.XXXXXXXXXXXXXX |
-|   StrPwr - Prod         |   http://www.XXXXXXXXXXXXXX |
-|   StrPwr - E2E          |   http://www-test.XXXXXXXXXXXXXX |
-|   StrPwr - Dev          |   http://www-dev.XXXXXXXXXXXXXX |
+|   Build Server          |   http://concourse.rdso.ugrouptech.com |
+|   Sonar                 |   http://sonarqube.rdso.ugrouptech.com|
+|   StrPwr - Prod         |   http://www.rdso.ugrouptech.com |
+|   StrPwr - E2E          |   http://www-test.rdso.ugrouptech.com |
+|   StrPwr - Dev          |   http://www-dev.rdso.ugrouptech.com |
 
 
 __INSTRUCTIONS FOR DEPLOYING SOLUTION IN AWS ACCOUNT__
