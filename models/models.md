@@ -8,7 +8,9 @@ Our data science process is comprised of three primary processes:
 * __Data Modeling__ - Designing and optimizing models for search, entity resolution, predictive redaction, and similarity
 
 
-(WRITE MORE HERE ABOUT HOLISTIC APPROACH 2 to 3 paragraphs)
+At U.Group we believe strongly in customer centricity while delivering value early and often.  This core value not only informs how we approach a given problem, but also how we organize our teams to ensure successful delivery at scale.  While working through the challenge our Developers, Data Scientist practiced multi-disciplinary paired programming to model the business domains and accelerate the path to production with a shared understanding of the needs and concerns.  
+
+In addition to direct collaboration, we have additionally extended our Continuous Integration and Delivery process to include the combined deployment of our Data Models and Integration code into a distributed platform that is consistently audited and versioned.  This active collaboration helps shape our design as well as provides an opportunity for active prioritization and quick feedback loops while remaining customer centric.
 
 __Our AI/ML Execution and Analytical Approach__
 
@@ -43,14 +45,15 @@ Data Engineering: Our team used Natural Language Processing (NLP) to classify un
 
 Data Sets: We collected data from a myriad of sources including the data provided by USCIS. Additionally we pulled data from IMDB, OMDB, Twitter, Wikipedia and Amazon Reviews. (Note: we used the publicly available data set of IMDB which is allowed under their terms of service. LINK TO THE IMDB TOS). We used a combination of Python and Java to parse data sources.
 
-* __Labeling__ We leveraged Doc2Vec analysis, an unsupervised learning process, to explore hidden data patterns within our data set. This method allows us to easily draw inferences within data sets to discover the strongest relationships among movies, as well as new entities based on patterns within the data. This method does not require us to label training data sets. 
+* __Labeling__ We leveraged Doc2Vec analysis, an unsupervised learning process, to explore hidden data patterns within our data set. This method allows us to easily draw inferences within data sets to discover the strongest relationships among movies, as well as new entities based on patterns within the data. This method does not require us to label training data sets.
 
-* __Optimization__ WRITE SOME THING HERE
+* __Optimization__ To create a more responsive and rich user experience, we leveraged a series of runtime caching techniques to ensure that data was accessible with minimal seek time.  
 
-__Training__ Answered in Logic & Innovation below under “Multiple ways to train models”.
+* __Training__ Answered in Logic & Innovation below under “Multiple ways to train models”.
 Integrating, Maintaining & Validating NLP/AI/ML models:
 Integration and Maintenance: Addressed in “Model Maintenance & Integration through automated CI/CD”.
-Validation:  NEED TO WRITE SOME THING HERE
+
+* __Validation__ was conducted leveraging various data sources for entity recognition on a known and dataset to ensure consistency of execution and reuslts.  
 
 ## Model Maintenance & Integration using CI/CD:
 
