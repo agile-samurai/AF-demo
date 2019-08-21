@@ -56,10 +56,10 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
-  data-science-notebook:
-    image: ugroup/data-science-notebook
-    ports:
-      - "8888:8888"
+#  data-science-notebook:
+#    image: ugroup/data-science-notebook
+#    ports:
+#      - "8888:8888"
 
   spacy:
       image: jgontrum/spacyapi:en_v2
