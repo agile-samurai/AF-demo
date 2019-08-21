@@ -7,7 +7,7 @@ RUN yum -y update \
 
 RUN wget https://releases.hashicorp.com/terraform/0.12.5/terraform_0.12.5_linux_amd64.zip \
     && unzip terraform_0.12.5_linux_amd64.zip && rm terraform_0.12.5_linux_amd64.zip \
-    && wget https://github.com/EngineerBetter/control-tower/releases/download/0.7.3/control-tower-linux-amd64 \ 
+    && wget https://github.com/EngineerBetter/control-tower/releases/download/0.7.3/control-tower-linux-amd64 \
     && mv terraform /usr/local/bin/ \
     && mv control-tower-linux-amd64 /usr/local/bin/control-tower \
     && chmod +x /usr/local/bin/control-tower \
@@ -33,6 +33,8 @@ RUN mkdir /app
 COPY launch.sh app/.
 COPY destroy-launch.sh app/.
 COPY credentials.template.yml app/.
+COPY pipeline.yml app/.
+COPY pipeline-infra.yml app/.
 
 WORKDIR /app
 
