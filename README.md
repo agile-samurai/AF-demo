@@ -103,12 +103,24 @@ The data-importer-batch is a Java program that leverages Spring-Boot and Spring-
 __Business Use Cases__
 
 ###### Business User
+Our initial user is a SPIDER investigator who needs to review the plot details, and actors (or the names of their characters) that correspond to a film dossier. This user would like to understand at a glance what people are saying about the film, what other similar films are, and use that as a launching point to investigate the celebrities who act in the film. The assignment for the business user today is ***Toy Story 3***.
+- The user should be able to locate the dossier for Toy Story using a search bar.
+- The user should be able to make note of the most similar other films, and other films that have been identified using similar terms in the plot summary for the film.
+- The user should be able to see information from multiple data sources and scroll through all of the information detail.
+- From the initial Toy Story 3 dossier, the user should be able to navigate to the page for ***Tom Hanks*** without additional searching.
 
-: someone searching for a dossier based on an actor's name; search by name, by character, and the movies they are in --> ultimately viewing
 
-###### Business User
-: a supervisor uploads a file, assigns the business user
+###### Business Supervisor
+For our use case, a SPIDER business supervisor should be able to navigate first to the page of a celebrity and use it to generate a new investigation to assign to a business user. The business supervisor has a celebrity in mind, but can only remember the name of the character, so she initiates a search with ***Buzz Lightyear***.    
+<<<<NOTE: WE NEED TO MAKE SURE THESE MOVIES ARE IN THE DATA>>>>
+- The business supervisor should be able to navigate to the page of the actor who plays Buzz Lightyear and see what other films he has starred in.
+- The business supervisor should be able to make a note on the page for one of the actors she finds suspicious.
+- The business supervisor notices that some of the names in the Plot Summary section of one of the films might be sensitive, so she would like to be able to quickly identify the names of people, organizations, and countries that occur in them using the Auto Redact tool.
+-
+- After considering one of the film dossiers, the business supervisor realizes that the dossier should no longer be able to be shown in the data, and decides to delete it.
 
+
+   
 ### Repository Hierarchy List
 | PACKAGE | PURPOSE |
 | --- | --- |
