@@ -1,6 +1,7 @@
 .search-toolbar {
     justify-content: space-between;
     height: 120px;
+    background: #575758 !important;
 }
 
 .star-power-text {
