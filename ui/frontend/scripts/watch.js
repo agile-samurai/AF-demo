@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const paths = require('react-scripts/config/paths');
 const webpack = require('webpack');
 const importCwd = require('import-cwd');
-const config = importCwd('react-scripts/config/webpack.config')('development');
+const config = importCwd('react-scripts/config/webpack.config')('production')
 
 var entry = config.entry;
 var plugins = config.plugins;

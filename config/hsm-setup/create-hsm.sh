@@ -17,6 +17,7 @@ init() {
   printf "\n*** Initializing Terraform ***\n"
   cd ../../config/hsm-setup/initial-setup
   rm -rf .terraform
+  rm -f ./key.pem
   terraform init
 }
 
