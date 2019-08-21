@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "service" {
     { "name": "APP_BUSINESS_USER_PASSWORD", "value" :"${var.business_user_password}"},
     { "name": "APP_BUSINESS_SUPERVISOR_PASSWORD", "value" :"${var.business_supervisor_password}"},
     { "name": "APP_SYSTEM_USER_PASSWORD", "value" :"${var.system_user_password}"},
-    { "name": "APP_ENVIRONMENT_TAG", "value" :"${terraform.workspace}"},
+    { "name": "APP_ENVIRONMENT_TAG", "value" :"${terraform.workspace}-${var.aws_account_id}"},
 
     { "name": "APP_SECURITY_HSM_ENABLED", "value" :"${terraform.workspace == "dev" ? "false" : "true"}"},
     { "name": "APP_CONTENT_SECURITY_HOST", "value" :"http://18.130.232.231:8080"},

@@ -100,3 +100,5 @@ variable "logs_bucket" {}
 variable "access_key" {}
 
 variable "access_secret" {}
+
+variable "aws_account_id" {}
