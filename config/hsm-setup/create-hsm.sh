@@ -11,7 +11,7 @@ init() {
   cd ../../services/hsmgateway
   docker build -t build-image:latest .
   docker run -v $(pwd):/build build-image bash -c "mvn clean install -f /build/pom.xml -DskipTests"
-  cp target/hsm-gateway*.jar ../../config/hsm-setup/initial-setup
+  cp target/hsmgateway*.jar ../../config/hsm-setup/initial-setup
   printf "\n*** Gateway service built***\n"
 
   printf "\n*** Initializing Terraform ***\n"
