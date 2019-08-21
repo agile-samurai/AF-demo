@@ -36,7 +36,7 @@ def parse_movie(html: str):
             characters.append(cdict)
         except:
             pass
-        return characters
+    return characters
 
 
 if __name__ == "__main__":
