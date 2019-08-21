@@ -164,9 +164,9 @@ resource aws_instance hsm_gateway {
       "chmod +x /tmp/script.sh",
       "chmod +x /tmp/setup_ec2.sh",
       "chmod +x /tmp/expect_script.sh",
-      "/tmp/script.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password}",
-      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address}",
-      "echo 'Starting gateway' && export HSM_PASSWORD=$(echo '${aws_iam_user_login_profile.admin.encrypted_password}' | cut -c10-20) && export HSM_PARTITION=${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} && export HSM_USER=gatewayuser && nohup java -Djava.library.path=/opt/cloudhsm/lib -jar /tmp/hsmgateway-0.0.1-SNAPSHOT.jar &"
+      "/tmp/script.sh",
+      "sleep 5",
+      "/tmp/setup_ec2.sh ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.hsm_id} ${aws_iam_user_login_profile.admin.encrypted_password} ${aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm.ip_address} ${aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_state} ${var.region}"
     ]
   }
 

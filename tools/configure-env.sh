@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#user:rdso.eval
+#user:rdsoeval
 #password-nf@i03Rr
 #rdso.eval@gmail.com
 
