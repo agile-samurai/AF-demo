@@ -56,17 +56,15 @@ Run the script
 docker build -t rdso/builder .
 docker run -it -e "GIT_USERNAME=<git_hub_user>" -e "GIT_PASSWORD=<git_hub_password>"  -e "AWS_ACCESS_KEY_ID=<aws_access_key_id>" -e "AWS_SECRET_ACCESS_KEY=<aws_secret-access_key>" rdso/builder
 
-## Option 2 - (Native - MacOS)
+## Option 2 - (Native - MacOS/linux)
 
 Install the following tools
 
-[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3)
+[Concourse](https://github.com/EngineerBetter/control-tower/releases/tag/0.7.3) 
 
+GIT_USERNAME=<git_hub_user> GIT_PASSWORD=<git_hub_password> AWS_ACCESS_KEY_ID=<aws_access_key_id> AWS_SECRET_ACCESS_KEY=<aws_secret-access_key> ./launch.sh
 
-
-AWS_ACCESS_KEY_ID=<access-key-id> \
-AWS_SECRET_ACCESS_KEY=<secret-access-key> \
-control-tower deploy --iaas aws <rdso>
+(If these commands do no succeed you may run them again)
 
 Once completed,
 
