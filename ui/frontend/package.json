@@ -8,7 +8,7 @@
     "@material-ui/styles": "^4.0.1",
     "axios": "^0.19.0",
     "browser-history": "^1.0.1",
-    "chart.js": "^2.8.0",
+    "chart.js": "^2.9.4",
     "react": "^16.8.6",
     "react-chartjs": "^1.2.0",
     "react-chartjs-2": "^2.7.6",
